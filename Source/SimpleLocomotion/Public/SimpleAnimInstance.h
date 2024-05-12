@@ -126,6 +126,10 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
+	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
+	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}
+	virtual void NativeThreadSafeUpdateAnimationPreCompletion(float DeltaTime) {}
+	
 protected:
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);

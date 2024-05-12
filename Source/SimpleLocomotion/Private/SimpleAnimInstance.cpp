@@ -107,6 +107,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 		BaseAimRotation = ControlRotation;
 	}
 
+	// Extension point
+	NativeThreadSafePostUpdateMovementProperties(DeltaTime);
+
 	if (bFirstUpdate)
 	{
 		// There is no valid delta on the first frame
@@ -145,6 +148,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 		Stance = ESimpleStanceMode::Crouch;
 	}
 	bStanceChanged = Stance != PrevStance;
+
+	// Extension point
+	NativeThreadSafePreUpdateInAirProperties(DeltaTime);
 	
 	// Landing Frame Lock
 	if (bWantsLandingFrameLock && bIsMoveModeValid)
@@ -172,6 +178,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 			bIsFalling = true;
 		}
 	}
+
+	// Extension point
+	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
 
 	bFirstUpdate = false;
 }
