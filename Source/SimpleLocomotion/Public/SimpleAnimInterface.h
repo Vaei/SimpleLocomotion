@@ -80,6 +80,7 @@ public:
 	 *
 	 * When they land, e.g. ACharacter::Landed():
 	 *
+	 * Super::Landed(Hit);
 	 * (void)AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
 	 */
 	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() = 0;
