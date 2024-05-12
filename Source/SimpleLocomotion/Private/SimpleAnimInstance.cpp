@@ -1,15 +1,13 @@
-﻿// Copyright (c) 2024 Studio Titan
+﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
 #include "SimpleAnimInstance.h"
 
 #include "SimpleAnimInterface.h"
 
-
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
 DEFINE_LOG_CATEGORY_STATIC(LogSimpleAnim, Log, All);
-
 
 namespace SimpleAnimInstanceCVars
 {
@@ -206,7 +204,7 @@ bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime)
 			LogString = "USimpleAnimInstance: " + LogString;
 			if (IsInGameThread() && SimpleAnimInstanceCVars::bPrintFailedValidationToMessageLog)
 			{
-				FMessageLog Log{"PIE"};
+				FMessageLog Log { "PIE" };
 				Log.Error(FText::FromString(LogString));
 			}
 			else
