@@ -77,6 +77,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsMovingOnGround = OwnerInterface->GetSimpleIsMovingOnGround();
 	bInAir = OwnerInterface->GetSimpleIsFalling();
 	bCanJump = OwnerInterface->GetSimpleCanJump();
+	bMovementIs3D = OwnerInterface->GetSimpleMovementIs3D();
 
 	bIsCrouching = OwnerInterface->GetSimpleIsCrouching();
 	bIsProning = OwnerInterface->GetSimpleIsProning();
@@ -99,6 +100,10 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	Local = World.GetLocal(WorldRotation);
 	Local2D = Local.Get2D();
 	World2D = World.Get2D();
+
+	const FSimpleMovement& MoveBasis = bMovementIs3D ? Local : Local2D;
+	bHasVelocity = !FMath::IsNearlyZero(MoveBasis.Velocity.SizeSquared());
+	bHasAcceleration = !FMath::IsNearlyZero(MoveBasis.Acceleration.SizeSquared());
 
 	// Rotation properties
 	if (LocalRole != ROLE_SimulatedProxy)

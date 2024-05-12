@@ -24,6 +24,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.3
+* Added `bHasVelocity` and `bHasAcceleration`
+
 ### 1.0.2
 * Added extension points during NativeThreadSafeUpdateAnimation()
 
