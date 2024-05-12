@@ -79,6 +79,9 @@ protected:
 	bool bCanJump = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bMovementIs3D = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsCrouching = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
@@ -93,6 +96,12 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsMoveModeValid = false;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bHasAcceleration;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bHasVelocity;
+	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	ESimpleGaitMode Gait = ESimpleGaitMode::Jog;
 

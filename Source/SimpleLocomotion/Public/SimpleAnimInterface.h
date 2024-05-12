@@ -63,6 +63,9 @@ public:
 	/** e.g. ASprintCharacter::IsSprinting() */
 	virtual bool GetSimpleIsSprinting() const { return false; }
 
+	/** e.g. UCharacterMovementComponent::IsSwimming() || UCharacterMovementComponent::IsFlying() */
+	virtual bool GetSimpleMovementIs3D() const { return false; }
+	
 	/** UCharacterMovementComponent::MovementMode != MOVE_None */
 	virtual bool GetSimpleIsMoveModeValid() const = 0;
 
