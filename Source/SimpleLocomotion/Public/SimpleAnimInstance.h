@@ -100,6 +100,12 @@ protected:
 	ESimpleStanceMode Stance = ESimpleStanceMode::Stand;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bStanceChanged;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bGaitChanged;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	TEnumAsByte<ENetRole> LocalRole;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
