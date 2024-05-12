@@ -123,6 +123,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	}
 
 	// Gait
+	const ESimpleGaitMode PrevGait = Gait;
 	Gait = ESimpleGaitMode::Jog;
 	if (bIsSprinting)
 	{
@@ -132,8 +133,10 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	{
 		Gait = ESimpleGaitMode::Walk;
 	}
+	bGaitChanged = Gait != PrevGait;
 
 	// Stance
+	const ESimpleStanceMode PrevStance = Stance;
 	Stance = ESimpleStanceMode::Stand;
 	if (bIsProning)
 	{
@@ -143,6 +146,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	{
 		Stance = ESimpleStanceMode::Crouch;
 	}
+	bStanceChanged = Stance != PrevStance;
 	
 	// Landing Frame Lock
 	if (bWantsLandingFrameLock && bIsMoveModeValid)
