@@ -24,6 +24,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.2
+* Added extension points during NativeThreadSafeUpdateAnimation()
+
 ### 1.0.1
 * Added stance and gait change detection
 
