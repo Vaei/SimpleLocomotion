@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Studio Titan
+﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
 #include "SimpleLocomotionTypes.h"
