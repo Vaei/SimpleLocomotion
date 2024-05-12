@@ -42,6 +42,9 @@ public:
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
 	virtual float GetSimpleLeanRate() const { return 3.75f; };
 
+	/** UCharacterMovementComponent::GetGravityZ()  */
+	virtual float GetSimpleGravityZ() const { return 1.f; }
+	
 	/** UCharacterMovementComponent::IsMovingOnGround() */
 	virtual bool GetSimpleIsMovingOnGround() const { return true; }
 

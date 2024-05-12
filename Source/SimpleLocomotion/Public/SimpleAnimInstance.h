@@ -43,10 +43,10 @@ protected:
 	FVector RightVector = FVector::RightVector;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	FRotator WorldRotation;
+	FRotator WorldRotation = FRotator::ZeroRotator;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	FRotator PrevWorldRotation;
+	FRotator PrevWorldRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FRotator ControlRotation = FRotator::ZeroRotator;
@@ -58,10 +58,16 @@ protected:
 	float MaxSpeed = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float LeanRate;
+	float LeanRate = 0.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float LeanAngle;
+	float LeanAngle = 0.f;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float GravityZ = 1.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float TimeToJumpApex = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsMovingOnGround = true;
@@ -97,10 +103,10 @@ protected:
 	bool bIsMoveModeValid = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	bool bHasAcceleration;
+	bool bHasAcceleration = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	bool bHasVelocity;
+	bool bHasVelocity = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	ESimpleGaitMode Gait = ESimpleGaitMode::Jog;
@@ -109,13 +115,13 @@ protected:
 	ESimpleStanceMode Stance = ESimpleStanceMode::Stand;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	bool bStanceChanged;
+	bool bStanceChanged = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	bool bGaitChanged;
+	bool bGaitChanged = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	TEnumAsByte<ENetRole> LocalRole;
+	TEnumAsByte<ENetRole> LocalRole = ROLE_AutonomousProxy;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bFirstUpdate = true;

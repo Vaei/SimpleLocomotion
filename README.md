@@ -24,6 +24,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.4
+* Added `TimeToJumpApex`
+* Initialized remaining members
+
 ### 1.0.3
 * Added `bHasVelocity` and `bHasAcceleration`
 

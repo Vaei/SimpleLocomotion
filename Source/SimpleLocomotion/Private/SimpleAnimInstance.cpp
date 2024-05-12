@@ -77,6 +77,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsMovingOnGround = OwnerInterface->GetSimpleIsMovingOnGround();
 	bInAir = OwnerInterface->GetSimpleIsFalling();
 	bCanJump = OwnerInterface->GetSimpleCanJump();
+	GravityZ = OwnerInterface->GetSimpleGravityZ();
 	bMovementIs3D = OwnerInterface->GetSimpleMovementIs3D();
 
 	bIsCrouching = OwnerInterface->GetSimpleIsCrouching();
@@ -183,6 +184,8 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 			bIsFalling = true;
 		}
 	}
+
+	TimeToJumpApex = bIsJumping ? -World.Velocity.Z / GravityZ : 0.f;
 
 	// Extension point
 	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
