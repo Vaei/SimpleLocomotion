@@ -4,7 +4,9 @@ Simple locomotion system code functionality to extend from, with respect to upda
 
 This demonstrates best practices for building the functionality side of locomotion systems.
 
-Works with any actor, not only pawns or characters. That means it supports Mover 2.0. Requires C++ for interface implementation.
+Works with any actor, not only pawns or characters. That means it supports Mover 2.0.
+
+Requires C++ for interface implementation.
 
 Does not include an anim blueprint. Extend the USimpleAnimInstance to make your own. Does not include any content.
 
@@ -23,6 +25,10 @@ Next you will want to either subclass `USimpleAnimInstance` to extend functional
 You will likely run into fast path warnings on your animation state transitions. For this you will want to use ThreadSafeUpdateAnimation to cache the conditions to a boolean and pass that boolean to the transition instead.
 
 ## Changelog
+
+### 1.0.5
+* Expose `IsAnimValidToUpdate` to BP
+* Make `IsAnimValidToUpdate` `const`
 
 ### 1.0.4
 * Added `TimeToJumpApex`

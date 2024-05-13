@@ -7,6 +7,13 @@
 #include "SimpleLocomotionTypes.generated.h"
 
 UENUM(BlueprintType)
+enum class ESimpleIsValidResult : uint8
+{
+	Valid,
+	NotValid,
+};
+
+UENUM(BlueprintType)
 enum class ESimpleGaitMode : uint8
 {
 	Walk,
