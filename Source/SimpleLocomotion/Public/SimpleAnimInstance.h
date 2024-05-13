@@ -148,6 +148,10 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);
+
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	virtual bool IsAnimValidToUpdate(float DeltaTime) const;
 	
-	virtual bool IsAnimValidToUpdate(float DeltaTime);
+	UFUNCTION(BlueprintCallable, Category=Animation, meta=(BlueprintThreadSafe, ExpandEnumAsExecs="ResultIsValid", DisplayName="Is Anim Valid to Update"))
+	virtual void K2_IsAnimValidToUpdate(float DeltaTime, ESimpleIsValidResult& ResultIsValid);
 };

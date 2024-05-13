@@ -198,7 +198,7 @@ void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 	bLandingFrameLock = true;
 }
 
-bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime)
+bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
 	const bool bValidDeltaTime = DeltaTime > 1e-6f;
 	const bool bValid = IsValid(Owner) && OwnerInterface && bValidDeltaTime;
@@ -233,4 +233,10 @@ bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime)
 #endif
 	
 	return bValid;
+}
+
+void USimpleAnimInstance::K2_IsAnimValidToUpdate(float DeltaTime, ESimpleIsValidResult& ResultIsValid)
+{
+	const bool bValid = IsAnimValidToUpdate(DeltaTime);
+	ResultIsValid = bValid ? ESimpleIsValidResult::Valid : ESimpleIsValidResult::NotValid;
 }
