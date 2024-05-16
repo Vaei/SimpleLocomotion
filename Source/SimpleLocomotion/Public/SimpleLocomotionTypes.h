@@ -57,8 +57,8 @@ struct SIMPLELOCOMOTION_API FSimpleMovement
 	
 	FSimpleMovement GetLocal(const FRotator& WorldRotation) const
 	{
-		const FVector Velocity2D = { Velocity.X, Velocity.Y, 0.f };
-		const FVector Acceleration2D = { Acceleration.X, Acceleration.Y, 0.f };
-		return FSimpleMovement { Velocity2D, Acceleration2D };
+		return FSimpleMovement {
+			WorldRotation.UnrotateVector(Velocity), WorldRotation.UnrotateVector(Acceleration)
+		};
 	}
 };
