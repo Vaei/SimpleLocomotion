@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.7
+* Don't require GetSimpleOnLandedDelegate(), or GetSimpleIsMoveModeValid() implemented
+
 ### 1.0.6
 * Implement the GetLocal() conversion (had been forgotten)
 

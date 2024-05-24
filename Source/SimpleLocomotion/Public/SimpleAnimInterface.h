@@ -70,7 +70,7 @@ public:
 	virtual bool GetSimpleMovementIs3D() const { return false; }
 	
 	/** UCharacterMovementComponent::MovementMode != MOVE_None */
-	virtual bool GetSimpleIsMoveModeValid() const = 0;
+	virtual bool GetSimpleIsMoveModeValid() const { return true; };
 
 	/** e.g. AMantleCharacter::IsMantling() */
 	virtual bool WantsFrameLockOnLanding() const { return false; }
@@ -89,5 +89,5 @@ public:
 	 * Super::Landed(Hit);
 	 * (void)AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
 	 */
-	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() = 0;
+	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() { return nullptr; };
 };
