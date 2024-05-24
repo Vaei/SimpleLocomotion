@@ -3,41 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SimpleLocomotionTypes.h"
-#include "UObject/Interface.h"
-#include "SimpleAnimInterface.generated.h"
+#include "Components/ActorComponent.h"
+#include "SimpleAnimComponent.generated.h"
+
 
 /** Call from ACharacter::Landed or equivalent */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FSimpleLandedSignature, const FHitResult&, Hit);
 
-UINTERFACE()
-class USimpleAnimInterface : public UInterface
-{
-	GENERATED_BODY()
-};
-
-/**
- * 
- */
-class SIMPLELOCOMOTION_API ISimpleAnimInterface
+UCLASS(Abstract, ClassGroup=(Custom))
+class SIMPLELOCOMOTION_API USimpleAnimComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+	virtual void OnRegister() override;
+	virtual void InitializeComponent() override;
+	virtual void PostLoad() override;
+
+protected:
+	/** This is where you cast the owner and cache it along with any other references */
+	virtual void SetUpdatedCharacter() {}
+	
+public:
 	/** AActor::GetVelocity() */
-	virtual FVector GetSimpleVelocity() const = 0;
+	virtual FVector GetSimpleVelocity() const PURE_VIRTUAL(, return FVector::ZeroVector;);
 
 	/** UCharacterMovementComponent::GetCurrentAcceleration() */
-	virtual FVector GetSimpleAcceleration() const = 0;
+	virtual FVector GetSimpleAcceleration() const PURE_VIRTUAL(, return FVector::ZeroVector;);
 
 	/** APawn::GetControlRotation() */
-	virtual FRotator GetSimpleControlRotation() const = 0;
+	virtual FRotator GetSimpleControlRotation() const PURE_VIRTUAL(, return FRotator::ZeroRotator;);
 	
 	/** APawn::GetBaseAimRotation() */
-	virtual FRotator GetSimpleBaseAimRotation() const = 0;
+	virtual FRotator GetSimpleBaseAimRotation() const PURE_VIRTUAL(, return FRotator::ZeroRotator;);
 
-	/** UCharacterMovementComponent::GetMaxSpeed()  */
-	virtual float GetSimpleMaxSpeed() const = 0;
+	/** UCharacterMovementComponent::GetMaxSpeed() */
+	virtual float GetSimpleMaxSpeed() const PURE_VIRTUAL(, return 0.f;);
 	
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
 	virtual float GetSimpleLeanRate() const { return 3.75f; };
@@ -76,18 +77,21 @@ public:
 	virtual bool WantsFrameLockOnLanding() const { return false; }
 
 	/** AActor::GetLocalRole() */
-	virtual ENetRole GetSimpleLocalRole() const { return ROLE_AutonomousProxy; }
+	virtual ENetRole GetSimpleLocalRole() const PURE_VIRTUAL(, return ROLE_None;)
 	
 	/**
-	 * Add to your actor that implements this interface:
+	 * Add to your actor that owns this component:
 	 * 
 	 * FSimpleLandedSignature SimpleLandedDelegate;
-	 * virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() override final { return &SimpleLandedDelegate; }
+	 *
+	 * Then override on your component:
+	 * 
+	 * virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() override final { return &Owner->SimpleLandedDelegate; }
 	 *
 	 * When they land, e.g. ACharacter::Landed():
 	 *
 	 * Super::Landed(Hit);
-	 * (void)AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
+	 * (void)ThisComponent->AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
 	 */
-	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() { return nullptr; };
+	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() { return nullptr; }
 };

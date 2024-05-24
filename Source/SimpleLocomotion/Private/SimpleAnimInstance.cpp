@@ -3,7 +3,7 @@
 
 #include "SimpleAnimInstance.h"
 
-#include "SimpleAnimInterface.h"
+#include "SimpleAnimComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
@@ -25,11 +25,11 @@ namespace SimpleAnimInstanceCVars
 void USimpleAnimInstance::NativeInitializeAnimation()
 {
 	Owner = TryGetPawnOwner();
-	OwnerInterface = Owner ? Cast<ISimpleAnimInterface>(Owner) : nullptr;
+	OwnerComponent = Owner ? Owner->GetComponentByClass<USimpleAnimComponent>() : nullptr;
 
-	if (OwnerInterface)
+	if (OwnerComponent)
 	{
-		if (FSimpleLandedSignature* LandedDelegatePtr = OwnerInterface->GetSimpleOnLandedDelegate())
+		if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
 		{
 			if (LandedDelegatePtr->IsBoundToObject(this))
 			{
@@ -44,14 +44,6 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 
 void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
-#if WITH_EDITOR
-	// Interfaces are not UPROPERTY and edge cases see it getting garbage collected (eg. live coding)
-	if (IsValid(Owner) && !OwnerInterface)
-	{
-		OwnerInterface = Owner ? Cast<ISimpleAnimInterface>(Owner) : nullptr;
-	}
-#endif
-	
 	if (!IsAnimValidToUpdate(DeltaTime))
 	{
 		return;
@@ -59,35 +51,35 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
-	LocalRole = OwnerInterface->GetSimpleLocalRole();
+	LocalRole = OwnerComponent->GetSimpleLocalRole();
 
-	World.Velocity = OwnerInterface->GetSimpleVelocity();
-	World.Acceleration = OwnerInterface->GetSimpleAcceleration();
+	World.Velocity = OwnerComponent->GetSimpleVelocity();
+	World.Acceleration = OwnerComponent->GetSimpleAcceleration();
 	ForwardVector = Owner->GetActorForwardVector();
 	RightVector = Owner->GetActorRightVector();
 
 	PrevWorldRotation = WorldRotation;
 	WorldRotation = Owner->GetActorRotation();
-	ControlRotation = OwnerInterface->GetSimpleControlRotation();
-	BaseAimRotation = OwnerInterface->GetSimpleBaseAimRotation();
+	ControlRotation = OwnerComponent->GetSimpleControlRotation();
+	BaseAimRotation = OwnerComponent->GetSimpleBaseAimRotation();
 	
-	MaxSpeed = OwnerInterface->GetSimpleMaxSpeed();
-	LeanRate = OwnerInterface->GetSimpleLeanRate();
+	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
+	LeanRate = OwnerComponent->GetSimpleLeanRate();
 	
-	bIsMovingOnGround = OwnerInterface->GetSimpleIsMovingOnGround();
-	bInAir = OwnerInterface->GetSimpleIsFalling();
-	bCanJump = OwnerInterface->GetSimpleCanJump();
-	GravityZ = OwnerInterface->GetSimpleGravityZ();
-	bMovementIs3D = OwnerInterface->GetSimpleMovementIs3D();
+	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround();
+	bInAir = OwnerComponent->GetSimpleIsFalling();
+	bCanJump = OwnerComponent->GetSimpleCanJump();
+	GravityZ = OwnerComponent->GetSimpleGravityZ();
+	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
 
-	bIsCrouching = OwnerInterface->GetSimpleIsCrouching();
-	bIsProning = OwnerInterface->GetSimpleIsProning();
+	bIsCrouching = OwnerComponent->GetSimpleIsCrouching();
+	bIsProning = OwnerComponent->GetSimpleIsProning();
 
-	bIsWalking = OwnerInterface->GetSimpleIsWalking();
-	bIsSprinting = OwnerInterface->GetSimpleIsSprinting();
+	bIsWalking = OwnerComponent->GetSimpleIsWalking();
+	bIsSprinting = OwnerComponent->GetSimpleIsSprinting();
 
-	bWantsLandingFrameLock = OwnerInterface->WantsFrameLockOnLanding();
-	bIsMoveModeValid = OwnerInterface->GetSimpleIsMoveModeValid();
+	bWantsLandingFrameLock = OwnerComponent->WantsFrameLockOnLanding();
+	bIsMoveModeValid = OwnerComponent->GetSimpleIsMoveModeValid();
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
@@ -201,7 +193,7 @@ void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
 	const bool bValidDeltaTime = DeltaTime > 1e-6f;
-	const bool bValid = IsValid(Owner) && OwnerInterface && bValidDeltaTime;
+	const bool bValid = IsValid(Owner) && OwnerComponent && bValidDeltaTime;
 
 #if WITH_EDITOR
 	if (!bValid && bValidDeltaTime && GetWorld() && GetWorld()->IsGameWorld())
@@ -211,10 +203,10 @@ bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 		{
 			LogString += "Owner is not valid";
 		}
-		if (!OwnerInterface)
+		if (!OwnerComponent)
 		{
 			if (!LogString.IsEmpty()) { LogString += ". "; }
-			LogString += "No SimpleAnimInterface found.";
+			LogString += "No SimpleAnimComponent found.";
 		}
 		if (!LogString.IsEmpty())
 		{

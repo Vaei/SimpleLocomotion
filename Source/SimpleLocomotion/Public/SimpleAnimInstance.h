@@ -7,7 +7,7 @@
 #include "Animation/AnimInstance.h"
 #include "SimpleAnimInstance.generated.h"
 
-class ISimpleAnimInterface;
+class USimpleAnimComponent;
 
 /**
  * 
@@ -21,7 +21,8 @@ public:
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
 	AActor* Owner = nullptr;
 
-	ISimpleAnimInterface* OwnerInterface = nullptr;
+	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
+	USimpleAnimComponent* OwnerComponent = nullptr;
 
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
