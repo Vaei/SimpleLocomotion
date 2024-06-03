@@ -64,7 +64,10 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	BaseAimRotation = OwnerComponent->GetSimpleBaseAimRotation();
 	
 	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
+	MaxGaitSpeeds = OwnerComponent->GetSimpleMaxGaitSpeeds();
 	LeanRate = OwnerComponent->GetSimpleLeanRate();
+
+	RootYawOffset = OwnerComponent->GetSimpleRootYawOffset();
 	
 	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround();
 	bInAir = OwnerComponent->GetSimpleIsFalling();
@@ -77,6 +80,9 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bIsWalking = OwnerComponent->GetSimpleIsWalking();
 	bIsSprinting = OwnerComponent->GetSimpleIsSprinting();
+
+	bWantsWalking = OwnerComponent->GetSimpleWantsWalking();
+	bWantsSprinting = OwnerComponent->GetSimpleWantsSprinting();
 
 	bWantsLandingFrameLock = OwnerComponent->WantsFrameLockOnLanding();
 	bIsMoveModeValid = OwnerComponent->GetSimpleIsMoveModeValid();
@@ -104,6 +110,15 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 		// Control Rotation is more accurate, but BaseAimRotation is replicated to sim proxies
 		BaseAimRotation = ControlRotation;
 	}
+
+	// Update cardinal properties
+	if (bWantsCardinalsUpdated)
+	{
+		CardinalMovement.ThreadSafeUpdate(World2D, WorldRotation, RootYawOffset);
+	}
+
+	// Update gait modes
+	NativeThreadSafeUpdateGaitMode(DeltaTime);
 
 	// Extension point
 	NativeThreadSafePostUpdateMovementProperties(DeltaTime);
@@ -183,6 +198,89 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
 
 	bFirstUpdate = false;
+}
+
+void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
+{
+	const float Speed = World2D.GetSpeed();
+	
+	// Start Gait Mode: Use the intended mode
+	StartGait = ESimpleGaitMode::Jog;
+	if (bWantsSprinting)
+	{
+		// We will probably start sprinting next frame
+		StartGait = ESimpleGaitMode::Sprint;
+	}
+	else if (bWantsWalking)
+	{
+		// We will probably start walking next frame
+		StartGait = ESimpleGaitMode::Walk;
+	}
+	
+	// Gait Mode: Use the current mode
+	if (bIsSprinting)
+	{
+		Gait = ESimpleGaitMode::Sprint;
+	}
+	else if (bIsWalking)
+	{
+		Gait = ESimpleGaitMode::Walk;
+	}
+	else
+	{
+		Gait = ESimpleGaitMode::Jog;
+	}
+
+	// Stop Gait Mode: Use the previous mode
+	if (bHasAcceleration)
+	{
+		StopGait = Gait;
+		switch(Gait)
+		{
+			case ESimpleGaitMode::Walk:
+				// If walking and needing to stop, default to walk stop
+				break;
+			case ESimpleGaitMode::Jog:
+				// If not at run speed, use walking stop
+				if (Speed < MaxGaitSpeeds.WalkSpeed)
+				{
+					// Use walk speed if we haven't even reached our max walk speed yet
+					StopGait = ESimpleGaitMode::Walk;
+				}
+				else if (Speed < MaxGaitSpeeds.JogSpeed)
+				{
+					// Use the gait mode that our speed is closer to
+					if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
+					{
+						StopGait = ESimpleGaitMode::Walk;
+					}
+					else
+					{
+						StopGait = ESimpleGaitMode::Jog;
+					}
+				}
+			break;
+			case ESimpleGaitMode::Sprint:
+				if (Speed < MaxGaitSpeeds.JogSpeed)
+				{
+					// Use the gait mode that our speed is closer to if we haven't even reached jog speed
+					if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
+					{
+						StopGait = ESimpleGaitMode::Walk;
+					}
+					else
+					{
+						StopGait = ESimpleGaitMode::Jog;
+					}
+				}
+				else
+				{
+					// Sprint always results in a sprint stop, provided we have exceeded jog speed
+					StopGait = ESimpleGaitMode::Sprint;
+				}
+			break;
+		}
+	}
 }
 
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)

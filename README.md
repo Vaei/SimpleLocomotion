@@ -26,6 +26,11 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.2.0
+* Add basic cardinal movement property handling
+* Add start and stop gait mode support
+* Some properties moved to public instead of protected after anticipating getters
+
 ### 1.1.0
 * Change to component based approach instead of interface
 

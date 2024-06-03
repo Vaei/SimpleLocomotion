@@ -25,6 +25,10 @@ public:
 	USimpleAnimComponent* OwnerComponent = nullptr;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
+	bool bWantsCardinalsUpdated = true;
+	
+protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FSimpleMovement World;
 	
@@ -36,6 +40,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FSimpleMovement Local2D;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	FSimpleCardinalMovement CardinalMovement;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FVector ForwardVector = FVector::ForwardVector;
@@ -56,6 +63,9 @@ protected:
 	FRotator BaseAimRotation = FRotator::ZeroRotator;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	FSimpleGaitSpeed MaxGaitSpeeds = {};
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float MaxSpeed = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
@@ -63,6 +73,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanAngle = 0.f;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float RootYawOffset = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float GravityZ = 1.f;
@@ -99,6 +112,12 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsSprinting = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bWantsWalking = false;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bWantsSprinting = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsMoveModeValid = false;
@@ -108,13 +127,21 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bHasVelocity = false;
-	
+
+public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	ESimpleGaitMode Gait = ESimpleGaitMode::Jog;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	ESimpleGaitMode StartGait = ESimpleGaitMode::Jog;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	ESimpleGaitMode StopGait = ESimpleGaitMode::Jog;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	ESimpleStanceMode Stance = ESimpleStanceMode::Stand;
 
+protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bStanceChanged = false;
 	
@@ -142,6 +169,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
+	virtual void NativeThreadSafeUpdateGaitMode(float DeltaTime);
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
 	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateAnimationPreCompletion(float DeltaTime) {}
