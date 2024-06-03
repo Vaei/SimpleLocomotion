@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SimpleLocomotionTypes.h"
 #include "Components/ActorComponent.h"
 #include "SimpleAnimComponent.generated.h"
 
@@ -39,9 +40,15 @@ public:
 
 	/** UCharacterMovementComponent::GetMaxSpeed() */
 	virtual float GetSimpleMaxSpeed() const PURE_VIRTUAL(, return 0.f;);
+
+	/** UCharacterMovementComponent::MaxWalkSpeed and optional custom implementations of Walk and Sprint speeds */
+	virtual FSimpleGaitSpeed GetSimpleMaxGaitSpeeds() const PURE_VIRTUAL(, return 0.f;);
 	
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
 	virtual float GetSimpleLeanRate() const { return 3.75f; };
+	
+	/** Used with TurnInPlace systems where usually a mesh offset is applied */
+	virtual float GetSimpleRootYawOffset() const { return 0.f; };
 
 	/** UCharacterMovementComponent::GetGravityZ()  */
 	virtual float GetSimpleGravityZ() const { return 1.f; }
@@ -66,6 +73,12 @@ public:
 
 	/** e.g. ASprintCharacter::IsSprinting() */
 	virtual bool GetSimpleIsSprinting() const { return false; }
+	
+	/** e.g. UWalkMovement::bWantsToWalk && USprintMovement::CanWalk() */
+	virtual bool GetSimpleWantsWalking() const { return false; }
+
+	/** e.g. USprintMovement::bWantsToSprint && USprintMovement::CanSprint() */
+	virtual bool GetSimpleWantsSprinting() const { return false; }
 
 	/** e.g. UCharacterMovementComponent::IsSwimming() || UCharacterMovementComponent::IsFlying() */
 	virtual bool GetSimpleMovementIs3D() const { return false; }
