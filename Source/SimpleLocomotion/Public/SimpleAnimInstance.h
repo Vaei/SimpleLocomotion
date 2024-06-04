@@ -24,6 +24,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
 	USimpleAnimComponent* OwnerComponent = nullptr;
 
+#if WITH_EDITORONLY_DATA
+	/** Assist designers by cleaning out categories they don't need to see */
+	UPROPERTY(EditDefaultsOnly, Category=Editor)
+	TArray<FName> HideEditorCategories = { "RootMotion", "Notifies", "Montage" };
+	
+	UPROPERTY(EditDefaultsOnly, Category=Editor)
+	TArray<FName> ImportantEditorCategories = {};
+#endif
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsCardinalsUpdated = true;

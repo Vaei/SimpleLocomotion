@@ -1,7 +1,7 @@
 ﻿{
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.2.1",
+	"VersionName": "1.2.2",
 	"FriendlyName": "SimpleLocomotion",
 	"Description": "Simple locomotion system code functionality to extend from, with respect to updating in worker threads for maximum performance optimization.",
 	"Category": "Animation",
@@ -18,6 +18,11 @@
 			"Name": "SimpleLocomotion",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SimpleLocomotionEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PreDefault"
 		}
 	]
 }
