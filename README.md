@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.2.1
+* Add Speed, Speed3D, and Speed2D convenience parameters
+
 ### 1.2.0
 * Add basic cardinal movement property handling
 * Add start and stop gait mode support

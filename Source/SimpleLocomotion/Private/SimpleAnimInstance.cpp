@@ -100,9 +100,17 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	Local2D = Local.Get2D();
 	World2D = World.Get2D();
 
-	const FSimpleMovement& MoveBasis = bMovementIs3D ? Local : Local2D;
-	bHasVelocity = !FMath::IsNearlyZero(MoveBasis.Velocity.SizeSquared());
-	bHasAcceleration = !FMath::IsNearlyZero(MoveBasis.Acceleration.SizeSquared());
+	Speed3D = Local.Velocity.Size();
+	Speed2D = Local2D.Velocity.Size();
+	Speed = bIsMovingOnGround ? Speed : Speed2D;
+	const float SpeedSq = Speed * Speed;
+
+	const float AccelMag3D = Local.Acceleration.SizeSquared();
+	const float AccelMag2D = Local2D.Acceleration.SizeSquared();
+	const float AccelSq = bMovementIs3D ? AccelMag3D : AccelMag2D;
+	
+	bHasVelocity = !FMath::IsNearlyZero(SpeedSq);
+	bHasAcceleration = !FMath::IsNearlyZero(AccelSq);
 
 	// Rotation properties
 	if (LocalRole != ROLE_SimulatedProxy)
@@ -202,8 +210,6 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 {
-	const float Speed = World2D.GetSpeed();
-	
 	// Start Gait Mode: Use the intended mode
 	StartGait = ESimpleGaitMode::Jog;
 	if (bWantsSprinting)
