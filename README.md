@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.3.1
+* Fixed bug where incorrect speed was factored
+
 ### 1.3.0
 * Disable anim component tick
 * Hide anim component properties via details customization for CD0 as they are not needed
