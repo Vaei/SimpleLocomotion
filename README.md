@@ -27,6 +27,7 @@ You will likely run into fast path warnings on your animation state transitions.
 ## Changelog
 
 ### 1.2.2
+* Add SimpleLocomotionEditor module
 * Hide common categories from CD0 to make it cleaner for designers
 * Mark categories as important from CD0 for same purpose
 
