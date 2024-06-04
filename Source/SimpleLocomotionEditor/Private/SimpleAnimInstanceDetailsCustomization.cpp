@@ -23,7 +23,7 @@ void FSimpleAnimInstanceDetailsCustomization::CustomizeDetails(IDetailLayoutBuil
 		return;
 	}
 
-	if (SimpleAnimInstance->HasAnyFlags(RF_ClassDefaultObject))
+	if (SimpleAnimInstance->HasAnyFlags(RF_ClassDefaultObject | RF_Transactional))
 	{
 		DetailBuilder.EditCategory(TEXT("Editor"), FText::GetEmpty(), ECategoryPriority::Transform);
 		for (const FName& Category : SimpleAnimInstance->HideEditorCategories)
@@ -39,7 +39,7 @@ void FSimpleAnimInstanceDetailsCustomization::CustomizeDetails(IDetailLayoutBuil
 	else
 	{
 		const TSharedPtr<IPropertyHandle> EditorProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstance, HideEditorCategories));
-		const TSharedPtr<IPropertyHandle> ImportantProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstance, HideEditorCategories));
+		const TSharedPtr<IPropertyHandle> ImportantProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstance, ImportantEditorCategories));
 		DetailBuilder.HideProperty(EditorProperty);
 		DetailBuilder.HideProperty(ImportantProperty);
 	}

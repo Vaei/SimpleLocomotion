@@ -17,6 +17,19 @@ class SIMPLELOCOMOTION_API USimpleAnimComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+#if WITH_EDITORONLY_DATA
+	/** Assist designers by cleaning out categories they don't need to see */
+	UPROPERTY(EditDefaultsOnly, Category=Editor)
+	TArray<FName> HideEditorCategories = { "Sockets", "Tags", "ComponentTick", "ComponentReplication",
+		"Activation", "Cooking", "Events", "AssetUserData", "Replication", "Navigation" };
+	
+	UPROPERTY(EditDefaultsOnly, Category=Editor)
+	TArray<FName> ImportantEditorCategories = {};
+#endif
+	
+public:
+	USimpleAnimComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
 	virtual void OnRegister() override;
 	virtual void InitializeComponent() override;
 	virtual void PostLoad() override;
