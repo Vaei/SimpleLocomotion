@@ -296,43 +296,59 @@ void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
+	const bool bValid = IsValid(Owner) && OwnerComponent;
 	const bool bValidDeltaTime = DeltaTime > 1e-6f;
-	const bool bValid = IsValid(Owner) && OwnerComponent && bValidDeltaTime;
 
-#if WITH_EDITOR
-	if (!bValid && bValidDeltaTime && GetWorld() && GetWorld()->IsGameWorld())
+#if WITH_EDITORONLY_DATA
+	if (!bValid && !HasAnyFlags(RF_DefaultSubObject) && GetWorld() && GetWorld()->IsGameWorld())
 	{
-		FString LogString;
+		FString LogError;
 		if (!IsValid(Owner))
 		{
-			LogString += "Owner is not valid";
+			LogError += "Owner is not valid";
 		}
 		if (!OwnerComponent)
 		{
-			if (!LogString.IsEmpty()) { LogString += ". "; }
-			LogString += "No SimpleAnimComponent found.";
+			if (!LogError.IsEmpty()) { LogError += ". "; }
+			LogError += "No SimpleAnimComponent found.";
 		}
-		if (!LogString.IsEmpty())
+		if (!LogError.IsEmpty())
 		{
-			LogString = "USimpleAnimInstance: " + LogString;
-			if (IsInGameThread() && SimpleAnimInstanceCVars::bPrintFailedValidationToMessageLog)
-			{
-				FMessageLog Log { "PIE" };
-				Log.Error(FText::FromString(LogString));
-			}
-			else
-			{
-				UE_LOG(LogSimpleAnim, Error, TEXT("%s"), *LogString);
-			}
+			OnAnimNotValidToUpdate(LogError);
 		}
+	}
+#else
+	if (!bValid)
+	{
+		OnAnimNotValidToUpdate("");
 	}
 #endif
 	
-	return bValid;
+	return bValid && bValidDeltaTime;
 }
 
 void USimpleAnimInstance::K2_IsAnimValidToUpdate(float DeltaTime, ESimpleIsValidResult& ResultIsValid)
 {
 	const bool bValid = IsAnimValidToUpdate(DeltaTime);
 	ResultIsValid = bValid ? ESimpleIsValidResult::Valid : ESimpleIsValidResult::NotValid;
+}
+
+void USimpleAnimInstance::OnAnimNotValidToUpdate(FString LogError) const
+{
+#if WITH_EDITORONLY_DATA
+	if (!ConsumedDebugMessages.Contains(LogError))  // Don't spam the message log
+	{
+		const_cast<USimpleAnimInstance*>(this)->ConsumedDebugMessages.Add(LogError);
+		LogError = "USimpleAnimInstance: " + LogError;
+		if (IsInGameThread() && SimpleAnimInstanceCVars::bPrintFailedValidationToMessageLog)
+		{
+			FMessageLog Log { "PIE" };
+			Log.Error(FText::FromString(LogError));
+		}
+		else
+		{
+			UE_LOG(LogSimpleAnim, Error, TEXT("%s"), *LogError);
+		}
+	}
+#endif
 }

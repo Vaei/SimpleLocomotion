@@ -26,6 +26,12 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.3.0
+* Disable anim component tick
+* Hide anim component properties via details customization for CD0 as they are not needed
+* Prevent message log spam
+* Add extension point OnAnimNotValidToUpdate
+
 ### 1.2.2
 * Add SimpleLocomotionEditor module
 * Hide common categories from CD0 to make it cleaner for designers

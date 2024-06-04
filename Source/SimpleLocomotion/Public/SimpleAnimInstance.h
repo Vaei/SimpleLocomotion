@@ -201,4 +201,11 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category=Animation, meta=(BlueprintThreadSafe, ExpandEnumAsExecs="ResultIsValid", DisplayName="Is Anim Valid to Update"))
 	virtual void K2_IsAnimValidToUpdate(float DeltaTime, ESimpleIsValidResult& ResultIsValid);
+
+	virtual void OnAnimNotValidToUpdate(FString LogError) const;
+	
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(Transient, DuplicateTransient)
+	TArray<FString> ConsumedDebugMessages;
+#endif
 };

@@ -6,6 +6,13 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimComponent)
 
+USimpleAnimComponent::USimpleAnimComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+}
+
 void USimpleAnimComponent::OnRegister()
 {
 	Super::OnRegister();
