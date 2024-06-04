@@ -26,6 +26,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.2.2
+* Hide common categories from CD0 to make it cleaner for designers
+* Mark categories as important from CD0 for same purpose
+
 ### 1.2.1
 * Add Speed, Speed3D, and Speed2D convenience parameters
 
