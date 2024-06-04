@@ -102,7 +102,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 
 	Speed3D = Local.Velocity.Size();
 	Speed2D = Local2D.Velocity.Size();
-	Speed = bIsMovingOnGround ? Speed : Speed2D;
+	Speed = bIsMovingOnGround ? Speed3D : Speed2D;
 	const float SpeedSq = Speed * Speed;
 
 	const float AccelMag3D = Local.Acceleration.SizeSquared();
