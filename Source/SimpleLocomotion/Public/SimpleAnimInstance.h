@@ -58,6 +58,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float Speed;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float PrevSpeed;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FSimpleCardinalMovement CardinalMovement;
