@@ -100,6 +100,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	Local2D = Local.Get2D();
 	World2D = World.Get2D();
 
+	PrevSpeed = Speed;
 	Speed3D = Local.Velocity.Size();
 	Speed2D = Local2D.Velocity.Size();
 	Speed = bIsMovingOnGround ? Speed3D : Speed2D;

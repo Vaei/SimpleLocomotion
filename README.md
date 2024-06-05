@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.3.3
+* Cache PrevSpeed
+
 ### 1.3.2
 * Moved FSimpleLandedSignature to SimpleLocomotionTypes for include
 
