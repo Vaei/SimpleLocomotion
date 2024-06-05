@@ -4,6 +4,7 @@
 #include "SimpleAnimInstance.h"
 
 #include "SimpleAnimComponent.h"
+#include "SimpleAnimInstanceProxy.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
@@ -21,6 +22,11 @@ namespace SimpleAnimInstanceCVars
 #endif
 }
 
+
+FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
+{
+	return new FSimpleAnimInstanceProxy(this);
+}
 
 void USimpleAnimInstance::NativeInitializeAnimation()
 {
@@ -290,6 +296,18 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	}
 }
 
+void USimpleAnimInstance::NativePostEvaluateAnimation()
+{
+	FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
+	for (auto& PendingLogs : Proxy.PendingMessageLogs)
+	{
+		FMessageLog MsgLog { *PendingLogs.Key };
+		MsgLog.Error(FText::FromString(PendingLogs.Value));
+	}
+
+	Proxy.PendingMessageLogs.Reset();
+}
+
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 {
 	bLandingFrameLock = true;
@@ -348,7 +366,8 @@ void USimpleAnimInstance::OnAnimNotValidToUpdate(FString LogError) const
 		}
 		else
 		{
-			UE_LOG(LogSimpleAnim, Error, TEXT("%s"), *LogError);
+			FSimpleAnimInstanceProxy& Proxy = const_cast<USimpleAnimInstance*>(this)->GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
+			Proxy.PendingMessageLogs.Add({ "PIE", LogError });
 		}
 	}
 #endif

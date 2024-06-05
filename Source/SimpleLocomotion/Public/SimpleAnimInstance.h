@@ -186,6 +186,8 @@ protected:
 	bool bLandingFrameLock = false;
 	
 public:
+	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
+
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
@@ -194,7 +196,9 @@ public:
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
 	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateAnimationPreCompletion(float DeltaTime) {}
-	
+
+	virtual void NativePostEvaluateAnimation() override;
+
 protected:
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);

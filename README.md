@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.4.0
+* Add custom anim instance proxy for pushing information out of worker threads
+
 ### 1.3.3
 * Cache PrevSpeed
 
