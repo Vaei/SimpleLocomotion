@@ -8,9 +8,6 @@
 #include "SimpleAnimComponent.generated.h"
 
 
-/** Call from ACharacter::Landed or equivalent */
-DECLARE_DYNAMIC_DELEGATE_OneParam(FSimpleLandedSignature, const FHitResult&, Hit);
-
 UCLASS(Abstract, ClassGroup=(Custom))
 class SIMPLELOCOMOTION_API USimpleAnimComponent : public UActorComponent
 {
