@@ -71,7 +71,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	
 	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
 	MaxGaitSpeeds = OwnerComponent->GetSimpleMaxGaitSpeeds();
-	LeanRate = OwnerComponent->GetSimpleLeanRate();
+	LeanRate = LeanRateOverride >= 0.f ? LeanRateOverride : OwnerComponent->GetSimpleLeanRate();
 
 	RootYawOffset = OwnerComponent->GetSimpleRootYawOffset();
 	
@@ -143,12 +143,16 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 		// There is no valid delta on the first frame
 		LeanAngle = 0.f;
 	}
-	else
+	else if (bWantsLeansUpdated)
 	{
 		const float YawDelta = WorldRotation.Yaw - PrevWorldRotation.Yaw;
 		const float YawDeltaSpeed = YawDelta / DeltaTime;
 		const float ScaledLeanRate = LeanRate / 100.f;  // 3.75 is a friendlier number than 0.0375 for designers
 		LeanAngle = YawDeltaSpeed * ScaledLeanRate;
+	}
+	else
+	{
+		LeanAngle = 0.f;
 	}
 
 	// Gait

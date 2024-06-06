@@ -26,6 +26,11 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.4.1
+* Make bWantsCardinalsUpdated public
+* Add bWantsLeansUpdated property
+* Add LeanRateOverride
+
 ### 1.4.0
 * Add custom anim instance proxy for pushing information out of worker threads
 
