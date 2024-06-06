@@ -33,9 +33,12 @@ public:
 	TArray<FName> ImportantEditorCategories = {};
 #endif
 
-protected:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsCardinalsUpdated = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
+	bool bWantsLeansUpdated = true;
 	
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
@@ -91,6 +94,10 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanRate = 0.f;
+
+	/** If set, will use this instead of LeanRate */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category=Properties)
+	float LeanRateOverride = -1.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanAngle = 0.f;
