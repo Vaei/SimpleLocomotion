@@ -62,7 +62,10 @@ public:
 
 	/** UCharacterMovementComponent::GetGravityZ()  */
 	virtual float GetSimpleGravityZ() const { return 1.f; }
-	
+
+	/** UCharacterMovementComponent::CurrentFloor.IsWalkableFloor() */
+	virtual bool IsSimpleCurrentFloorWalkable() const { return true; }
+
 	/** UCharacterMovementComponent::IsMovingOnGround() */
 	virtual bool GetSimpleIsMovingOnGround() const { return true; }
 

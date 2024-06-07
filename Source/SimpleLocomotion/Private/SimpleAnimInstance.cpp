@@ -74,9 +74,10 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	LeanRate = LeanRateOverride >= 0.f ? LeanRateOverride : OwnerComponent->GetSimpleLeanRate();
 
 	RootYawOffset = OwnerComponent->GetSimpleRootYawOffset();
-	
-	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround();
-	bInAir = OwnerComponent->GetSimpleIsFalling();
+
+	bIsCurrentFloorWalkable = OwnerComponent->IsSimpleCurrentFloorWalkable();
+	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround() && bIsCurrentFloorWalkable;
+	bInAir = OwnerComponent->GetSimpleIsFalling() || !bIsCurrentFloorWalkable;
 	bCanJump = OwnerComponent->GetSimpleCanJump();
 	GravityZ = OwnerComponent->GetSimpleGravityZ();
 	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
@@ -197,21 +198,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	}
 
 	// Jumping and falling
-	bIsJumping = false;
-	bIsFalling = false;
-	if (bIsFalling && !bLandingFrameLock)
-	{
-		if (World.Velocity.Z > 0.f)
-		{
-			bIsJumping = true;
-		}
-		else
-		{
-			bIsFalling = true;
-		}
-	}
-
-	TimeToJumpApex = bIsJumping ? -World.Velocity.Z / GravityZ : 0.f;
+	NativeThreadSafeUpdateFalling(DeltaTime);
 
 	// Extension point
 	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
@@ -300,16 +287,36 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	}
 }
 
+void USimpleAnimInstance::NativeThreadSafeUpdateFalling(float DeltaTime)
+{
+	// Jumping and falling
+	bIsJumping = false;
+	bIsFalling = false;
+	if (bInAir && !bLandingFrameLock)
+	{
+		if (World.Velocity.Z > 0.f)
+		{
+			bIsJumping = true;
+		}
+		else
+		{
+			bIsFalling = true;
+		}
+	}
+
+	TimeToJumpApex = bIsJumping ? -World.Velocity.Z / GravityZ : 0.f;
+}
+
 void USimpleAnimInstance::NativePostEvaluateAnimation()
 {
 	FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
-	for (auto& PendingLogs : Proxy.PendingMessageLogs)
+	for (auto& PendingLogs : Proxy.GetPendingMessageLogs())
 	{
 		FMessageLog MsgLog { *PendingLogs.Key };
 		MsgLog.Error(FText::FromString(PendingLogs.Value));
 	}
 
-	Proxy.PendingMessageLogs.Reset();
+	Proxy.ResetPendingMessageLogs();
 }
 
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
@@ -371,7 +378,7 @@ void USimpleAnimInstance::OnAnimNotValidToUpdate(FString LogError) const
 		else
 		{
 			FSimpleAnimInstanceProxy& Proxy = const_cast<USimpleAnimInstance*>(this)->GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
-			Proxy.PendingMessageLogs.Add({ "PIE", LogError });
+			Proxy.AddPendingMessage(LogError);
 		}
 	}
 #endif

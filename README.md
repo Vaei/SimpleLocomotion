@@ -26,6 +26,12 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.5.0
+* Add function for IsSimpleCurrentFloorWalkable() to improve ground/air detection
+* Extend FSimpleAnimInstanceProxy printing functionality to not repeat messages
+* Extract jumping and falling to virtual function
+* Fixed bug where incorrect bool was checked for in air
+
 ### 1.4.1
 * Make bWantsCardinalsUpdated public
 * Add bWantsLeansUpdated property
