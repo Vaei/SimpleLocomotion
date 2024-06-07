@@ -110,6 +110,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float TimeToJumpApex = 0.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bIsCurrentFloorWalkable = true;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsMovingOnGround = true;
@@ -201,6 +204,7 @@ public:
 
 	virtual void NativeThreadSafeUpdateGaitMode(float DeltaTime);
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
+	virtual void NativeThreadSafeUpdateFalling(float DeltaTime);
 	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateAnimationPreCompletion(float DeltaTime) {}
 
