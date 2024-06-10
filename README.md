@@ -6,13 +6,13 @@ This demonstrates best practices for building the functionality side of locomoti
 
 Works with any actor, not only pawns or characters. That means it supports Mover 2.0.
 
-Requires C++ for interface implementation.
+Requires C++ for component implementation.
 
 Does not include an anim blueprint. Extend the USimpleAnimInstance to make your own. Does not include any content.
 
 ## Setup
 
-Derive from AActor or any subclass in C++ and implement the `ISimpleAnimInterface`. Look at the header to see the comments for each function to understand how to implement them.
+Derive from AActor or any subclass in C++ and implement the `USimpleAnimComponent`. Look at the header to see the comments for each function to understand how to implement them.
 
 Create an animation blueprint with `USimpleAnimInstance` as the parent class.
 
