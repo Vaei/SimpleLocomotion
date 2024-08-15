@@ -12,7 +12,6 @@ public class SimpleLocomotion : ModuleRules
 			new string[]
 			{
 				"Core",
-				"GameplayTags",
 			}
 			);
 			
@@ -22,6 +21,7 @@ public class SimpleLocomotion : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
+				"GameplayTags"
 			}
 			);
 	}
