@@ -26,6 +26,13 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 2.0.0
+* Switched from enums to FGameplayTag
+* Fixed gait change detection and fixed double update
+* Added virtual NativeThreadSafeUpdateStance() for overriding
+	* Removed prone, no longer necessary to include this thanks to gameplay tags, feel free to extend the system and re-add it
+* Added a few missing init properties in USimpleAnimInstance
+
 ### 1.5.0
 * Add function for IsSimpleCurrentFloorWalkable() to improve ground/air detection
 * Extend FSimpleAnimInstanceProxy printing functionality to not repeat messages

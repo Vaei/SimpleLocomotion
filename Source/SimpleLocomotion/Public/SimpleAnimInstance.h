@@ -54,16 +54,16 @@ protected:
 	FSimpleMovement Local2D;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float Speed3D;
+	float Speed3D = 0.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float Speed2D;
+	float Speed2D = 0.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float Speed;
+	float Speed = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float PrevSpeed;
+	float PrevSpeed = 0.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FSimpleCardinalMovement CardinalMovement;
@@ -136,9 +136,6 @@ protected:
 	bool bIsCrouching = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	bool bIsProning = false;
-	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsWalking = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
@@ -161,16 +158,16 @@ protected:
 
 public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	ESimpleGaitMode Gait = ESimpleGaitMode::Jog;
+	FGameplayTag Gait;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	ESimpleGaitMode StartGait = ESimpleGaitMode::Jog;
+	FGameplayTag StartGait;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	ESimpleGaitMode StopGait = ESimpleGaitMode::Jog;
-
+	FGameplayTag StopGait;
+	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
-	ESimpleStanceMode Stance = ESimpleStanceMode::Stand;
+	FGameplayTag Stance;
 
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
@@ -196,6 +193,8 @@ protected:
 	bool bLandingFrameLock = false;
 	
 public:
+	USimpleAnimInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
 
 	virtual void NativeInitializeAnimation() override;
@@ -203,6 +202,7 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
 	virtual void NativeThreadSafeUpdateGaitMode(float DeltaTime);
+	virtual void NativeThreadSafeUpdateStance(float DeltaTime);
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateFalling(float DeltaTime);
 	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}

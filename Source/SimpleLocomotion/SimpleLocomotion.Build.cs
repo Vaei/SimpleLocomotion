@@ -12,6 +12,7 @@ public class SimpleLocomotion : ModuleRules
 			new string[]
 			{
 				"Core",
+				"GameplayTags",
 			}
 			);
 			

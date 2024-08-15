@@ -78,9 +78,6 @@ public:
 	/** ACharacter::bIsCrouched */
 	virtual bool GetSimpleIsCrouching() const { return false; }
 
-	/** e.g. AProneCharacter::bIsProned */
-	virtual bool GetSimpleIsProning() const { return false; }
-
 	/** e.g. AWalkCharacter::IsWalking() */
 	virtual bool GetSimpleIsWalking() const { return false; }
 
