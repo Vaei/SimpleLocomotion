@@ -1,4 +1,4 @@
-﻿// Copyright (c) Jared Taylor. All Rights Reserved
+// Copyright (c) Jared Taylor. All Rights Reserved
 
 
 #include "SimpleAnimInstance.h"
@@ -25,7 +25,7 @@ namespace SimpleAnimInstanceCVars
 	static bool bPrintInvalidGameplayTagStates = true;
 	FAutoConsoleVariableRef CVarPrintInvalidGameplayTagStates(
 		TEXT("a.SimpleAnim.PrintInvalidGameplayTagStates"),
-		bPrintFailedValidationToMessageLog,
+		bPrintInvalidGameplayTagStates,
 		TEXT("Prints invalid gameplay tag states to output log."),
 		ECVF_Default);
 }
