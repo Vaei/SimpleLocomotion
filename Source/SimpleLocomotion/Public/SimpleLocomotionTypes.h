@@ -16,22 +16,6 @@ enum class ESimpleIsValidResult : uint8
 	NotValid,
 };
 
-UENUM(BlueprintType)
-enum class ESimpleGaitMode : uint8
-{
-	Walk,
-	Jog,
-	Sprint,
-};
-
-UENUM(BlueprintType)
-enum class ESimpleStanceMode : uint8
-{
-	Stand,
-	Crouch,
-	Prone,
-};
-
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleGaitSpeed
 {

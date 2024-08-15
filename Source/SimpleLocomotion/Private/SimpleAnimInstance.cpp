@@ -5,6 +5,7 @@
 
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
+#include "SimpleLocomotionTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
@@ -20,8 +21,24 @@ namespace SimpleAnimInstanceCVars
 		TEXT("Prints failed validation to message log instead of output log."),
 		ECVF_Default);
 #endif
+	
+	static bool bPrintInvalidGameplayTagStates = true;
+	FAutoConsoleVariableRef CVarPrintInvalidGameplayTagStates(
+		TEXT("a.SimpleAnim.PrintInvalidGameplayTagStates"),
+		bPrintFailedValidationToMessageLog,
+		TEXT("Prints invalid gameplay tag states to output log."),
+		ECVF_Default);
 }
 
+
+USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	Gait = FSimpleGameplayTags::Simple_Gait_Jog;
+	StartGait = FSimpleGameplayTags::Simple_Gait_Jog;
+	StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
+	Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+}
 
 FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
 {
@@ -83,7 +100,6 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
 
 	bIsCrouching = OwnerComponent->GetSimpleIsCrouching();
-	bIsProning = OwnerComponent->GetSimpleIsProning();
 
 	bIsWalking = OwnerComponent->GetSimpleIsWalking();
 	bIsSprinting = OwnerComponent->GetSimpleIsSprinting();
@@ -136,6 +152,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	// Update gait modes
 	NativeThreadSafeUpdateGaitMode(DeltaTime);
 
+	// Update stance
+	NativeThreadSafeUpdateStance(DeltaTime);
+
 	// Extension point
 	NativeThreadSafePostUpdateMovementProperties(DeltaTime);
 
@@ -155,32 +174,6 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	{
 		LeanAngle = 0.f;
 	}
-
-	// Gait
-	const ESimpleGaitMode PrevGait = Gait;
-	Gait = ESimpleGaitMode::Jog;
-	if (bIsSprinting)
-	{
-		Gait = ESimpleGaitMode::Sprint;
-	}
-	else if (bIsWalking)
-	{
-		Gait = ESimpleGaitMode::Walk;
-	}
-	bGaitChanged = Gait != PrevGait;
-
-	// Stance
-	const ESimpleStanceMode PrevStance = Stance;
-	Stance = ESimpleStanceMode::Stand;
-	if (bIsProning)
-	{
-		Stance = ESimpleStanceMode::Prone;
-	}
-	else if (bIsCrouching)
-	{
-		Stance = ESimpleStanceMode::Crouch;
-	}
-	bStanceChanged = Stance != PrevStance;
 
 	// Extension point
 	NativeThreadSafePreUpdateInAirProperties(DeltaTime);
@@ -209,82 +202,104 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 {
 	// Start Gait Mode: Use the intended mode
-	StartGait = ESimpleGaitMode::Jog;
+	StartGait = FSimpleGameplayTags::Simple_Gait_Jog;
 	if (bWantsSprinting)
 	{
 		// We will probably start sprinting next frame
-		StartGait = ESimpleGaitMode::Sprint;
+		StartGait = FSimpleGameplayTags::Simple_Gait_Sprint;
 	}
 	else if (bWantsWalking)
 	{
 		// We will probably start walking next frame
-		StartGait = ESimpleGaitMode::Walk;
+		StartGait = FSimpleGameplayTags::Simple_Gait_Walk;
 	}
-	
+
 	// Gait Mode: Use the current mode
+	const FGameplayTag PrevGait = Gait;
 	if (bIsSprinting)
 	{
-		Gait = ESimpleGaitMode::Sprint;
+		Gait = FSimpleGameplayTags::Simple_Gait_Sprint;
 	}
 	else if (bIsWalking)
 	{
-		Gait = ESimpleGaitMode::Walk;
+		Gait = FSimpleGameplayTags::Simple_Gait_Walk;
 	}
 	else
 	{
-		Gait = ESimpleGaitMode::Jog;
+		Gait = FSimpleGameplayTags::Simple_Gait_Jog;
 	}
+	bGaitChanged = Gait != PrevGait;
 
 	// Stop Gait Mode: Use the previous mode
 	if (bHasAcceleration)
 	{
 		StopGait = Gait;
-		switch(Gait)
+		if (Gait == FSimpleGameplayTags::Simple_Gait_Walk)
 		{
-			case ESimpleGaitMode::Walk:
-				// If walking and needing to stop, default to walk stop
-				break;
-			case ESimpleGaitMode::Jog:
-				// If not at run speed, use walking stop
-				if (Speed < MaxGaitSpeeds.WalkSpeed)
+			// If walking and needing to stop, default to walk stop, don't need to do anything here
+		}
+		else if (Gait == FSimpleGameplayTags::Simple_Gait_Jog)
+		{
+			// If not at run speed, use walking stop
+			if (Speed < MaxGaitSpeeds.WalkSpeed)
+			{
+				// Use walk speed if we haven't even reached our max walk speed yet
+				StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
+			}
+			else if (Speed < MaxGaitSpeeds.JogSpeed)
+			{
+				// Use the gait mode that our speed is closer to
+				if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
 				{
-					// Use walk speed if we haven't even reached our max walk speed yet
-					StopGait = ESimpleGaitMode::Walk;
-				}
-				else if (Speed < MaxGaitSpeeds.JogSpeed)
-				{
-					// Use the gait mode that our speed is closer to
-					if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
-					{
-						StopGait = ESimpleGaitMode::Walk;
-					}
-					else
-					{
-						StopGait = ESimpleGaitMode::Jog;
-					}
-				}
-			break;
-			case ESimpleGaitMode::Sprint:
-				if (Speed < MaxGaitSpeeds.JogSpeed)
-				{
-					// Use the gait mode that our speed is closer to if we haven't even reached jog speed
-					if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
-					{
-						StopGait = ESimpleGaitMode::Walk;
-					}
-					else
-					{
-						StopGait = ESimpleGaitMode::Jog;
-					}
+					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
 				}
 				else
 				{
-					// Sprint always results in a sprint stop, provided we have exceeded jog speed
-					StopGait = ESimpleGaitMode::Sprint;
+					StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
 				}
-			break;
+			}
+		}
+		else if (Gait == FSimpleGameplayTags::Simple_Gait_Sprint)
+		{
+			if (Speed < MaxGaitSpeeds.JogSpeed)
+			{
+				// Use the gait mode that our speed is closer to if we haven't even reached jog speed
+				if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
+				{
+					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
+				}
+				else
+				{
+					StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
+				}
+			}
+			else
+			{
+				// Sprint always results in a sprint stop, provided we have exceeded jog speed
+				StopGait = FSimpleGameplayTags::Simple_Gait_Sprint;
+			}
+		}
+		else if (SimpleAnimInstanceCVars::bPrintInvalidGameplayTagStates)
+		{
+			FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
+			Proxy.AddPendingMessage(FString::Printf(TEXT("Invalid Gait Mode: %s"), *Gait.ToString()));
 		}
 	}
+}
+
+void USimpleAnimInstance::NativeThreadSafeUpdateStance(float DeltaTime)
+{
+	// Stance
+	const FGameplayTag PrevStance = Stance;
+	if (bIsCrouching)
+	{
+		Stance = FSimpleGameplayTags::Simple_Stance_Crouch;
+	}
+	else
+	{
+		Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+	}
+	bStanceChanged = Stance != PrevStance;
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateFalling(float DeltaTime)

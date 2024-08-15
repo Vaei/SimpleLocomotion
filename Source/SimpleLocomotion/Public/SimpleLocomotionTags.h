@@ -1,0 +1,15 @@
+﻿// Copyright (c) Jared Taylor. All Rights Reserved
+
+#pragma once
+
+#include "NativeGameplayTags.h"
+
+namespace FSimpleGameplayTags
+{
+	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_Gait_Walk);
+	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_Gait_Jog);
+	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_Gait_Sprint);
+	
+	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_Stance_Stand);
+	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_Stance_Crouch);
+}
