@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 2.0.2
+* Fixed accidental CVarPrintInvalidGameplayTagStates referencing wrong bool
+
 ### 2.0.1
 * Build.cs FGameplayTag dependency moved from Public to Private
 
