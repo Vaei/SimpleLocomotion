@@ -34,9 +34,11 @@ public:
 #endif
 
 public:
+	/** Required for CardinalMovement to update. If true, NativeThreadSafeUpdateAnimation() calls CardinalMovement.ThreadSafeUpdate() */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsCardinalsUpdated = true;
 
+	/** Required for LeanAngle to update. If true, NativeThreadSafeUpdateAnimation() updates LeanAngle. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsLeansUpdated = true;
 	
