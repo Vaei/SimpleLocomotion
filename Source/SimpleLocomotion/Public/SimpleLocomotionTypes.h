@@ -16,6 +16,15 @@ enum class ESimpleIsValidResult : uint8
 	NotValid,
 };
 
+UENUM(BlueprintType)
+enum class ESimpleCardinalType : uint8
+{
+	Acceleration,
+	AccelerationNoOffset,
+	Velocity,
+	VelocityNoOffset,
+};
+
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleGaitSpeed
 {
@@ -86,15 +95,15 @@ struct SIMPLELOCOMOTION_API FSimpleCardinalMovement
 	GENERATED_BODY()
 	
 	FSimpleCardinalMovement(
-		float InVelocityDirectionAngle = 0.f,
-		float InVelocityDirectionAngleWithOffset = 0.f,
-		float InAccelerationDirectionAngle = 0.f,
-		float InAccelerationDirectionAngleWithOffset = 0.f
+		float InVelocity = 0.f,
+		float InVelocityNoOffset = 0.f,
+		float InAcceleration = 0.f,
+		float InAccelerationNoOffset = 0.f
 		)
-		: VelocityDirectionAngle(InVelocityDirectionAngle)
-		, VelocityDirectionAngleWithOffset(InVelocityDirectionAngleWithOffset)
-		, AccelerationDirectionAngle(InAccelerationDirectionAngle)
-		, AccelerationDirectionAngleWithOffset(InAccelerationDirectionAngleWithOffset)
+		: Velocity(InVelocity)
+		, VelocityNoOffset(InVelocityNoOffset)
+		, Acceleration(InAcceleration)
+		, AccelerationNoOffset(InAccelerationNoOffset)
 		, bHasEverUpdated(false)
 	{}
 	
@@ -106,22 +115,24 @@ struct SIMPLELOCOMOTION_API FSimpleCardinalMovement
 		: bHasEverUpdated(false)
 	{
 		ThreadSafeUpdate_Internal(World2D, WorldRotation, RootYawOffset);
-	}
+	}	
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float VelocityDirectionAngle;
+	float Velocity;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float VelocityNoOffset;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float VelocityDirectionAngleWithOffset;
-	
+	float Acceleration;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float AccelerationDirectionAngle;
-	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	float AccelerationDirectionAngleWithOffset;
+	float AccelerationNoOffset;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bHasEverUpdated;
+
+	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
 
 	void ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset);
 
