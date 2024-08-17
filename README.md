@@ -26,6 +26,11 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 2.1.0
+* Add ESimpleCardinalType enum
+	* Refactor FSimpleCardinalMovement properties to match ESimpleCardinalType enum
+	* Implement convenience getter in FSimpleCardinalMovement using ESimpleCardinalType
+
 ### 2.0.2
 * Fixed accidental CVarPrintInvalidGameplayTagStates referencing wrong bool
 

@@ -215,6 +215,9 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);
+	
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	float GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const;
 
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	virtual bool IsAnimValidToUpdate(float DeltaTime) const;

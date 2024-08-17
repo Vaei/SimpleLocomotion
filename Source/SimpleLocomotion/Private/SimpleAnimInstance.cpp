@@ -339,6 +339,11 @@ void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 	bLandingFrameLock = true;
 }
 
+float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const
+{
+	return CardinalMovement.GetDirectionAngle(CardinalType);
+}
+
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
 	const bool bValid = IsValid(Owner) && OwnerComponent;

@@ -6,6 +6,18 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionTypes)
 
+float FSimpleCardinalMovement::GetDirectionAngle(ESimpleCardinalType CardinalType) const
+{
+	switch (CardinalType)
+	{
+		case ESimpleCardinalType::Acceleration: return Acceleration;
+		case ESimpleCardinalType::AccelerationNoOffset: return AccelerationNoOffset;
+		case ESimpleCardinalType::Velocity: return Velocity;
+		case ESimpleCardinalType::VelocityNoOffset: return VelocityNoOffset;
+	}
+	return 0.f;
+}
+
 void FSimpleCardinalMovement::ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset)
 {
 	ThreadSafeUpdate_Internal(World2D, WorldRotation, RootYawOffset);
@@ -14,11 +26,11 @@ void FSimpleCardinalMovement::ThreadSafeUpdate(const FSimpleMovement& World2D, c
 
 void FSimpleCardinalMovement::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset)
 {
-	VelocityDirectionAngle = CalculateDirection(World2D.Velocity, WorldRotation);
-	VelocityDirectionAngleWithOffset = VelocityDirectionAngle - RootYawOffset;
+	VelocityNoOffset = CalculateDirection(World2D.Velocity, WorldRotation);
+	Velocity = VelocityNoOffset - RootYawOffset;
 
-	AccelerationDirectionAngle = CalculateDirection(World2D.Acceleration, WorldRotation);
-	AccelerationDirectionAngleWithOffset = AccelerationDirectionAngle - RootYawOffset;
+	AccelerationNoOffset = CalculateDirection(World2D.Acceleration, WorldRotation);
+	Acceleration = AccelerationNoOffset - RootYawOffset;
 }
 
 float FSimpleCardinalMovement::CalculateDirection(const FVector& Velocity, const FRotator& BaseRotation)
