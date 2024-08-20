@@ -5,6 +5,7 @@
 
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
+#include "SimpleLocomotionStatics.h"
 #include "SimpleLocomotionTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
@@ -34,9 +35,9 @@ namespace SimpleAnimInstanceCVars
 USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Gait = FSimpleGameplayTags::Simple_Gait_Jog;
-	StartGait = FSimpleGameplayTags::Simple_Gait_Jog;
-	StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
+	Gait = FSimpleGameplayTags::Simple_Gait_Run;
+	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
+	StopGait = FSimpleGameplayTags::Simple_Gait_Run;
 	Stance = FSimpleGameplayTags::Simple_Stance_Stand;
 }
 
@@ -50,6 +51,12 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 	Owner = TryGetPawnOwner();
 	OwnerComponent = Owner ? Owner->GetComponentByClass<USimpleAnimComponent>() : nullptr;
 
+	if (!Owner || !OwnerComponent)
+	{
+		return;
+	}
+
+	// Bind landed delegate
 	if (OwnerComponent)
 	{
 		if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
@@ -61,7 +68,17 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 			LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
 		}
 	}
-	
+
+	// Bind cardinal update delegates
+	for (auto& CardinalItr : Cardinals.GetCardinals())
+	{
+		FSimpleCardinal& Cardinal = CardinalItr.Value;
+		if (Cardinal.bEnabled && !Cardinal.UpdateDelegate.IsBoundToObject(this))
+		{
+			Cardinal.UpdateDelegate.BindUObject(this, &ThisClass::UpdateCardinal);
+		}
+	}
+
 	bFirstUpdate = true;
 }
 
@@ -144,9 +161,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	}
 
 	// Update cardinal properties
-	if (bWantsCardinalsUpdated)
+	// if (bWantsCardinalsUpdated)
 	{
-		CardinalMovement.ThreadSafeUpdate(World2D, WorldRotation, RootYawOffset);
+		Cardinals.ThreadSafeUpdate(World2D, WorldRotation, RootYawOffset);
 	}
 
 	// Update gait modes
@@ -202,7 +219,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 {
 	// Start Gait Mode: Use the intended mode
-	StartGait = FSimpleGameplayTags::Simple_Gait_Jog;
+	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
 	if (bWantsSprinting)
 	{
 		// We will probably start sprinting next frame
@@ -226,10 +243,13 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	}
 	else
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Jog;
+		Gait = FSimpleGameplayTags::Simple_Gait_Run;
 	}
 	bGaitChanged = Gait != PrevGait;
 
+	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Walk);
+	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Run);
+	
 	// Stop Gait Mode: Use the previous mode
 	if (bHasAcceleration)
 	{
@@ -238,44 +258,44 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 		{
 			// If walking and needing to stop, default to walk stop, don't need to do anything here
 		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Jog)
+		else if (Gait == FSimpleGameplayTags::Simple_Gait_Run)
 		{
 			// If not at run speed, use walking stop
-			if (Speed < MaxGaitSpeeds.WalkSpeed)
+			if (Speed < MaxSpeedWalk)
 			{
 				// Use walk speed if we haven't even reached our max walk speed yet
 				StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
 			}
-			else if (Speed < MaxGaitSpeeds.JogSpeed)
+			else if (Speed < MaxSpeedRun)
 			{
 				// Use the gait mode that our speed is closer to
-				if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
+				if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
 				{
 					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
 				}
 				else
 				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
+					StopGait = FSimpleGameplayTags::Simple_Gait_Run;
 				}
 			}
 		}
 		else if (Gait == FSimpleGameplayTags::Simple_Gait_Sprint)
 		{
-			if (Speed < MaxGaitSpeeds.JogSpeed)
+			if (Speed < MaxSpeedRun)
 			{
-				// Use the gait mode that our speed is closer to if we haven't even reached jog speed
-				if ((Speed - MaxGaitSpeeds.WalkSpeed) < (MaxGaitSpeeds.JogSpeed - Speed))
+				// Use the gait mode that our speed is closer to if we haven't even reached run speed
+				if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
 				{
 					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
 				}
 				else
 				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Jog;
+					StopGait = FSimpleGameplayTags::Simple_Gait_Run;
 				}
 			}
 			else
 			{
-				// Sprint always results in a sprint stop, provided we have exceeded jog speed
+				// Sprint always results in a sprint stop, provided we have exceeded run speed
 				StopGait = FSimpleGameplayTags::Simple_Gait_Sprint;
 			}
 		}
@@ -339,9 +359,25 @@ void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 	bLandingFrameLock = true;
 }
 
+float USimpleAnimInstance::GetCardinalDeadZone(const FGameplayTag& CardinalMode) const
+{
+	return 10.f;
+}
+
+void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimpleCardinal& Cardinal, const FSimpleCardinals& InCardinals)
+{
+	// Consider not updating the properties you don't need to optimize performance!
+	const float DeadZone = GetCardinalDeadZone(CardinalMode);
+
+	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
+	Cardinal.AccelerationNoOffset	= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.AccelerationNoOffset, DeadZone, Cardinal.AccelerationNoOffset, bWasMovingLastUpdate);
+	Cardinal.Velocity				= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
+	Cardinal.VelocityNoOffset		= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.VelocityNoOffset, DeadZone, Cardinal.VelocityNoOffset, bWasMovingLastUpdate);
+}
+
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const
 {
-	return CardinalMovement.GetDirectionAngle(CardinalType);
+	return Cardinals.GetDirectionAngle(CardinalType);
 }
 
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const

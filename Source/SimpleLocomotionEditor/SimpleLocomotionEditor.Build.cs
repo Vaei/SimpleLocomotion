@@ -22,6 +22,7 @@ public class SimpleLocomotionEditor : ModuleRules
                 "SlateCore",
                 "PropertyEditor",
                 "SimpleLocomotion",
+                "GameplayTags",
             }
         );
     }

@@ -41,6 +41,9 @@ public:
 	/** Required for LeanAngle to update. If true, NativeThreadSafeUpdateAnimation() updates LeanAngle. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsLeansUpdated = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Properties)
+	FSimpleCardinals Cardinals;
 	
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
@@ -66,9 +69,6 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float PrevSpeed = 0.f;
-	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	FSimpleCardinalMovement CardinalMovement;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FVector ForwardVector = FVector::ForwardVector;
@@ -215,6 +215,10 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);
+	
+	virtual float GetCardinalDeadZone(const FGameplayTag& CardinalMode) const;
+
+	void UpdateCardinal(const FGameplayTag& CardinalMode, FSimpleCardinal& Cardinal, const FSimpleCardinals& InCardinals);
 	
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	float GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const;
