@@ -26,6 +26,20 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 3.0.0
+_Major update, changing to entirely FGameplayTag based approach_
+* Cardinal handling
+	* FSimpleCardinalMovement refactored to FSimpleCardinals
+	* Implemented FGameplayTag based cardinal approach
+	* Added delegate for updating cardinals, see USimpleAnimInstance::UpdateCardinal() for usage
+* Locomotion set handling
+	* Added FSimpleLocomotionSet
+	* Added FSimpleGaitSet
+	* Refactor "Jog" as "Run"
+* Changed FSimpleGaitSpeed to use GameplayTags for gaits to bring it in-line with the gameplay tag approach
+* FSimpleCardinalMovement::CalculateDirection reintroduces static_cast as per engine version
+* Protected FSimpleCardinalMovement::ThreadSafeUpdate_Internal
+
 ### 2.1.0
 * Add ESimpleCardinalType enum
 	* Refactor FSimpleCardinalMovement properties to match ESimpleCardinalType enum

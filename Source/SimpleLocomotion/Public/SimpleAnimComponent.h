@@ -51,8 +51,16 @@ public:
 	/** UCharacterMovementComponent::GetMaxSpeed() */
 	virtual float GetSimpleMaxSpeed() const PURE_VIRTUAL(, return 0.f;);
 
-	/** UCharacterMovementComponent::MaxWalkSpeed and optional custom implementations of Walk and Sprint speeds */
-	virtual FSimpleGaitSpeed GetSimpleMaxGaitSpeeds() const PURE_VIRTUAL(, return 0.f;);
+	/**
+	 * UCharacterMovementComponent::MaxWalkSpeed and optional custom implementations of Walk and Sprint speeds
+	 * All queried gait modes should be included, otherwise they will return 0 and could cause unexpected results
+	 *
+	 * EXAMPLE IMPLEMENTATION
+	 * TMap<FGameplayTag, float> MaxSpeeds { { FSimpleGameplayTags::Simple_Gait_Walk, GetSimpleMaxSpeed() },
+	 * { FSimpleGameplayTags::Simple_Gait_Run, GetSimpleMaxSpeed() }, { FSimpleGameplayTags::Simple_Gait_Sprint, GetSimpleMaxSpeed() } };
+	 * return FSimpleGaitSpeed { MaxSpeeds };
+	 */
+	virtual FSimpleGaitSpeed GetSimpleMaxGaitSpeeds() const PURE_VIRTUAL(, return {};);
 	
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
 	virtual float GetSimpleLeanRate() const { return 3.75f; };

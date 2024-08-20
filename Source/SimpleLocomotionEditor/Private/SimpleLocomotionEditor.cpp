@@ -4,6 +4,7 @@
 #include "SimpleAnimComponentDetailsCustomization.h"
 #include "SimpleAnimInstance.h"
 #include "SimpleAnimInstanceDetailsCustomization.h"
+#include "SimpleLocomotionSetPropertyCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FSimpleLocomotionEditorModule"
 
@@ -22,6 +23,10 @@ void FSimpleLocomotionEditorModule::StartupModule()
 		USimpleAnimComponent::StaticClass()->GetFName(),
 		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimComponentDetailsCustomization::MakeInstance)
 	);
+
+	// FSimpleLocomotionSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleLocomotionSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleLocomotionSetPropertyCustomization::MakeInstance));
 }
 
 void FSimpleLocomotionEditorModule::ShutdownModule()
@@ -31,6 +36,8 @@ void FSimpleLocomotionEditorModule::ShutdownModule()
 		FPropertyEditorModule* PropertyModule = FModuleManager::Get().GetModulePtr<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstance::StaticClass()->GetFName());
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimComponent::StaticClass()->GetFName());
+
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleLocomotionSet");
 	}
 }
 
