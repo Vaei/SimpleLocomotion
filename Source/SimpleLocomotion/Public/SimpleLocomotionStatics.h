@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintPure, Category=Animation)
 	static FGameplayTag SelectCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate);
 
+	UFUNCTION(BlueprintPure, Category=Animation)
+	static FGameplayTag GetOppositeCardinal(const FGameplayTag& Cardinal);
+	
 	static UAnimSequence* GetSimpleLocomotionAnimation(const FSimpleLocomotionSet* LocomotionSet, const FSimpleCardinals& Cardinals);
 
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait"))
