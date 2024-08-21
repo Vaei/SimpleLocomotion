@@ -26,6 +26,14 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 3.1.0
+* Add further helper functions available in USimpleLocomotionStatics
+* Removed redundant functions from USimpleLocomotionStatics
+* Marked functions as BlueprintThreadSafe
+* GaitSet getters output the CardinalType also
+* Fixed bug where cardinals were cached when cached cardinals not requested
+* FSimpleCardinals::GetCurrentCardinal aborts if EmptyTag, and warns if failed
+
 ### 3.0.0
 _Major update, changing to entirely FGameplayTag based approach_
 * Cardinal handling

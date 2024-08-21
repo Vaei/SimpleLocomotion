@@ -8,6 +8,16 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionStatics)
 
+FGameplayTag USimpleLocomotionStatics::GetCurrentCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& LocomotionSet)
+{
+	return Cardinals.GetCurrentCardinal(LocomotionSet);
+}
+
+FGameplayTag USimpleLocomotionStatics::GetCurrentCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
+{
+	return Cardinals.GetCurrentCardinal(CardinalMode, CardinalType);
+}
+
 FGameplayTag USimpleLocomotionStatics::SelectCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
 {
 	if (CardinalMode == FSimpleGameplayTags::Simple_Mode_1Way)
@@ -244,39 +254,6 @@ FGameplayTag USimpleLocomotionStatics::GetOppositeCardinal(const FGameplayTag& C
 	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Right; }
 	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Left; }
 	return FGameplayTag::EmptyTag;
-}
-
-UAnimSequence* USimpleLocomotionStatics::GetSimpleLocomotionAnimation(const FSimpleLocomotionSet* LocomotionSet, const FSimpleCardinals& Cardinals)
-{
-	if (LocomotionSet)
-	{
-		return GetSimpleLocomotionAnimation(*LocomotionSet, Cardinals);
-	}
-	return nullptr;
-}
-
-UAnimSequence* USimpleLocomotionStatics::GetSimpleLocomotionAnimation(const FSimpleLocomotionSet& LocomotionSet, const FSimpleCardinals& Cardinals)
-{
-	const FGameplayTag& CardinalTag = Cardinals.GetCurrentCardinal(LocomotionSet);
-	if (ensureMsgf(CardinalTag.IsValid(), TEXT("Could not determine cardinal tag, it is likely this mode has not been enabled in Cardinals")))
-	{
-		return LocomotionSet.GetAnimation(CardinalTag);
-	}
-	return nullptr;
-}
-
-UAnimSequence* USimpleLocomotionStatics::GetSimpleLocomotionAnimationFromTag(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag CardinalTag)
-{
-	return LocomotionSet.GetAnimation(CardinalTag);
-}
-
-UAnimSequence* USimpleLocomotionStatics::GetSimpleLocomotionAnimationFromGaitSet(const FSimpleGaitSet& GaitSet, FGameplayTag GaitTag, FGameplayTag CardinalTag)
-{
-	if (const FSimpleLocomotionSet* LocomotionSet = GaitSet.GetLocomotionSet(GaitTag))
-	{
-		return LocomotionSet->GetAnimation(CardinalTag);
-	}
-	return nullptr;
 }
 
 FSimpleLocomotionSet USimpleLocomotionStatics::GetSimpleLocomotionSet(const FSimpleGaitSet& GaitSet, FGameplayTag GaitTag, bool& bValid)

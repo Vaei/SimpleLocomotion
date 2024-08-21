@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SimpleLocomotionStatics.generated.h"
 
+enum class ESimpleCardinalType : uint8;
 struct FSimpleCardinals;
 struct FSimpleLocomotionSet;
 struct FSimpleGaitSet;
@@ -18,23 +19,18 @@ class SIMPLELOCOMOTION_API USimpleLocomotionStatics : public UBlueprintFunctionL
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintPure, Category=Animation)
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	static FGameplayTag GetCurrentCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& LocomotionSet);
+	
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	static FGameplayTag GetCurrentCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType);
+
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag SelectCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate);
 
-	UFUNCTION(BlueprintPure, Category=Animation)
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag GetOppositeCardinal(const FGameplayTag& Cardinal);
-	
-	static UAnimSequence* GetSimpleLocomotionAnimation(const FSimpleLocomotionSet* LocomotionSet, const FSimpleCardinals& Cardinals);
 
-	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait"))
-	static UAnimSequence* GetSimpleLocomotionAnimation(const FSimpleLocomotionSet& LocomotionSet, const FSimpleCardinals& Cardinals);
-
-	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait"))
-	static UAnimSequence* GetSimpleLocomotionAnimationFromTag(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag CardinalTag);
-	
-	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait"))
-	static UAnimSequence* GetSimpleLocomotionAnimationFromGaitSet(const FSimpleGaitSet& GaitSet, FGameplayTag GaitTag, FGameplayTag CardinalTag);
-	
-	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait"))
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(Categories="Simple.Gait", BlueprintThreadSafe))
 	static FSimpleLocomotionSet GetSimpleLocomotionSet(const FSimpleGaitSet& GaitSet, FGameplayTag GaitTag, bool& bValid);
 };
