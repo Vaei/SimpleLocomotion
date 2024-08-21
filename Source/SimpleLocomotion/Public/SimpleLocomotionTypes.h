@@ -52,7 +52,7 @@ struct SIMPLELOCOMOTION_API FSimpleGaitSpeed
 	UPROPERTY(BlueprintReadOnly, Category=Properties)
 	TMap<FGameplayTag, float> MaxSpeeds;
 
-	float GetMaxSpeed(const FGameplayTag& Gait);
+	float GetMaxSpeed(const FGameplayTag& GaitTag);
 };
 
 /**
@@ -180,7 +180,7 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	static FGameplayTagContainer ConstructCardinalTags_8Way();
 	static FGameplayTagContainer ConstructCardinalTags_10Way();
 
-	void SetCardinalEnabled(const FGameplayTag& CardinalMode, bool bEnabled);
+	void SetCardinalEnabled(const FGameplayTag& CardinalModeTag, bool bEnabled);
 
 	UPROPERTY(BlueprintReadOnly, Category=Properties)
 	float Velocity;
@@ -198,7 +198,7 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	bool bHasEverUpdated;
 
 	/** Get current cardinal based on Simple.Mode and CardinalType */
-	FGameplayTag GetCurrentCardinal(FGameplayTag CardinalMode, ESimpleCardinalType CardinalType) const;
+	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const;
 
 	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet& LocomotionSet) const;
 	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet* LocomotionSet) const;
@@ -218,11 +218,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category=Properties)
 	bool bHasCachedCardinals;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Properties, meta=(Categories="Simple.Mode"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Properties, meta=(Categories="Simple.Cardinal.Mode"))
 	TMap<FGameplayTag, FSimpleCardinal> Cardinals;
 
 	/** Cache only the cardinals that are enabled */
-	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(Categories="Simple.Mode"))
+	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(Categories="Simple.Cardinal.Mode"))
 	TMap<FGameplayTag, FSimpleCardinal> CachedCardinals;
 
 	void ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset);
@@ -240,7 +240,7 @@ struct SIMPLELOCOMOTION_API FSimpleLocomotionSet
 
 	FSimpleLocomotionSet();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(Categories="Simple.Mode"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(Categories="Simple.Cardinal.Mode"))
 	FGameplayTag Mode;
 
 	/** Moving 0º forward */
@@ -286,7 +286,7 @@ struct SIMPLELOCOMOTION_API FSimpleLocomotionSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	ESimpleCardinalType CardinalType;
 
-	UAnimSequence* GetAnimation(const FGameplayTag& Cardinal) const;
+	UAnimSequence* GetAnimation(const FGameplayTag& CardinalTag) const;
 };
 
 /**

@@ -6,7 +6,7 @@
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
 #include "IPropertyUtilities.h"
-#include "SimpleLocomotionTags.h"
+#include "SimpleGameplayTags.h"
 #include "SimpleLocomotionTypes.h"
 
 
@@ -48,11 +48,11 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 	}
 	
 	// Form booleans to conditionally toggle visibility
-	const bool b2Way = ModeTag == FSimpleGameplayTags::Simple_Mode_2Way;
-	const bool b4Way = ModeTag == FSimpleGameplayTags::Simple_Mode_4Way;
-	const bool b6Way = ModeTag == FSimpleGameplayTags::Simple_Mode_6Way;
-	const bool b8Way = ModeTag == FSimpleGameplayTags::Simple_Mode_8Way;
-	const bool b10Way = ModeTag == FSimpleGameplayTags::Simple_Mode_10Way;
+	const bool b2Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_2Way;
+	const bool b4Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_4Way;
+	const bool b6Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_6Way;
+	const bool b8Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_8Way;
+	const bool b10Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_10Way;
 
 	const bool bStrafe = b4Way || b6Way || b8Way || b10Way;
 	const bool bLateral = bStrafe || b2Way;

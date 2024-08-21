@@ -3,7 +3,7 @@
 
 #include "SimpleLocomotionStatics.h"
 
-#include "SimpleLocomotionTags.h"
+#include "SimpleGameplayTags.h"
 #include "SimpleLocomotionTypes.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionStatics)
@@ -20,11 +20,11 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleCardinalForTag(const FSimpleCard
 
 FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
 {
-	if (CardinalMode == FSimpleGameplayTags::Simple_Mode_1Way)
+	if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_1Way)
 	{
 		return FSimpleGameplayTags::Simple_Cardinal_Forward;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_2Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_2Way)
 	{
 		if (bWasMovingLastUpdate)
 		{
@@ -44,7 +44,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}	
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_4Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_4Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -87,7 +87,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_6Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_6Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -129,7 +129,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		}
 		return bRight ? FSimpleGameplayTags::Simple_Cardinal_Right_Away : FSimpleGameplayTags::Simple_Cardinal_Left_Away;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_8Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_8Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -184,7 +184,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_10Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_10Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -241,18 +241,18 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplayTag& Cardinal)
+FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplayTag& CardinalTag)
 {
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward) { return FSimpleGameplayTags::Simple_Cardinal_Backward; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Backward_Right; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Backward_Left; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Left) { return FSimpleGameplayTags::Simple_Cardinal_Right; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Right) { return FSimpleGameplayTags::Simple_Cardinal_Left; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Left_Away) { return FSimpleGameplayTags::Simple_Cardinal_Right_Away; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Right_Away) { return FSimpleGameplayTags::Simple_Cardinal_Left_Away; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward) { return FSimpleGameplayTags::Simple_Cardinal_Forward; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Right; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Left; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward) { return FSimpleGameplayTags::Simple_Cardinal_Backward; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Backward_Right; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Backward_Left; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Left) { return FSimpleGameplayTags::Simple_Cardinal_Right; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Right) { return FSimpleGameplayTags::Simple_Cardinal_Left; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Left_Away) { return FSimpleGameplayTags::Simple_Cardinal_Right_Away; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Right_Away) { return FSimpleGameplayTags::Simple_Cardinal_Left_Away; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward) { return FSimpleGameplayTags::Simple_Cardinal_Forward; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Right; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Left; }
 	return FGameplayTag::EmptyTag;
 }
 
@@ -267,10 +267,10 @@ FSimpleLocomotionSet USimpleLocomotionStatics::GetSimpleLocomotionSet(const FSim
 	return {};
 }
 
-UAnimSequence* USimpleLocomotionStatics::GetSimpleAnimation(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag Cardinal, bool& bValid)
+UAnimSequence* USimpleLocomotionStatics::GetSimpleAnimation(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag CardinalTag, bool& bValid)
 {
 	bValid = false;
-	if (UAnimSequence* Animation = LocomotionSet.GetAnimation(Cardinal))
+	if (UAnimSequence* Animation = LocomotionSet.GetAnimation(CardinalTag))
 	{
 		bValid = true;
 		return Animation;

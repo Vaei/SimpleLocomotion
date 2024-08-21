@@ -6,7 +6,7 @@
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
 #include "SimpleLocomotionStatics.h"
-#include "SimpleLocomotionTags.h"
+#include "SimpleGameplayTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
