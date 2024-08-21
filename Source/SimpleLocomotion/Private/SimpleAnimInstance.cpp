@@ -369,10 +369,10 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	// Consider not updating the properties you don't need to optimize performance!
 	const float DeadZone = GetCardinalDeadZone(CardinalMode);
 
-	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
-	Cardinal.AccelerationNoOffset	= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.AccelerationNoOffset, DeadZone, Cardinal.AccelerationNoOffset, bWasMovingLastUpdate);
-	Cardinal.Velocity				= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
-	Cardinal.VelocityNoOffset		= USimpleLocomotionStatics::SelectCardinalFromAngle(CardinalMode, InCardinals.VelocityNoOffset, DeadZone, Cardinal.VelocityNoOffset, bWasMovingLastUpdate);
+	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
+	Cardinal.AccelerationNoOffset	= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.AccelerationNoOffset, DeadZone, Cardinal.AccelerationNoOffset, bWasMovingLastUpdate);
+	Cardinal.Velocity				= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
+	Cardinal.VelocityNoOffset		= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.VelocityNoOffset, DeadZone, Cardinal.VelocityNoOffset, bWasMovingLastUpdate);
 }
 
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const

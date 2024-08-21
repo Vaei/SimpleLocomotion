@@ -26,6 +26,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 3.2.0
+* Modified USimpleLocomotionStatics function names to prefix Simple
+* Added USimpleLocomotionStatics::GetSimpleAnimation to support BP usage
+
 ### 3.1.0
 * Add further helper functions available in USimpleLocomotionStatics
 * Removed redundant functions from USimpleLocomotionStatics
