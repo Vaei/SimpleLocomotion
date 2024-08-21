@@ -8,17 +8,17 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionStatics)
 
-FGameplayTag USimpleLocomotionStatics::GetCurrentCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& LocomotionSet)
+FGameplayTag USimpleLocomotionStatics::GetSimpleCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& LocomotionSet)
 {
 	return Cardinals.GetCurrentCardinal(LocomotionSet);
 }
 
-FGameplayTag USimpleLocomotionStatics::GetCurrentCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
+FGameplayTag USimpleLocomotionStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
 {
 	return Cardinals.GetCurrentCardinal(CardinalMode, CardinalType);
 }
 
-FGameplayTag USimpleLocomotionStatics::SelectCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
+FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
 {
 	if (CardinalMode == FSimpleGameplayTags::Simple_Mode_1Way)
 	{
@@ -241,7 +241,7 @@ FGameplayTag USimpleLocomotionStatics::SelectCardinalFromAngle(const FGameplayTa
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag USimpleLocomotionStatics::GetOppositeCardinal(const FGameplayTag& Cardinal)
+FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplayTag& Cardinal)
 {
 	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward) { return FSimpleGameplayTags::Simple_Cardinal_Backward; }
 	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Backward_Right; }
@@ -265,4 +265,15 @@ FSimpleLocomotionSet USimpleLocomotionStatics::GetSimpleLocomotionSet(const FSim
 		return *LocomotionSet;
 	}
 	return {};
+}
+
+UAnimSequence* USimpleLocomotionStatics::GetSimpleAnimation(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag Cardinal, bool& bValid)
+{
+	bValid = false;
+	if (UAnimSequence* Animation = LocomotionSet.GetAnimation(Cardinal))
+	{
+		bValid = true;
+		return Animation;
+	}
+	return nullptr;
 }
