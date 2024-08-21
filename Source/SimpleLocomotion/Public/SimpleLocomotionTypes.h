@@ -198,9 +198,10 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	bool bHasEverUpdated;
 
 	/** Get current cardinal based on Simple.Mode and CardinalType */
-	FGameplayTag GetCurrentCardinal(FGameplayTag Mode, ESimpleCardinalType CardinalType) const;
+	FGameplayTag GetCurrentCardinal(FGameplayTag CardinalMode, ESimpleCardinalType CardinalType) const;
 
 	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet* LocomotionSet) const;
 	
 	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
 

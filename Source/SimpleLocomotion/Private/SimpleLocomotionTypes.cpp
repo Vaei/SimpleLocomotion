@@ -8,6 +8,8 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionTypes)
 
+DEFINE_LOG_CATEGORY_STATIC(LogSimpleTypes, Log, All);
+
 float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& Gait)
 {
 	if (float* MaxSpeed = MaxSpeeds.Find(Gait))
@@ -145,14 +147,22 @@ void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalMode, bool
 	}
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(FGameplayTag Mode, ESimpleCardinalType CardinalType) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(FGameplayTag CardinalMode, ESimpleCardinalType CardinalType) const
 {
-	if (const FSimpleCardinal* MatchingCardinal = GetCardinals().Find(Mode))
+	if (CardinalMode == FGameplayTag::EmptyTag)
 	{
-		if LIKELY(ensure(MatchingCardinal->bEnabled))  // Probably shouldn't have been cached if it can be false
+		return FGameplayTag::EmptyTag;
+	}
+	if (const FSimpleCardinal* MatchingCardinal = GetCardinals().Find(CardinalMode))
+	{
+		if (LIKELY(ensure(MatchingCardinal->bEnabled)))  // Probably shouldn't have been cached if it can be false
 		{
 			return MatchingCardinal->GetCardinal(CardinalType);
 		}
+	}
+	else
+	{
+		UE_LOG(LogSimpleTypes, Warning, TEXT("[ %s ] wants Cardinal { %s } but it has not been enabled"), *FString(__FUNCTION__), *CardinalMode.ToString());
 	}
 	return FGameplayTag::EmptyTag;
 }
@@ -160,6 +170,15 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(FGameplayTag Mode, ESimpleCard
 FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleLocomotionSet& LocomotionSet) const
 {
 	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
+}
+
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleLocomotionSet* LocomotionSet) const
+{
+	if (LocomotionSet)
+	{
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+	}
+	return FGameplayTag::EmptyTag;
 }
 
 float FSimpleCardinals::GetDirectionAngle(ESimpleCardinalType CardinalType) const
@@ -182,7 +201,7 @@ void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FR
 	for (auto& CardinalItr : GetCardinals())
 	{
 		FSimpleCardinal& Cardinal = CardinalItr.Value;
-		if LIKELY(ensure(Cardinal.bEnabled))  // Probably shouldn't have been cached if it can be false
+		if (LIKELY(ensure(Cardinal.bEnabled)))  // Probably shouldn't have been cached if it can be false
 		{
 			const FGameplayTag& ModeTag = CardinalItr.Key;
 			ensure(Cardinal.UpdateDelegate.ExecuteIfBound(ModeTag, Cardinal, *this));
@@ -359,7 +378,7 @@ void FSimpleCardinals::CacheCardinals()
 
 const TMap<FGameplayTag, FSimpleCardinal>& FSimpleCardinals::GetCardinals(ESimpleCardinalCache Mode) const
 {
-	if (!bHasCachedCardinals)
+	if (!bHasCachedCardinals && Mode == ESimpleCardinalCache::CachedEnabledOnly)
 	{
 		FSimpleCardinals* MutableThis = const_cast<FSimpleCardinals*>(this);
 		MutableThis->CacheCardinals();
@@ -369,7 +388,7 @@ const TMap<FGameplayTag, FSimpleCardinal>& FSimpleCardinals::GetCardinals(ESimpl
 
 TMap<FGameplayTag, FSimpleCardinal>& FSimpleCardinals::GetCardinals(ESimpleCardinalCache Mode)
 {
-	if (!bHasCachedCardinals)
+	if (!bHasCachedCardinals && Mode == ESimpleCardinalCache::CachedEnabledOnly)
 	{
 		CacheCardinals();
 	}
