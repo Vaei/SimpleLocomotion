@@ -3,20 +3,25 @@
 
 #include "SimpleLocomotionTypes.h"
 
-#include "SimpleLocomotionTags.h"
+#include "SimpleGameplayTags.h"
 
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionTypes)
 
 DEFINE_LOG_CATEGORY_STATIC(LogSimpleTypes, Log, All);
 
-float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& Gait)
+float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& GaitTag)
 {
-	if (float* MaxSpeed = MaxSpeeds.Find(Gait))
+	if (float* MaxSpeed = MaxSpeeds.Find(GaitTag))
 	{
 		return *MaxSpeed;
 	}
-	ensure(false);
+	else if (MaxSpeeds.Num() == 0)
+	{
+		// Not initialized
+		return 0.f;
+	}
+	ensureMsgf(false, TEXT("[ %s ] Requested Gait { %s } does not exist. Ensure this gait mode is handled by USimpleAnimComponent::GetSimpleMaxGaitSpeeds()"), *FString(__FUNCTION__), *GaitTag.ToString());
 	return 0.f;
 }
 
@@ -36,37 +41,37 @@ void FSimpleCardinals::ConstructDefaultCardinals()
 {
 	// 1-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_1Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_1Way);
 		Cardinal.Tags = ConstructCardinalTags_1Way();
 		Cardinal.bEnabled = true;
 	}
 	// 2-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_2Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_2Way);
 		Cardinal.Tags = ConstructCardinalTags_2Way();
 		Cardinal.bEnabled = false;
 	}
 	// 4-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_4Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_4Way);
 		Cardinal.Tags = ConstructCardinalTags_4Way();
 		Cardinal.bEnabled = false;
 	}
 	// 6-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_6Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_6Way);
 		Cardinal.Tags = ConstructCardinalTags_6Way();
 		Cardinal.bEnabled = false;
 	}
 	// 8-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_8Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_8Way);
 		Cardinal.Tags = ConstructCardinalTags_8Way();
 		Cardinal.bEnabled = false;
 	}
 	// 10-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_10Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Cardinal_Mode_10Way);
 		Cardinal.Tags = ConstructCardinalTags_10Way();
 		Cardinal.bEnabled = false;
 	}
@@ -139,21 +144,21 @@ FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_10Way()
 	return Tags;
 }
 
-void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalMode, bool bEnabled)
+void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalModeTag, bool bEnabled)
 {
-	if (FSimpleCardinal* Mode = Cardinals.Find(CardinalMode))
+	if (FSimpleCardinal* Mode = Cardinals.Find(CardinalModeTag))
 	{
 		Mode->bEnabled = bEnabled;
 	}
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(FGameplayTag CardinalMode, ESimpleCardinalType CardinalType) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const
 {
-	if (CardinalMode == FGameplayTag::EmptyTag)
+	if (CardinalModeTag == FGameplayTag::EmptyTag)
 	{
 		return FGameplayTag::EmptyTag;
 	}
-	if (const FSimpleCardinal* MatchingCardinal = GetCardinals().Find(CardinalMode))
+	if (const FSimpleCardinal* MatchingCardinal = GetCardinals().Find(CardinalModeTag))
 	{
 		if (LIKELY(ensure(MatchingCardinal->bEnabled)))  // Probably shouldn't have been cached if it can be false
 		{
@@ -162,7 +167,7 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(FGameplayTag CardinalMode, ESi
 	}
 	else
 	{
-		UE_LOG(LogSimpleTypes, Warning, TEXT("[ %s ] wants Cardinal { %s } but it has not been enabled"), *FString(__FUNCTION__), *CardinalMode.ToString());
+		UE_LOG(LogSimpleTypes, Warning, TEXT("[ %s ] wants Cardinal { %s } but it has not been enabled"), *FString(__FUNCTION__), *CardinalModeTag.ToString());
 	}
 	return FGameplayTag::EmptyTag;
 }
@@ -226,7 +231,7 @@ void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D,
 }
 
 FSimpleLocomotionSet::FSimpleLocomotionSet()
-	: Mode(FSimpleGameplayTags::Simple_Mode_4Way)
+	: Mode(FSimpleGameplayTags::Simple_Cardinal_Mode_4Way)
 	, Forward(nullptr)
 	, ForwardLeft(nullptr)
 	, ForwardRight(nullptr)
@@ -240,18 +245,18 @@ FSimpleLocomotionSet::FSimpleLocomotionSet()
 	, CardinalType(ESimpleCardinalType::VelocityNoOffset)
 {}
 
-UAnimSequence* FSimpleLocomotionSet::GetAnimation(const FGameplayTag& Cardinal) const
+UAnimSequence* FSimpleLocomotionSet::GetAnimation(const FGameplayTag& CardinalTag) const
 {
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward)			{ return Forward; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward_Left)	{ return ForwardLeft; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Forward_Right)	{ return ForwardRight; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Left)			{ return Left; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Right)			{ return Right; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Left_Away)		{ return LeftAway; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Right_Away)		{ return RightAway; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward)		{ return Backward; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Left)	{ return BackwardLeft; }
-	if (Cardinal == FSimpleGameplayTags::Simple_Cardinal_Backward_Right)	{ return BackwardRight; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward)			{ return Forward; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward_Left)		{ return ForwardLeft; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Forward_Right)	{ return ForwardRight; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Left)				{ return Left; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Right)			{ return Right; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Left_Away)		{ return LeftAway; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Right_Away)		{ return RightAway; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward)			{ return Backward; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Left)	{ return BackwardLeft; }
+	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Right)	{ return BackwardRight; }
 	ensure(false);
 	return nullptr;
 }

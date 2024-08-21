@@ -26,6 +26,14 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 3.3.0
+* Refactor FSimpleGameplayTags::Simple_Mode to FSimpleGameplayTags::Simple_Cardinal_Mode
+* Improved readability of input parameters by renaming, so its clearer what tag is expected
+* Improved FSimpleGaitSpeed::GetMaxSpeed Gait tag handling and logging
+
+### 3.2.1
+* Rename SimpleLocomotionTags.h/cpp to SimpleGameplayTags.h/cpp
+
 ### 3.2.0
 * Modified USimpleLocomotionStatics function names to prefix Simple
 * Added USimpleLocomotionStatics::GetSimpleAnimation to support BP usage
