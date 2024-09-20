@@ -138,10 +138,16 @@ protected:
 	bool bIsCrouching = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bIsStrolling = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsWalking = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsSprinting = false;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bWantsStrolling = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bWantsWalking = false;
@@ -213,6 +219,8 @@ public:
 	virtual void NativePostEvaluateAnimation() override;
 
 protected:
+	void ComputeSlowStopGait(float MaxSpeedStroll, float MaxSpeedWalk, float MaxSpeedRun);
+
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);
 	
