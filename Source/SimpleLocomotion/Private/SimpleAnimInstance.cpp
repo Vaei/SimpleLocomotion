@@ -118,9 +118,11 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bIsCrouching = OwnerComponent->GetSimpleIsCrouching();
 
+	bIsStrolling = OwnerComponent->GetSimpleIsStrolling();
 	bIsWalking = OwnerComponent->GetSimpleIsWalking();
 	bIsSprinting = OwnerComponent->GetSimpleIsSprinting();
 
+	bWantsStrolling = OwnerComponent->GetSimpleWantsStrolling();
 	bWantsWalking = OwnerComponent->GetSimpleWantsWalking();
 	bWantsSprinting = OwnerComponent->GetSimpleWantsSprinting();
 
@@ -230,6 +232,11 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 		// We will probably start walking next frame
 		StartGait = FSimpleGameplayTags::Simple_Gait_Walk;
 	}
+	else if (bWantsStrolling)
+	{
+		// We will probably start strolling next frame
+		StartGait = FSimpleGameplayTags::Simple_Gait_Stroll;
+	}
 
 	// Gait Mode: Use the current mode
 	const FGameplayTag PrevGait = Gait;
@@ -241,12 +248,17 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	{
 		Gait = FSimpleGameplayTags::Simple_Gait_Walk;
 	}
+	else if (bIsStrolling)
+	{
+		Gait = FSimpleGameplayTags::Simple_Gait_Stroll;
+	}
 	else
 	{
 		Gait = FSimpleGameplayTags::Simple_Gait_Run;
 	}
 	bGaitChanged = Gait != PrevGait;
 
+	const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
 	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Walk);
 	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Run);
 	
@@ -254,44 +266,37 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	if (bHasAcceleration)
 	{
 		StopGait = Gait;
-		if (Gait == FSimpleGameplayTags::Simple_Gait_Walk)
+		if (Gait == FSimpleGameplayTags::Simple_Gait_Stroll)
+		{
+			// If strolling and needing to stop, default to stroll stop, don't need to do anything here
+		}
+		else if (Gait == FSimpleGameplayTags::Simple_Gait_Walk)
 		{
 			// If walking and needing to stop, default to walk stop, don't need to do anything here
 		}
 		else if (Gait == FSimpleGameplayTags::Simple_Gait_Run)
 		{
-			// If not at run speed, use walking stop
-			if (Speed < MaxSpeedWalk)
+			// If not at run speed, use strolling stop
+			if (Speed < MaxSpeedStroll)
+			{
+				// Use stroll speed if we haven't even reached our max walk speed yet
+				StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
+			}
+			else if (Speed < MaxSpeedWalk)
 			{
 				// Use walk speed if we haven't even reached our max walk speed yet
 				StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
 			}
 			else if (Speed < MaxSpeedRun)
 			{
-				// Use the gait mode that our speed is closer to
-				if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
-				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-				}
-				else
-				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-				}
+				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
 			}
 		}
 		else if (Gait == FSimpleGameplayTags::Simple_Gait_Sprint)
 		{
 			if (Speed < MaxSpeedRun)
 			{
-				// Use the gait mode that our speed is closer to if we haven't even reached run speed
-				if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
-				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-				}
-				else
-				{
-					StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-				}
+				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
 			}
 			else
 			{
@@ -352,6 +357,36 @@ void USimpleAnimInstance::NativePostEvaluateAnimation()
 	}
 
 	Proxy.ResetPendingMessageLogs();
+}
+
+void USimpleAnimInstance::ComputeSlowStopGait(const float MaxSpeedStroll, const float MaxSpeedWalk, const float MaxSpeedRun)
+{
+	// Stroll vs Walk
+	if (Speed < MaxSpeedWalk)
+	{
+		// Use the gait mode that our speed is closer to
+		if ((Speed - MaxSpeedStroll) < (MaxSpeedWalk - Speed))
+		{
+			StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
+		}
+		else
+		{
+			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
+		}
+	}
+	// Walk vs Run
+	else
+	{
+		// Use the gait mode that our speed is closer to
+		if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
+		{
+			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
+		}
+		else
+		{
+			StopGait = FSimpleGameplayTags::Simple_Gait_Run;
+		}
+	}
 }
 
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)

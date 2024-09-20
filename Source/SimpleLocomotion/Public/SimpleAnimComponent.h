@@ -86,11 +86,17 @@ public:
 	/** ACharacter::bIsCrouched */
 	virtual bool GetSimpleIsCrouching() const { return false; }
 
+	/** e.g. AStrollCharacter::IsStrolling() */
+	virtual bool GetSimpleIsStrolling() const { return false; }
+	
 	/** e.g. AWalkCharacter::IsWalking() */
 	virtual bool GetSimpleIsWalking() const { return false; }
 
 	/** e.g. ASprintCharacter::IsSprinting() */
 	virtual bool GetSimpleIsSprinting() const { return false; }
+
+	/** e.g. UStrollMovement::bWantsToStroll && USprintMovement::CanStroll() */
+	virtual bool GetSimpleWantsStrolling() const { return false; }
 	
 	/** e.g. UWalkMovement::bWantsToWalk && USprintMovement::CanWalk() */
 	virtual bool GetSimpleWantsWalking() const { return false; }

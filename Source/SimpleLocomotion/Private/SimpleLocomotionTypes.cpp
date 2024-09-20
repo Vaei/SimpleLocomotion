@@ -265,20 +265,29 @@ FSimpleGaitSet::FSimpleGaitSet()
 {
 	Sets.Add(FSimpleGameplayTags::Simple_Gait_Walk);
 
-	// Walking should fall back to run if unavailable, otherwise sprint
+	// Strolling should fall back to walk if unavailable, otherwise run, otherwise sprint
+	FSimpleGameplayTagArray& StrollFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Gait_Stroll);
+	StrollFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Walk);
+	StrollFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Run);
+	StrollFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Sprint);
+
+	// Walking should fall back to run if unavailable, otherwise stroll, otherwise sprint
 	FSimpleGameplayTagArray& WalkFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Gait_Walk);
 	WalkFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Run);
+	WalkFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Stroll);
 	WalkFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Sprint);
 
-	// Run should fall back to walk if unavailable, otherwise sprint
+	// Run should fall back to walk if unavailable, otherwise sprint, otherwise stroll
 	FSimpleGameplayTagArray& RunFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Gait_Run);
 	RunFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Walk);
 	RunFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Sprint);
+	RunFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Stroll);
 	
-	// Sprint should fall back to run if unavailable, otherwise walk
+	// Sprint should fall back to run if unavailable, otherwise walk, otherwise stroll
 	FSimpleGameplayTagArray& SprintFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Gait_Sprint);
 	SprintFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Run);
 	SprintFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Walk);
+	SprintFallback.AddTagFast(FSimpleGameplayTags::Simple_Gait_Stroll);
 }
 
 void FSimpleGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
