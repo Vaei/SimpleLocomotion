@@ -26,6 +26,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 3.4.1
+* Expose IsAnyMontagePlaying
+
 ### 3.4.0
 * Added FSimpleGameplayTags::Simple_Gait_Stroll
 	* Primarily intended for NPCs who are not technically idle, but don't really have a purpose, and are wandering or possibly patrolling
