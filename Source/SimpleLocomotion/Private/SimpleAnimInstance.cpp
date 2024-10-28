@@ -128,6 +128,8 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bWantsLandingFrameLock = OwnerComponent->WantsFrameLockOnLanding();
 	bIsMoveModeValid = OwnerComponent->GetSimpleIsMoveModeValid();
+	
+	bIsAnyMontagePlaying = IsAnyMontagePlaying();
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)

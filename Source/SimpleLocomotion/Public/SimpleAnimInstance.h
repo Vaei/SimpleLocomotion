@@ -199,6 +199,10 @@ protected:
 	/** This prevents poor blending with systems such as mantling */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bLandingFrameLock = false;
+
+	/** This prevents poor blending with systems such as mantling */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
+	bool bIsAnyMontagePlaying = false;
 	
 public:
 	USimpleAnimInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
