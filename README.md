@@ -1,14 +1,17 @@
-# Simple Locomotion
+# Simple Locomotion <img align="right" width=128, height=128 src="https://github.com/Vaei/SimpleLocomotion/blob/main/Resources/Icon128.png">
 
-Simple locomotion system code functionality to extend from, with respect to updating in worker threads for maximum performance optimization.
+> [!IMPORTANT]
+> A simple locomotion framework to extend from
+> <br>Updates in worker threads for maximum performance optimization
+> <br>Demonstrates best practices for building the foundation side of locomotion systems
 
-This demonstrates best practices for building the functionality side of locomotion systems.
+> [!NOTE]
+> Works with any actor, not only pawns or characters -- It supports both CMC and Mover 2.0
+> <br>Requires C++ for component implementation to ensure the best possible performance
 
-Works with any actor, not only pawns or characters. That means it supports Mover 2.0.
-
-Requires C++ for component implementation.
-
-Does not include an anim blueprint. Extend the USimpleAnimInstance to make your own. Does not include any content.
+> [!TIP]
+> Does not include an anim blueprint -- Extend the USimpleAnimInstance to make your own
+> <br>Does not include any content
 
 ## Setup
 
