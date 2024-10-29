@@ -11,7 +11,8 @@ public class SimpleLocomotion : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", 
+				"GameplayTags",
 			}
 			);
 			
@@ -21,7 +22,6 @@ public class SimpleLocomotion : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"GameplayTags"
 			}
 			);
 	}

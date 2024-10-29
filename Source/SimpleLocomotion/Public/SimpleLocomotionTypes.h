@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 
 #include "SimpleLocomotionTypes.generated.h"
 
@@ -10,6 +11,8 @@
 DECLARE_DYNAMIC_DELEGATE_OneParam(FSimpleLandedSignature, const FHitResult&, Hit);
 
 DECLARE_DELEGATE_ThreeParams(FSimpleCardinalUpdate, const FGameplayTag&, struct FSimpleCardinal&, const struct FSimpleCardinals&);
+
+class UAnimSequence;
 
 UENUM(BlueprintType)
 enum class ESimpleIsValidResult : uint8
