@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "IPropertyTypeCustomization.h"
 
 class FSimpleLocomotionSetPropertyCustomization : public IPropertyTypeCustomization
 {

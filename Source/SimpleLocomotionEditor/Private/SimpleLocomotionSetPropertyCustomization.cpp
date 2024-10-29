@@ -8,7 +8,7 @@
 #include "IPropertyUtilities.h"
 #include "SimpleGameplayTags.h"
 #include "SimpleLocomotionTypes.h"
-
+#include "System/SimpleLocomotionVersioning.h"
 
 TSharedRef<IPropertyTypeCustomization> FSimpleLocomotionSetPropertyCustomization::MakeInstance()
 {
@@ -32,7 +32,11 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 	// Force a refresh on the details panel when Mode property changes
 	ModeProperty->SetOnPropertyValueChanged(FSimpleDelegate::CreateLambda([this, &CustomizationUtils]()
 	{
+#if UE_5_04_OR_LATER
 		CustomizationUtils.GetPropertyUtilities().Get()->RequestForceRefresh();
+#else
+		CustomizationUtils.GetPropertyUtilities().Get()->ForceRefresh();
+#endif
 	}));
 
 	// Determine the mode tag

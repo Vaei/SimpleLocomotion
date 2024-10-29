@@ -5,9 +5,13 @@
 > <br>Updates in worker threads for maximum performance optimization
 > <br>Demonstrates best practices for building the foundation side of locomotion systems
 
+> [!TIP]
+> Suitable for both singleplayer and multiplayer games
+> <br>Supports UE5.2+
+
 > [!NOTE]
 > Works with any actor, not only pawns or characters -- It supports both CMC and Mover 2.0
-> <br>Requires C++ for component implementation to ensure the best possible performance
+> <br>Requires C++ for SimpleAnimComponent implementation to ensure the best possible performance
 
 > [!TIP]
 > Does not include an anim blueprint -- Extend the USimpleAnimInstance to make your own
@@ -28,6 +32,10 @@ Next you will want to either subclass `USimpleAnimInstance` to extend functional
 You will likely run into fast path warnings on your animation state transitions. For this you will want to use ThreadSafeUpdateAnimation to cache the conditions to a boolean and pass that boolean to the transition instead.
 
 ## Changelog
+
+### 3.4.2
+* Support UE5.2, 5.3
+* Fix up includes
 
 ### 3.4.1
 * Expose IsAnyMontagePlaying

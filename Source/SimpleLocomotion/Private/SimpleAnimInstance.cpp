@@ -7,6 +7,9 @@
 #include "SimpleAnimInstanceProxy.h"
 #include "SimpleLocomotionStatics.h"
 #include "SimpleGameplayTags.h"
+#include "GameFramework/Pawn.h"
+
+#include "Logging/MessageLog.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
