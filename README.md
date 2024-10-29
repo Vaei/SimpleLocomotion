@@ -1,4 +1,4 @@
-# Simple Locomotion <img align="right" width=128, height=128 src="https://github.com/Vaei/SimpleLocomotion/blob/main/Resources/Icon128.png">
+# Simple Locomotion <img align="right" width=256, height=256 src="https://github.com/Vaei/SimpleLocomotion/blob/main/Resources/Icon256.png">
 
 > [!IMPORTANT]
 > A simple locomotion framework to extend from
