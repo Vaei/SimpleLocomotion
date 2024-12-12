@@ -94,8 +94,13 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
+#if WITH_EDITOR
+	const bool bGameWorld = GetWorld() && GetWorld()->IsGameWorld();
+	LocalRole = bGameWorld ? OwnerComponent->GetSimpleLocalRole() : ROLE_None;
+#else
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
-
+#endif
+	
 	World.Velocity = OwnerComponent->GetSimpleVelocity();
 	World.Acceleration = OwnerComponent->GetSimpleAcceleration();
 	ForwardVector = Owner->GetActorForwardVector();

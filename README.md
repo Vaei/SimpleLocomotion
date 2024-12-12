@@ -11,7 +11,8 @@
 
 > [!NOTE]
 > Works with any actor, not only pawns or characters -- It supports both CMC and Mover 2.0
-> <br>Requires C++ for SimpleAnimComponent implementation to ensure the best possible performance
+> <br>If using blueprint only, make sure to use the blueprint branch instead of main
+> <br>Otherwise, requires C++ for SimpleAnimComponent implementation to ensure the best possible performance
 
 > [!TIP]
 > Does not include an anim blueprint -- Extend the USimpleAnimInstance to make your own

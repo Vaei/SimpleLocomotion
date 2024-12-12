@@ -24,5 +24,11 @@ public class SimpleLocomotion : ModuleRules
 				"Engine",
 			}
 			);
+		
+		if (Target.bBuildEditor)
+		{
+			// FNotificationInfo & FSlateNotificationManager
+			PrivateDependencyModuleNames.Add("Slate");
+		}
 	}
 }
