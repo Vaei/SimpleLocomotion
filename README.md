@@ -5,6 +5,11 @@
 > <br>Updates in worker threads for maximum performance optimization
 > <br>Demonstrates best practices for building the foundation side of locomotion systems
 
+> [!CAUTION]
+> While fully functional and usable, in the future this plugin will re-release condensing all version history
+> <br>Compatibility with older versions is not guaranteed beyond that point
+> <br>This is still a beta version and undergoing constant iteration
+
 > [!TIP]
 > Suitable for both singleplayer and multiplayer games
 > <br>Supports UE5.2+
