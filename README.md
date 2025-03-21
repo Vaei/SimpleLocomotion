@@ -6,7 +6,7 @@
 > <br>Demonstrates best practices for building the foundation side of locomotion systems
 
 > [!CAUTION]
-> While fully functional and usable, in the future this plugin will re-release condensing all version history
+> While fully functional and usable, in the future this plugin will re-release condensing all version history and likely experience a breaking refactor
 > <br>Compatibility with older versions is not guaranteed beyond that point
 > <br>This is still a beta version and undergoing constant iteration
 
