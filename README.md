@@ -33,6 +33,13 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 4.0.0
+* Add Simple.State tag to represent differing AnimStates
+* Added nested data types, e.g. per-stance animations can be represented as AnimState:Stance:Anim
+* Added further data types to improve overall support
+	* Added transition sets with Entry/Loop/Exit animations
+* Changed from pointer struct getters to ref struct getters to stop copying structs at the final goal (anim graph)
+
 ### 3.4.2
 * Support UE5.2, 5.3
 * Fix up includes

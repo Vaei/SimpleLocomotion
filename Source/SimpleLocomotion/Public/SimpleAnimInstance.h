@@ -173,6 +173,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag StopGait;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	FGameplayTag State;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag Stance;

@@ -7,7 +7,7 @@
 #include "IDetailChildrenBuilder.h"
 #include "IPropertyUtilities.h"
 #include "SimpleGameplayTags.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleLocomotionSets.h"
 #include "System/SimpleLocomotionVersioning.h"
 
 TSharedRef<IPropertyTypeCustomization> FSimpleLocomotionSetPropertyCustomization::MakeInstance()
@@ -26,7 +26,7 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeHeader(TSharedRef<IProp
 void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils)
 {
 	// Add Mode property
-	TSharedPtr<IPropertyHandle> ModeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, Mode));
+	const TSharedPtr<IPropertyHandle> ModeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, Mode));
 	ChildBuilder.AddProperty(ModeProperty.ToSharedRef());
 
 	// Force a refresh on the details panel when Mode property changes
@@ -52,11 +52,11 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 	}
 	
 	// Form booleans to conditionally toggle visibility
-	const bool b2Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_2Way;
-	const bool b4Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_4Way;
-	const bool b6Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_6Way;
-	const bool b8Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_8Way;
-	const bool b10Way = ModeTag == FSimpleGameplayTags::Simple_Cardinal_Mode_10Way;
+	const bool b2Way = ModeTag == FSimpleGameplayTags::Simple_Mode_2Way;
+	const bool b4Way = ModeTag == FSimpleGameplayTags::Simple_Mode_4Way;
+	const bool b6Way = ModeTag == FSimpleGameplayTags::Simple_Mode_6Way;
+	const bool b8Way = ModeTag == FSimpleGameplayTags::Simple_Mode_8Way;
+	const bool b10Way = ModeTag == FSimpleGameplayTags::Simple_Mode_10Way;
 
 	const bool bStrafe = b4Way || b6Way || b8Way || b10Way;
 	const bool bLateral = bStrafe || b2Way;
@@ -76,7 +76,7 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, BackwardRight)), bDiagonal);
 
 	// Add CardinalType property
-	TSharedPtr<IPropertyHandle> CardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, CardinalType));
+	const TSharedPtr<IPropertyHandle> CardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, CardinalType));
 	ChildBuilder.AddProperty(CardinalTypeProperty.ToSharedRef());
 }
 

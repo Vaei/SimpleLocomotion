@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SimpleGameplayTags.h"
 #include "SimpleLocomotionTypes.h"
 #include "Components/ActorComponent.h"
 #include "SimpleAnimComponent.generated.h"
@@ -36,6 +37,9 @@ protected:
 	virtual void SetUpdatedCharacter() {}
 	
 public:
+	/** A mode pertaining to your specific project, representing the state of the character, e.g. in combat */
+	virtual FGameplayTag GetSimpleAnimState() const { return FSimpleGameplayTags::Simple_State_Default; }
+	
 	/** AActor::GetVelocity() */
 	virtual FVector GetSimpleVelocity() const PURE_VIRTUAL(, return FVector::ZeroVector;);
 
@@ -128,7 +132,7 @@ public:
 	 * When they land, e.g. ACharacter::Landed():
 	 *
 	 * Super::Landed(Hit);
-	 * (void)ThisComponent->AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
+	 * (void)SimpleLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
 	 */
 	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() { return nullptr; }
 };
