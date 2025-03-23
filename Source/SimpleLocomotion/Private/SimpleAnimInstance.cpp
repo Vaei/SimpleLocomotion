@@ -41,6 +41,7 @@ USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitial
 	Gait = FSimpleGameplayTags::Simple_Gait_Run;
 	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
 	StopGait = FSimpleGameplayTags::Simple_Gait_Run;
+	State = FSimpleGameplayTags::Simple_State_Default;
 	Stance = FSimpleGameplayTags::Simple_Stance_Stand;
 }
 
@@ -95,6 +96,8 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
+
+	State = OwnerComponent->GetSimpleAnimState();
 
 	World.Velocity = OwnerComponent->GetSimpleVelocity();
 	World.Acceleration = OwnerComponent->GetSimpleAcceleration();
@@ -410,9 +413,7 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	const float DeadZone = GetCardinalDeadZone(CardinalMode);
 
 	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
-	Cardinal.AccelerationNoOffset	= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.AccelerationNoOffset, DeadZone, Cardinal.AccelerationNoOffset, bWasMovingLastUpdate);
 	Cardinal.Velocity				= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
-	Cardinal.VelocityNoOffset		= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.VelocityNoOffset, DeadZone, Cardinal.VelocityNoOffset, bWasMovingLastUpdate);
 }
 
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const

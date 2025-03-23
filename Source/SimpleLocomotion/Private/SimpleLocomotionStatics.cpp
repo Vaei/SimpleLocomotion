@@ -8,9 +8,9 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionStatics)
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& LocomotionSet)
+FGameplayTag USimpleLocomotionStatics::GetSimpleCardinal(const FSimpleCardinals& Cardinals, const FSimpleLocomotionSet& Set)
 {
-	return Cardinals.GetCurrentCardinal(LocomotionSet);
+	return Cardinals.GetCurrentCardinal(Set);
 }
 
 FGameplayTag USimpleLocomotionStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
@@ -20,11 +20,11 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleCardinalForTag(const FSimpleCard
 
 FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
 {
-	if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_1Way)
+	if (CardinalMode == FSimpleGameplayTags::Simple_Mode_1Way)
 	{
 		return FSimpleGameplayTags::Simple_Cardinal_Forward;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_2Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_2Way)
 	{
 		if (bWasMovingLastUpdate)
 		{
@@ -44,7 +44,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}	
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_4Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_4Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -87,7 +87,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_6Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_6Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -129,7 +129,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		}
 		return bRight ? FSimpleGameplayTags::Simple_Cardinal_Right_Away : FSimpleGameplayTags::Simple_Cardinal_Left_Away;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_8Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_8Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -184,7 +184,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 		// Left
 		return FSimpleGameplayTags::Simple_Cardinal_Left;
 	}
-	else if (CardinalMode == FSimpleGameplayTags::Simple_Cardinal_Mode_10Way)
+	else if (CardinalMode == FSimpleGameplayTags::Simple_Mode_10Way)
 	{
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
@@ -254,26 +254,4 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplay
 	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Left) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Right; }
 	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Left; }
 	return FGameplayTag::EmptyTag;
-}
-
-FSimpleLocomotionSet USimpleLocomotionStatics::GetSimpleLocomotionSet(const FSimpleGaitSet& GaitSet, FGameplayTag GaitTag, bool& bValid)
-{
-	bValid = false;
-	if (const FSimpleLocomotionSet* LocomotionSet = GaitSet.GetLocomotionSet(GaitTag))
-	{
-		bValid = true;
-		return *LocomotionSet;
-	}
-	return {};
-}
-
-UAnimSequence* USimpleLocomotionStatics::GetSimpleAnimation(const FSimpleLocomotionSet& LocomotionSet, FGameplayTag CardinalTag, bool& bValid)
-{
-	bValid = false;
-	if (UAnimSequence* Animation = LocomotionSet.GetAnimation(CardinalTag))
-	{
-		bValid = true;
-		return Animation;
-	}
-	return nullptr;
 }
