@@ -67,10 +67,10 @@ public:
 	virtual FSimpleGaitSpeed GetSimpleMaxGaitSpeeds() const PURE_VIRTUAL(, return {};);
 	
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
-	virtual float GetSimpleLeanRate() const { return 3.75f; };
+	virtual float GetSimpleLeanRate() const { return 3.75f; }
 	
 	/** Used with TurnInPlace systems where usually a mesh offset is applied */
-	virtual float GetSimpleRootYawOffset() const { return 0.f; };
+	virtual float GetSimpleRootYawOffset() const { return 0.f; }
 
 	/** UCharacterMovementComponent::GetGravityZ()  */
 	virtual float GetSimpleGravityZ() const { return 1.f; }
@@ -88,7 +88,10 @@ public:
 	virtual bool GetSimpleCanJump() const { return false; }
 
 	/** ACharacter::bIsCrouched */
-	virtual bool GetSimpleIsCrouching() const { return false; }
+	virtual bool GetSimpleIsCrouched() const { return false; }
+
+	/** AMyCharacter::bIsProned */
+	virtual bool GetSimpleIsProned() const { return false; }
 
 	/** e.g. AStrollCharacter::IsStrolling() */
 	virtual bool GetSimpleIsStrolling() const { return false; }

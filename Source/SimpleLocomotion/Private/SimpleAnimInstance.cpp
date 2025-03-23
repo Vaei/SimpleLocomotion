@@ -13,7 +13,7 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
-DEFINE_LOG_CATEGORY_STATIC(LogSimpleAnim, Log, All);
+// DEFINE_LOG_CATEGORY_STATIC(LogSimpleAnim, Log, All);
 
 namespace SimpleAnimInstanceCVars
 {
@@ -122,7 +122,8 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	GravityZ = OwnerComponent->GetSimpleGravityZ();
 	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
 
-	bIsCrouching = OwnerComponent->GetSimpleIsCrouching();
+	bIsCrouched = OwnerComponent->GetSimpleIsCrouched();
+	bIsProned = OwnerComponent->GetSimpleIsProned();
 
 	bIsStrolling = OwnerComponent->GetSimpleIsStrolling();
 	bIsWalking = OwnerComponent->GetSimpleIsWalking();
@@ -324,7 +325,11 @@ void USimpleAnimInstance::NativeThreadSafeUpdateStance(float DeltaTime)
 {
 	// Stance
 	const FGameplayTag PrevStance = Stance;
-	if (bIsCrouching)
+	if (bIsProned)
+	{
+		Stance = FSimpleGameplayTags::Simple_Stance_Prone;
+	}
+	else if (bIsCrouched)
 	{
 		Stance = FSimpleGameplayTags::Simple_Stance_Crouch;
 	}
