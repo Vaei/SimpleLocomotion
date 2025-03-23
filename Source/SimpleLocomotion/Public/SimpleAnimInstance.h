@@ -135,7 +135,10 @@ protected:
 	bool bMovementIs3D = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
-	bool bIsCrouching = false;
+	bool bIsCrouched = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bIsProned = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsStrolling = false;
