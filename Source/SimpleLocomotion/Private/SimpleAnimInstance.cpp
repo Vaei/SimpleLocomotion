@@ -137,6 +137,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsMoveModeValid = OwnerComponent->GetSimpleIsMoveModeValid();
 	
 	bIsAnyMontagePlaying = IsAnyMontagePlaying();
+	bIsPlayingNetworkedRootMotionMontage = OwnerComponent->IsPlayingNetworkedRootMotionMontage();
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
@@ -145,6 +146,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	{
 		return;
 	}
+
+	// Extension point
+	NativeThreadSafePreUpdateMovementProperties(DeltaTime);
 
 	// Movement properties
 	Local = World.GetLocal(WorldRotation);

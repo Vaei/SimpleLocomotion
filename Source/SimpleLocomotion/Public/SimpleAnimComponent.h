@@ -120,6 +120,9 @@ public:
 	/** e.g. AMantleCharacter::IsMantling() */
 	virtual bool WantsFrameLockOnLanding() const { return false; }
 
+	/** e.g. ACharacter::IsPlayingNetworkedRootMotionMontage() */
+	virtual bool IsPlayingNetworkedRootMotionMontage() const { return false; }
+	
 	/** AActor::GetLocalRole() */
 	virtual ENetRole GetSimpleLocalRole() const PURE_VIRTUAL(, return ROLE_None;)
 	
