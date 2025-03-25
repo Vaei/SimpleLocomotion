@@ -33,6 +33,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 4.0.1
+* Extension point for PreMovement update & IsPlayingNetworkedRootMotionMontage caching
+
 ### 4.0.0
 * Add Simple.State tag to represent differing AnimStates
 * Added nested data types, e.g. per-stance animations can be represented as AnimState:Stance:Anim

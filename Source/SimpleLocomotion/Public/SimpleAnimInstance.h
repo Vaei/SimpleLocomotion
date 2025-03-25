@@ -210,6 +210,10 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bIsAnyMontagePlaying = false;
 	
+	/** This prevents poor blending with systems such as mantling */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
+	bool bIsPlayingNetworkedRootMotionMontage = false;
+	
 public:
 	USimpleAnimInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
@@ -219,6 +223,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
+	virtual void NativeThreadSafePreUpdateMovementProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateGaitMode(float DeltaTime);
 	virtual void NativeThreadSafeUpdateStance(float DeltaTime);
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
