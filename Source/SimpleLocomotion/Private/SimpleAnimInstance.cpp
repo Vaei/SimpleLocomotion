@@ -459,6 +459,13 @@ bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 		OnAnimNotValidToUpdate("");
 	}
 #endif
+
+#if WITH_EDITOR
+	if (!GetWorld() || !GetWorld()->IsGameWorld())
+	{
+		return false;
+	}
+#endif
 	
 	return bValid && bValidDeltaTime;
 }
