@@ -19,10 +19,13 @@ class SIMPLELOCOMOTION_API USimpleAnimInstance : public UAnimInstance
 
 public:
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
-	AActor* Owner = nullptr;
+	TObjectPtr<AActor> Owner = nullptr;
+	
+	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
+	TObjectPtr<APawn> PawnOwner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
-	USimpleAnimComponent* OwnerComponent = nullptr;
+	TObjectPtr<USimpleAnimComponent> OwnerComponent = nullptr;
 
 #if WITH_EDITORONLY_DATA
 	/** Assist designers by cleaning out categories they don't need to see */
@@ -163,10 +166,16 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bHasAcceleration = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bHasAcceleration2D = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bHasVelocity = false;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bHasVelocity2D = false;
+	
 public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag Gait;

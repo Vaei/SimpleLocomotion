@@ -255,3 +255,12 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplay
 	if (CardinalTag == FSimpleGameplayTags::Simple_Cardinal_Backward_Right) { return FSimpleGameplayTags::Simple_Cardinal_Forward_Left; }
 	return FGameplayTag::EmptyTag;
 }
+
+bool USimpleLocomotionStatics::IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity,
+	const FVector& ActorRightVector)
+{
+	const FVector VelDir = Velocity.GetSafeNormal();
+	const FVector SideBasis = (VelDir ^ ActorRightVector) ^ VelDir;
+	const float Dot = (Acceleration.GetSafeNormal() | SideBasis);
+	return Dot >= 0.f;
+}

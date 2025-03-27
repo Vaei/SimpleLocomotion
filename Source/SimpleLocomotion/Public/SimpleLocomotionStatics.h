@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag GetSimpleOppositeCardinal(const FGameplayTag& CardinalTag);
+
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	static bool IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity, const FVector& ActorRightVector);
 };
