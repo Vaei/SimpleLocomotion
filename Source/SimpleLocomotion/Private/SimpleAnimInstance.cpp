@@ -52,7 +52,8 @@ FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
 
 void USimpleAnimInstance::NativeInitializeAnimation()
 {
-	Owner = TryGetPawnOwner();
+	Owner = GetOwningActor();
+	PawnOwner = TryGetPawnOwner();
 	OwnerComponent = Owner ? Owner->GetComponentByClass<USimpleAnimComponent>() : nullptr;
 
 	if (!Owner || !OwnerComponent)
@@ -160,13 +161,16 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	Speed2D = Local2D.Velocity.Size();
 	Speed = bIsMovingOnGround ? Speed3D : Speed2D;
 	const float SpeedSq = Speed * Speed;
+	const float Speed2DSq = Speed2D * Speed2D;
 
 	const float AccelMag3D = Local.Acceleration.SizeSquared();
 	const float AccelMag2D = Local2D.Acceleration.SizeSquared();
 	const float AccelSq = bMovementIs3D ? AccelMag3D : AccelMag2D;
 	
 	bHasVelocity = !FMath::IsNearlyZero(SpeedSq);
+	bHasVelocity2D = !FMath::IsNearlyZero(Speed2DSq);
 	bHasAcceleration = !FMath::IsNearlyZero(AccelSq);
+	bHasAcceleration2D = !FMath::IsNearlyZero(AccelMag2D);
 
 	// Rotation properties
 	if (LocalRole != ROLE_SimulatedProxy)
