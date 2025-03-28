@@ -39,6 +39,7 @@ USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitial
 	: Super(ObjectInitializer)
 {
 	Gait = FSimpleGameplayTags::Simple_Gait_Run;
+	GaitSpeed = FSimpleGameplayTags::Simple_Gait_Run;
 	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
 	StopGait = FSimpleGameplayTags::Simple_Gait_Run;
 	State = FSimpleGameplayTags::Simple_State_Default;
@@ -109,7 +110,8 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	WorldRotation = Owner->GetActorRotation();
 	ControlRotation = OwnerComponent->GetSimpleControlRotation();
 	BaseAimRotation = OwnerComponent->GetSimpleBaseAimRotation();
-	
+
+	PrevMaxSpeed = MaxSpeed;
 	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
 	MaxGaitSpeeds = OwnerComponent->GetSimpleMaxGaitSpeeds();
 	LeanRate = LeanRateOverride >= 0.f ? LeanRateOverride : OwnerComponent->GetSimpleLeanRate();
@@ -275,57 +277,34 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	}
 	bGaitChanged = Gait != PrevGait;
 
-	const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
+	// const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
 	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Walk);
 	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Run);
+	const float MaxSpeedSprint = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Sprint);
 	
+	// Gait Mode at Speed: Use the current mode based on speed
+	GaitSpeed = Gait;
+	if (Speed < MaxSpeedWalk)
+	{
+		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Stroll;
+	}
+	else if (Speed < MaxSpeedRun)
+	{
+		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Walk;
+	}
+	else if (Speed < MaxSpeedSprint)
+	{
+		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Run;
+	}
+	else
+	{
+		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Sprint;
+	}
+
 	// Stop Gait Mode: Use the previous mode
 	if (bHasAcceleration)
 	{
-		StopGait = Gait;
-		if (Gait == FSimpleGameplayTags::Simple_Gait_Stroll)
-		{
-			// If strolling and needing to stop, default to stroll stop, don't need to do anything here
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Walk)
-		{
-			// If walking and needing to stop, default to walk stop, don't need to do anything here
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Run)
-		{
-			// If not at run speed, use strolling stop
-			if (Speed < MaxSpeedStroll)
-			{
-				// Use stroll speed if we haven't even reached our max walk speed yet
-				StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
-			}
-			else if (Speed < MaxSpeedWalk)
-			{
-				// Use walk speed if we haven't even reached our max walk speed yet
-				StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-			}
-			else if (Speed < MaxSpeedRun)
-			{
-				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
-			}
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Sprint)
-		{
-			if (Speed < MaxSpeedRun)
-			{
-				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
-			}
-			else
-			{
-				// Sprint always results in a sprint stop, provided we have exceeded run speed
-				StopGait = FSimpleGameplayTags::Simple_Gait_Sprint;
-			}
-		}
-		else if (SimpleAnimInstanceCVars::bPrintInvalidGameplayTagStates)
-		{
-			FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
-			Proxy.AddPendingMessage(FString::Printf(TEXT("Invalid Gait Mode: %s"), *Gait.ToString()));
-		}
+		StopGait = GaitSpeed;  // We stop based on the speed we are at rather than intent
 	}
 }
 
@@ -380,36 +359,6 @@ void USimpleAnimInstance::NativePostEvaluateAnimation()
 	Proxy.ResetPendingMessageLogs();
 }
 
-void USimpleAnimInstance::ComputeSlowStopGait(const float MaxSpeedStroll, const float MaxSpeedWalk, const float MaxSpeedRun)
-{
-	// Stroll vs Walk
-	if (Speed < MaxSpeedWalk)
-	{
-		// Use the gait mode that our speed is closer to
-		if ((Speed - MaxSpeedStroll) < (MaxSpeedWalk - Speed))
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
-		}
-		else
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-		}
-	}
-	// Walk vs Run
-	else
-	{
-		// Use the gait mode that our speed is closer to
-		if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-		}
-		else
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-		}
-	}
-}
-
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 {
 	bLandingFrameLock = true;
@@ -425,8 +374,11 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	// Consider not updating the properties you don't need to optimize performance!
 	const float DeadZone = GetCardinalDeadZone(CardinalMode);
 
-	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
-	Cardinal.Velocity				= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
+	Cardinal.Acceleration = USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(
+		CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
+	
+	Cardinal.Velocity = USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(
+		CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
 }
 
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const

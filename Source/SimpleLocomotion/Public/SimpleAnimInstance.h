@@ -87,6 +87,9 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float MaxSpeed = 0.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float PrevMaxSpeed = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanRate = 0.f;
@@ -170,6 +173,9 @@ protected:
 public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag Gait;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	FGameplayTag GaitSpeed;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag StartGait;
@@ -234,8 +240,6 @@ public:
 	virtual void NativePostEvaluateAnimation() override;
 
 protected:
-	void ComputeSlowStopGait(float MaxSpeedStroll, float MaxSpeedWalk, float MaxSpeedRun);
-
 	UFUNCTION()
 	virtual void OnLanded(const FHitResult& Hit);
 	
