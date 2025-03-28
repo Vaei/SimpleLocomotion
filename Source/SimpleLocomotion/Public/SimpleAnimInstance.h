@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SimpleAnimInstanceBase.h"
 #include "SimpleLocomotionTypes.h"
-#include "Animation/AnimInstance.h"
 #include "SimpleAnimInstance.generated.h"
 
 class USimpleAnimComponent;
@@ -13,7 +13,7 @@ class USimpleAnimComponent;
  * 
  */
 UCLASS()
-class SIMPLELOCOMOTION_API USimpleAnimInstance : public UAnimInstance
+class SIMPLELOCOMOTION_API USimpleAnimInstance : public USimpleAnimInstanceBase
 {
 	GENERATED_BODY()
 
@@ -26,15 +26,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
 	TObjectPtr<USimpleAnimComponent> OwnerComponent = nullptr;
-
-#if WITH_EDITORONLY_DATA
-	/** Assist designers by cleaning out categories they don't need to see */
-	UPROPERTY(EditDefaultsOnly, Category=Editor)
-	TArray<FName> HideEditorCategories = { "RootMotion", "Notifies", "Montage" };
-	
-	UPROPERTY(EditDefaultsOnly, Category=Editor)
-	TArray<FName> ImportantEditorCategories = {};
-#endif
 
 public:
 	/** Required for CardinalMovement to update. If true, NativeThreadSafeUpdateAnimation() calls CardinalMovement.ThreadSafeUpdate() */
