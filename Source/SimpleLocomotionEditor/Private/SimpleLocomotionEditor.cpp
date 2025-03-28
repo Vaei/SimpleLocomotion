@@ -2,7 +2,7 @@
 
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimComponentDetailsCustomization.h"
-#include "SimpleAnimInstance.h"
+#include "SimpleAnimInstanceBase.h"
 #include "SimpleAnimInstanceDetailsCustomization.h"
 #include "SimpleLocomotionSetPropertyCustomization.h"
 
@@ -14,7 +14,7 @@ void FSimpleLocomotionEditorModule::StartupModule()
 
 	// Anim Instance
 	PropertyModule.RegisterCustomClassLayout(
-		USimpleAnimInstance::StaticClass()->GetFName(),
+		USimpleAnimInstanceBase::StaticClass()->GetFName(),
 		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimInstanceDetailsCustomization::MakeInstance)
 	);
 
@@ -34,7 +34,7 @@ void FSimpleLocomotionEditorModule::ShutdownModule()
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
 	{
 		FPropertyEditorModule* PropertyModule = FModuleManager::Get().GetModulePtr<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstance::StaticClass()->GetFName());
+		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstanceBase::StaticClass()->GetFName());
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimComponent::StaticClass()->GetFName());
 
 		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleLocomotionSet");
