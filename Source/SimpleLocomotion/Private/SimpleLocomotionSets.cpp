@@ -110,17 +110,9 @@ FSimpleStateToGaitSet::FSimpleStateToGaitSet()
 	Sets.Add(FSimpleGameplayTags::Simple_State_Default);
 }
 
-FSimpleStanceToStateToGaitSet::FSimpleStanceToStateToGaitSet()
+FSimpleStateToStanceToGaitSet::FSimpleStateToStanceToGaitSet()
 {
 	Sets.Add(FSimpleGameplayTags::Simple_State_Default);
-
-	// Crouch falls back to standing
-	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Stance_Crouch);
-	CrouchFallback.AddTagFast(FSimpleGameplayTags::Simple_Stance_Stand);
-
-	// Prone falls back to crouch
-	FSimpleGameplayTagArray& ProneFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Stance_Prone);
-	ProneFallback.AddTagFast(FSimpleGameplayTags::Simple_Stance_Crouch);
 }
 
 FSimpleStanceToTransitionSet::FSimpleStanceToTransitionSet()
