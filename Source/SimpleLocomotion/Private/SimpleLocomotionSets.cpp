@@ -43,7 +43,7 @@ UAnimSequence* FSimpleLocomotionSet::GetAnimation(const FGameplayTag& CardinalTa
 
 FSimpleGaitSet::FSimpleGaitSet()
 {
-	Sets.Add(FSimpleGameplayTags::Simple_Gait_Walk);
+	Sets.Add(FSimpleGameplayTags::Simple_Gait_Run);
 
 	// Strolling should fall back to walk if unavailable, otherwise run, otherwise sprint
 	FSimpleGameplayTagArray& StrollFallback = Fallbacks.Add(FSimpleGameplayTags::Simple_Gait_Stroll);
