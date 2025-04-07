@@ -182,7 +182,10 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	UPROPERTY(BlueprintReadOnly, Category=Properties)
 	bool bHasEverUpdated;
 
-	/** Get current cardinal based on Simple.Mode and CardinalType */
+	/**
+	 * Get current cardinal based on Simple.Mode and CardinalType, e.g. Simple.Mode.1Way and ESimpleCardinalType::Acceleration
+	 * @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left
+	 */
 	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const;
 
 	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet& LocomotionSet) const;
@@ -194,6 +197,9 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 
 	static float CalculateDirection(const FVector& Velocity, const FRotator& BaseRotation);
 
+	void UpdateCardinals(const TMap<FGameplayTag, FSimpleCardinal>& NewCardinals);
+	const TMap<FGameplayTag, FSimpleCardinal>& GetDefaultCardinals() const { return Cardinals; }
+	
 	void CacheCardinals();
 
 	const TMap<FGameplayTag, FSimpleCardinal>& GetCardinals(ESimpleCardinalCache Mode = ESimpleCardinalCache::CachedEnabledOnly) const;

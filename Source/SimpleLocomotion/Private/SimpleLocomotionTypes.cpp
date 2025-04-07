@@ -253,6 +253,12 @@ float FSimpleCardinals::CalculateDirection(const FVector& Velocity, const FRotat
 	return 0.f;
 }
 
+void FSimpleCardinals::UpdateCardinals(const TMap<FGameplayTag, FSimpleCardinal>& NewCardinals)
+{
+	Cardinals = NewCardinals;
+	CacheCardinals();
+}
+
 void FSimpleCardinals::CacheCardinals()
 {
 	CachedCardinals.Reset();
