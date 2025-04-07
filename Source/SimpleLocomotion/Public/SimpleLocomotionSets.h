@@ -279,11 +279,14 @@ struct SIMPLELOCOMOTION_API FSimpleStateToGaitSet
  * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleStanceToStateToGaitSet
+struct SIMPLELOCOMOTION_API FSimpleStateToStanceToGaitSet
 {
 	GENERATED_BODY()
 
-	FSimpleStanceToStateToGaitSet();
+	FSimpleStateToStanceToGaitSet();
+	
+	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
+	FSimpleLocomotionSet DummySet;
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
@@ -388,26 +391,39 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Gait,Simple.Stance,Simple.Cardinal"))
 	static UAnimSequence* SimpleStanceToGaitSet(const FSimpleStanceToGaitSet& Set, FGameplayTag Stance, FGameplayTag Gait, FGameplayTag Cardinal)
 	{ 
-		const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, Set.Sets, Set.Fallbacks);
-		const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
-		return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, Set.Sets, Set.Fallbacks))
+		{
+			const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		}
+		return nullptr;
 	}
 	
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Gait,Simple.Cardinal"))
 	static UAnimSequence* SimpleStateToGaitSet(const FSimpleStateToGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
 	{
-		const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(State, Set.Sets, Set.Fallbacks);
-		const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
-		return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(State, Set.Sets, Set.Fallbacks))
+		{
+			const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		}
+		return nullptr;
 	}
 
-	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait,Simple.Cardinal"))
-	static UAnimSequence* SimpleStateToStanceToGaitSet(const FSimpleStanceToStateToGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait, FGameplayTag Cardinal)
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
+	static const FSimpleLocomotionSet& SimpleStateToStanceToGaitSet(const FSimpleStateToStanceToGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
 	{
-		const FSimpleStanceToGaitSet* StanceToGaitSet = FSimpleGetter::GetSet<FSimpleStanceToGaitSet>(State, Set.Sets, Set.Fallbacks);
-		const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, StanceToGaitSet->Sets, StanceToGaitSet->Fallbacks);
-		const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
-		return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		if (const FSimpleStanceToGaitSet* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToGaitSet>(State, Set.Sets, Set.Fallbacks))
+		{
+			if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
+			{
+				if (const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks))
+				{
+					return *LocoSet;
+				}
+			}
+		}
+		return Set.DummySet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Stance"))
