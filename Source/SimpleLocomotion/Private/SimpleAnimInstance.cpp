@@ -115,6 +115,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
 	MaxGaitSpeeds = OwnerComponent->GetSimpleMaxGaitSpeeds();
 	LeanRate = LeanRateOverride >= 0.f ? LeanRateOverride : OwnerComponent->GetSimpleLeanRate();
+	StartLeanRate = StartLeanRateOverride >= 0.f ? StartLeanRateOverride : OwnerComponent->GetSimpleStartLeanRate();
 
 	RootYawOffset = OwnerComponent->GetSimpleRootYawOffset();
 
@@ -196,22 +197,8 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	// Extension point
 	NativeThreadSafePostUpdateMovementProperties(DeltaTime);
 
-	if (bFirstUpdate)
-	{
-		// There is no valid delta on the first frame
-		LeanAngle = 0.f;
-	}
-	else if (bWantsLeansUpdated)
-	{
-		const float YawDelta = WorldRotation.Yaw - PrevWorldRotation.Yaw;
-		const float YawDeltaSpeed = YawDelta / DeltaTime;
-		const float ScaledLeanRate = LeanRate / 100.f;  // 3.75 is a friendlier number than 0.0375 for designers
-		LeanAngle = YawDeltaSpeed * ScaledLeanRate;
-	}
-	else
-	{
-		LeanAngle = 0.f;
-	}
+	// Lean angles
+	ThreadSafeUpdateLeanAngles(DeltaTime);
 
 	// Extension point
 	NativeThreadSafePreUpdateInAirProperties(DeltaTime);
@@ -235,6 +222,35 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
 
 	bFirstUpdate = false;
+}
+
+void USimpleAnimInstance::ThreadSafeUpdateLeanAngles(float DeltaTime)
+{
+	if (bFirstUpdate)
+	{
+		// There is no valid delta on the first frame
+		LeanAngle = 0.f;
+		StartLeanAngle = 0.f;
+	}
+	else if (bWantsLeansUpdated)
+	{
+		// Compute lean delta
+		const float YawDelta = WorldRotation.Yaw - PrevWorldRotation.Yaw;
+		const float YawDeltaSpeed = YawDelta / DeltaTime;
+
+		// 3.75 is a friendlier number than 0.0375 for designers so we divide by 100
+		const float ScaledLeanRate = LeanRate / 100.f;  
+		const float ScaledStartLeanRate = StartLeanRate / 100.f;
+
+		// Apply lean rate
+		LeanAngle = YawDeltaSpeed * ScaledLeanRate;
+		StartLeanAngle = YawDeltaSpeed * ScaledStartLeanRate;
+	}
+	else
+	{
+		LeanAngle = 0.f;
+		StartLeanAngle = 0.f;
+	}
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)

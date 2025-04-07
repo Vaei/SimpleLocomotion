@@ -36,7 +36,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsLeansUpdated = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Properties)
+	/** Required for StartLeanAngle to update. If true, NativeThreadSafeUpdateAnimation() updates StartLeanAngle. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
+	bool bWantsStartLeansUpdated = true;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Settings)
 	FSimpleCardinals Cardinals;
 	
 protected:
@@ -93,13 +97,23 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanRate = 0.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float StartLeanRate = 0.f;
 
 	/** If set, will use this instead of LeanRate */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category=Properties)
 	float LeanRateOverride = -1.f;
+
+	/** If set, will use this instead of StartLeanRate */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category=Properties)
+	float StartLeanRateOverride = -1.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float LeanAngle = 0.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float StartLeanAngle = 0.f;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float RootYawOffset = 0.f;
@@ -230,6 +244,7 @@ public:
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
 	virtual void NativeThreadSafePreUpdateMovementProperties(float DeltaTime) {}
+	virtual void ThreadSafeUpdateLeanAngles(float DeltaTime);
 	virtual void NativeThreadSafeUpdateGaitMode(float DeltaTime);
 	virtual void NativeThreadSafeUpdateStance(float DeltaTime);
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
