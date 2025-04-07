@@ -69,6 +69,9 @@ public:
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
 	virtual float GetSimpleLeanRate() const { return 3.75f; }
 	
+	/** Change the rate at which the additive lean occurs for start state optionally based on stance, gait, or other state */
+	virtual float GetSimpleStartLeanRate() const { return 3.75f; }
+	
 	/** Used with TurnInPlace systems where usually a mesh offset is applied */
 	virtual float GetSimpleRootYawOffset() const { return 0.f; }
 
