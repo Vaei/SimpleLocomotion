@@ -26,6 +26,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category=References)
 	TObjectPtr<USimpleAnimComponent> OwnerComponent = nullptr;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bOwnerHasInitialized = false;
 
 public:
 	/** Required for CardinalMovement to update. If true, NativeThreadSafeUpdateAnimation() calls CardinalMovement.ThreadSafeUpdate() */

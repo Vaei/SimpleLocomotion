@@ -62,17 +62,17 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 		return;
 	}
 
+	// Check optional initialization of owner
+	bOwnerHasInitialized = OwnerComponent->GetSimpleOwnerHasInitialized();
+
 	// Bind landed delegate
-	if (OwnerComponent)
+	if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
 	{
-		if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
+		if (LandedDelegatePtr->IsBoundToObject(this))
 		{
-			if (LandedDelegatePtr->IsBoundToObject(this))
-			{
-				LandedDelegatePtr->Unbind();
-			}
-			LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
+			LandedDelegatePtr->Unbind();
 		}
+		LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
 	}
 
 	// Bind cardinal update delegates
@@ -92,6 +92,10 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	if (!IsAnimValidToUpdate(DeltaTime))
 	{
+		if (!bOwnerHasInitialized && IsValid(Owner) && OwnerComponent)
+		{
+			bOwnerHasInitialized = OwnerComponent->GetSimpleOwnerHasInitialized();
+		}
 		return;
 	}
 
@@ -404,7 +408,7 @@ float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType Cardin
 
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
-	const bool bValid = IsValid(Owner) && OwnerComponent;
+	const bool bValid = IsValid(Owner) && OwnerComponent && bOwnerHasInitialized;
 	const bool bValidDeltaTime = DeltaTime > 1e-6f;
 
 #if WITH_EDITORONLY_DATA

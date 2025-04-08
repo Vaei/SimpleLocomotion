@@ -117,6 +117,10 @@ struct SIMPLELOCOMOTION_API FSimpleLocomotionSet
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode"))
 	FGameplayTag Mode;
+	
+	/** Blend time to optionally pass to SetSequenceWithInertialBlending */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	float InertialBlendTime;
 
 	/** Moving 0º forward */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
