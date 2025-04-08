@@ -11,6 +11,7 @@
 
 FSimpleLocomotionSet::FSimpleLocomotionSet()
 	: Mode(FSimpleGameplayTags::Simple_Mode_4Way)
+	, InertialBlendTime(0.2f)
 	, Forward(nullptr)
 	, ForwardLeft(nullptr)
 	, ForwardRight(nullptr)

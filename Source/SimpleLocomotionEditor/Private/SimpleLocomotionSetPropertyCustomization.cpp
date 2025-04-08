@@ -64,6 +64,7 @@ void FSimpleLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef<IPr
 	const bool bAway = b6Way || b10Way;
 	
 	// Add with conditional visibility
+	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, InertialBlendTime)), true);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, Forward)), !b2Way);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, ForwardLeft)), bDiagonal);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleLocomotionSet, ForwardRight)), bDiagonal);

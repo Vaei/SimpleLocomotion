@@ -125,6 +125,9 @@ public:
 
 	/** e.g. ACharacter::IsPlayingNetworkedRootMotionMontage() */
 	virtual bool IsPlayingNetworkedRootMotionMontage() const { return false; }
+
+	/** Optional to pause anim system until fully initialized the character */
+	virtual bool GetSimpleOwnerHasInitialized() const PURE_VIRTUAL(, return true;)
 	
 	/** AActor::GetLocalRole() */
 	virtual ENetRole GetSimpleLocalRole() const PURE_VIRTUAL(, return ROLE_None;)
