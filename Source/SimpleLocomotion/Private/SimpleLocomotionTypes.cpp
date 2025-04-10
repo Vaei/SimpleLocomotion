@@ -40,38 +40,82 @@ void FSimpleCardinals::ConstructDefaultCardinals()
 {
 	// 1-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_1Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_1Way);
 		Cardinal.Tags = ConstructCardinalTags_1Way();
-		Cardinal.bEnabled = true;
+		Cardinal.bEnabled = false;
 	}
 	// 2-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_2Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_2Way);
 		Cardinal.Tags = ConstructCardinalTags_2Way();
 		Cardinal.bEnabled = false;
 	}
 	// 4-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_4Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_4Way);
 		Cardinal.Tags = ConstructCardinalTags_4Way();
-		Cardinal.bEnabled = false;
+		Cardinal.bEnabled = true;
 	}
 	// 6-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_6Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_6Way);
 		Cardinal.Tags = ConstructCardinalTags_6Way();
 		Cardinal.bEnabled = false;
 	}
 	// 8-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_8Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_8Way);
 		Cardinal.Tags = ConstructCardinalTags_8Way();
 		Cardinal.bEnabled = false;
 	}
 	// 10-Way
 	{
-		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_10Way);
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Strafe_10Way);
 		Cardinal.Tags = ConstructCardinalTags_10Way();
+		Cardinal.bEnabled = false;
+	}
+
+	// Start 1-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Start_1Way);
+		Cardinal.Tags = ConstructCardinalTags_Start_1Way();
+		Cardinal.bEnabled = true;
+	}
+	// Start 2-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Start_2Way);
+		Cardinal.Tags = ConstructCardinalTags_Start_2Way();
+		Cardinal.bEnabled = false;
+	}
+	// Start 4-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Start_4Way);
+		Cardinal.Tags = ConstructCardinalTags_Start_4Way();
+		Cardinal.bEnabled = false;
+	}
+	// Start 8-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Start_8Way);
+		Cardinal.Tags = ConstructCardinalTags_Start_8Way();
+		Cardinal.bEnabled = false;
+	}
+
+	// Turn 1-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Turn_1Way);
+		Cardinal.Tags = ConstructCardinalTags_Turn_1Way();
+		Cardinal.bEnabled = false;
+	}
+	// Turn 4-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Turn_4Way);
+		Cardinal.Tags = ConstructCardinalTags_Turn_4Way();
+		Cardinal.bEnabled = false;
+	}
+	// Turn 8-Way
+	{
+		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleGameplayTags::Simple_Mode_Turn_8Way);
+		Cardinal.Tags = ConstructCardinalTags_Turn_8Way();
 		Cardinal.bEnabled = false;
 	}
 }
@@ -143,6 +187,80 @@ FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_10Way()
 	return Tags;
 }
 
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Start_1Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Start_2Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Start_4Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Start_8Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Backward_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Backward_Right);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Turn_1Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Turn_4Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	return Tags;
+}
+
+FGameplayTagContainer FSimpleCardinals::ConstructCardinalTags_Turn_8Way()
+{
+	FGameplayTagContainer Tags;
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Forward_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Right);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnLeft);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_BackwardTurnRight);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Backward_Left);
+	Tags.AddTagFast(FSimpleGameplayTags::Simple_Cardinal_Backward_Right);
+	return Tags;
+}
+
 void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalModeTag, bool bEnabled)
 {
 	if (FSimpleCardinal* Mode = Cardinals.Find(CardinalModeTag))
@@ -171,18 +289,46 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleLocomotionSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocomotionSet& LocomotionSet) const
 {
 	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleLocomotionSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocomotionSet* LocomotionSet) const
 {
 	if (LocomotionSet)
 	{
 		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
 	}
 	return FGameplayTag::EmptyTag;
+}
+
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocomotionSet& LocomotionSet) const
+{
+	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
+}
+
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocomotionSet* LocomotionSet) const
+{
+	if (LocomotionSet)
+	{
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+	}
+	return FGameplayTag::EmptyTag;
+}
+
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocomotionSet* LocomotionSet) const
+{
+	if (LocomotionSet)
+	{
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+	}
+	return FGameplayTag::EmptyTag;
+}
+
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocomotionSet& LocomotionSet) const
+{
+	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
 }
 
 float FSimpleCardinals::GetDirectionAngle(ESimpleCardinalType CardinalType) const

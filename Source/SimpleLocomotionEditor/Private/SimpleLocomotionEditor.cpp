@@ -4,7 +4,9 @@
 #include "SimpleAnimComponentDetailsCustomization.h"
 #include "SimpleAnimInstanceBase.h"
 #include "SimpleAnimInstanceDetailsCustomization.h"
-#include "SimpleLocomotionSetPropertyCustomization.h"
+#include "SimpleStartLocomotionSetPropertyCustomization.h"
+#include "SimpleStrafeLocomotionSetPropertyCustomization.h"
+#include "SimpleTurnLocomotionSetPropertyCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FSimpleLocomotionEditorModule"
 
@@ -24,9 +26,17 @@ void FSimpleLocomotionEditorModule::StartupModule()
 		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimComponentDetailsCustomization::MakeInstance)
 	);
 
-	// FSimpleLocomotionSet (SimpleLocomotionTypes)
-	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleLocomotionSet"),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleLocomotionSetPropertyCustomization::MakeInstance));
+	// FSimpleStrafeLocomotionSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleStrafeLocomotionSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleStrafeLocomotionSetPropertyCustomization::MakeInstance));
+
+	// FSimpleStartLocomotionSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleStartLocomotionSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleStartLocomotionSetPropertyCustomization::MakeInstance));
+	
+	// FSimpleTurnLocomotionSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleTurnLocomotionSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleTurnLocomotionSetPropertyCustomization::MakeInstance));
 }
 
 void FSimpleLocomotionEditorModule::ShutdownModule()
@@ -37,7 +47,9 @@ void FSimpleLocomotionEditorModule::ShutdownModule()
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstanceBase::StaticClass()->GetFName());
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimComponent::StaticClass()->GetFName());
 
-		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleLocomotionSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStrafeLocomotionSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStartLocomotionSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleTurnLocomotionSet");
 	}
 }
 

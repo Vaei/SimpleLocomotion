@@ -153,8 +153,7 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	
 	FSimpleCardinals(
 		const FSimpleMovement& World2D,
-		const FRotator& WorldRotation,
-		float RootYawOffset
+		const FRotator& WorldRotation
 		)
 		: bHasEverUpdated(false)
 		, bHasCachedCardinals(false)
@@ -170,6 +169,15 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	static FGameplayTagContainer ConstructCardinalTags_6Way();
 	static FGameplayTagContainer ConstructCardinalTags_8Way();
 	static FGameplayTagContainer ConstructCardinalTags_10Way();
+	
+	static FGameplayTagContainer ConstructCardinalTags_Start_1Way();
+	static FGameplayTagContainer ConstructCardinalTags_Start_2Way();
+	static FGameplayTagContainer ConstructCardinalTags_Start_4Way();
+	static FGameplayTagContainer ConstructCardinalTags_Start_8Way();
+	
+	static FGameplayTagContainer ConstructCardinalTags_Turn_1Way();
+	static FGameplayTagContainer ConstructCardinalTags_Turn_4Way();
+	static FGameplayTagContainer ConstructCardinalTags_Turn_8Way();
 
 	void SetCardinalEnabled(const FGameplayTag& CardinalModeTag, bool bEnabled);
 
@@ -183,13 +191,17 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	bool bHasEverUpdated;
 
 	/**
-	 * Get current cardinal based on Simple.Mode and CardinalType, e.g. Simple.Mode.1Way and ESimpleCardinalType::Acceleration
+	 * Get current cardinal based on Simple.Mode and CardinalType, e.g. Simple.Mode.Strafe.1Way and ESimpleCardinalType::Acceleration
 	 * @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left
 	 */
 	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const;
 
-	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleLocomotionSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocomotionSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocomotionSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocomotionSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocomotionSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocomotionSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocomotionSet* LocomotionSet) const;
 	
 	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
 
