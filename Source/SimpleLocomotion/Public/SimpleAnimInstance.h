@@ -215,6 +215,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	TEnumAsByte<ENetRole> LocalRole = ROLE_AutonomousProxy;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bLocallyControlled = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bFirstUpdate = true;
@@ -243,6 +246,7 @@ public:
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
 
 	virtual void NativeInitializeAnimation() override;
+	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaTime) override;
 
@@ -263,6 +267,7 @@ protected:
 	
 	virtual float GetCardinalDeadZone(const FGameplayTag& CardinalMode) const;
 
+	/** CardinalMode is Simple.Mode */
 	void UpdateCardinal(const FGameplayTag& CardinalMode, FSimpleCardinal& Cardinal, const FSimpleCardinals& InCardinals);
 	
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))

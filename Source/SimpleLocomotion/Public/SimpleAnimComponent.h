@@ -131,6 +131,9 @@ public:
 	
 	/** AActor::GetLocalRole() */
 	virtual ENetRole GetSimpleLocalRole() const PURE_VIRTUAL(, return ROLE_None;)
+
+	/** ACharacter::IsLocallyControlled() */
+	virtual bool GetSimpleIsLocallyControlled() const PURE_VIRTUAL(, return false;)
 	
 	/**
 	 * Add to your actor that owns this component:

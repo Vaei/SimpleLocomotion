@@ -65,16 +65,6 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 	// Check optional initialization of owner
 	bOwnerHasInitialized = OwnerComponent->GetSimpleOwnerHasInitialized();
 
-	// Bind landed delegate
-	if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
-	{
-		if (LandedDelegatePtr->IsBoundToObject(this))
-		{
-			LandedDelegatePtr->Unbind();
-		}
-		LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
-	}
-
 	// Bind cardinal update delegates
 	for (auto& CardinalItr : Cardinals.GetCardinals())
 	{
@@ -86,6 +76,19 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 	}
 
 	bFirstUpdate = true;
+}
+
+void USimpleAnimInstance::NativeBeginPlay()
+{
+	// Bind landed delegate -- cannot do this in NativeInitializeAnimation because the owner is CD0 there
+	if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
+	{
+		if (LandedDelegatePtr->IsBoundToObject(this))
+		{
+			LandedDelegatePtr->Unbind();
+		}
+		LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
+	}
 }
 
 void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
@@ -102,6 +105,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
+	bLocallyControlled = OwnerComponent->GetSimpleIsLocallyControlled();
 
 	State = OwnerComponent->GetSimpleAnimState();
 
@@ -394,6 +398,8 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	// Consider not updating the properties you don't need to optimize performance!
 	const float DeadZone = GetCardinalDeadZone(CardinalMode);
 
+	// CardinalMode is Simple.Mode
+	
 	Cardinal.Acceleration = USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(
 		CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
 	

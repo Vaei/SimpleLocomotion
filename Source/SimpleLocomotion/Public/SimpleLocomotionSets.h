@@ -109,13 +109,13 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
  * Contained by FSimpleGaitSet, allowing separate locomotion set for each gait mode
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleLocomotionSet
+struct SIMPLELOCOMOTION_API FSimpleStrafeLocomotionSet
 {
 	GENERATED_BODY()
 
-	FSimpleLocomotionSet();
+	FSimpleStrafeLocomotionSet();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Strafe"))
 	FGameplayTag Mode;
 	
 	/** Blend time to optionally pass to SetSequenceWithInertialBlending */
@@ -165,9 +165,197 @@ struct SIMPLELOCOMOTION_API FSimpleLocomotionSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	ESimpleCardinalType CardinalType;
 
+	bool operator==(const FSimpleStrafeLocomotionSet& Other) const
+	{
+		return Mode == Other.Mode &&
+			CardinalType == Other.CardinalType &&
+			InertialBlendTime == Other.InertialBlendTime &&
+			Forward == Other.Forward &&
+			ForwardLeft == Other.ForwardLeft &&
+			ForwardRight == Other.ForwardRight &&
+			Left == Other.Left &&
+			Right == Other.Right &&
+			LeftAway == Other.LeftAway &&
+			RightAway == Other.RightAway &&
+			Backward == Other.Backward &&
+			BackwardLeft == Other.BackwardLeft &&
+			BackwardRight == Other.BackwardRight;
+	}
+
+	bool operator!=(const FSimpleStrafeLocomotionSet& Other) const
+	{
+		return !(*this == Other);
+	}
+	
+	bool IsValid() const
+	{
+		return *this != FSimpleStrafeLocomotionSet();
+	}
+
 	UAnimSequence* GetAnimation(const FGameplayTag& CardinalTag) const;
 };
 
+/**
+ * Start moving locomotion set
+ * For forward-facing movement only
+ * Strafe uses the FSimpleLocomotionSet even for starts
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStartLocomotionSet
+{
+	GENERATED_BODY()
+
+	FSimpleStartLocomotionSet();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Start"))
+	FGameplayTag Mode;
+
+	/** Turning 0º forward - moving straight */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* Forward;
+	
+	/** Turning -45º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* ForwardLeft;
+
+	/** Turning 45º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* ForwardRight;
+	
+	/** Turning -90º to the left while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* Left;
+	
+	/** Turning 90º to the right while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* Right;
+	
+	/** Turning 180º backwards to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardTurnLeft;
+
+	/** Turning 180º backwards to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardTurnRight;
+	
+	/** Turning -135º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardLeft;
+	
+	/** Turning 135º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	ESimpleCardinalType CardinalType;
+
+	bool operator==(const FSimpleStartLocomotionSet& Other) const
+	{
+		return Mode == Other.Mode &&
+			CardinalType == Other.CardinalType &&
+			Forward == Other.Forward &&
+			ForwardLeft == Other.ForwardLeft &&
+			ForwardRight == Other.ForwardRight &&
+			Left == Other.Left &&
+			Right == Other.Right &&
+			BackwardLeft == Other.BackwardLeft &&
+			BackwardRight == Other.BackwardRight &&
+			BackwardTurnLeft == Other.BackwardTurnLeft &&
+			BackwardTurnRight == Other.BackwardTurnRight;
+	}
+
+	bool operator!=(const FSimpleStartLocomotionSet& Other) const
+	{
+		return !(*this == Other);
+	}
+
+	bool IsValid() const
+	{
+		return *this != FSimpleStartLocomotionSet();
+	}
+
+	UAnimSequence* GetAnimation(const FGameplayTag& CardinalTag) const;
+};
+
+/**
+ * Turning locomotion set, for turn pivots
+ * For forward-facing movement only
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleTurnLocomotionSet
+{
+	GENERATED_BODY()
+
+	FSimpleTurnLocomotionSet();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Turn"))
+	FGameplayTag Mode;
+
+	/** e.g. 4-Way turns with a 90-degree angle, but you may want to trigger a turn with 60 to make it more sensitive, in fact 90 may never be sensitive enough to trigger */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(ClampMin="0.0", ClampMax="180", UIMin="0.0", UIMax="180.0", Delta="1", ForceUnits="degrees"))
+	float AngleTolerance;
+
+	/** Turning -45º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* ForwardLeft;
+
+	/** Turning 45º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* ForwardRight;
+	
+	/** Turning -90º to the left while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* Left;
+	
+	/** Turning 90º to the right while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* Right;
+	
+	/** Turning 180º backwards to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardTurnLeft;
+
+	/** Turning 180º backwards to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardTurnRight;
+	
+	/** Turning -135º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardLeft;
+	
+	/** Turning 135º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	UAnimSequence* BackwardRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	ESimpleCardinalType CardinalType;
+
+	bool operator==(const FSimpleTurnLocomotionSet& Other) const
+	{
+		return Mode == Other.Mode &&
+			CardinalType == Other.CardinalType &&
+			ForwardLeft == Other.ForwardLeft &&
+			ForwardRight == Other.ForwardRight &&
+			Left == Other.Left &&
+			Right == Other.Right &&
+			BackwardLeft == Other.BackwardLeft &&
+			BackwardRight == Other.BackwardRight &&
+			BackwardTurnLeft == Other.BackwardTurnLeft &&
+			BackwardTurnRight == Other.BackwardTurnRight;
+	}
+
+	bool operator!=(const FSimpleTurnLocomotionSet& Other) const
+	{
+		return !(*this == Other);
+	}
+
+	bool IsValid() const
+	{
+		return *this != FSimpleTurnLocomotionSet();
+	}
+
+	UAnimSequence* GetAnimation(const FGameplayTag& CardinalTag) const;
+};
 
 /** Container for transition animations */
 USTRUCT(BlueprintType)
@@ -197,15 +385,61 @@ struct SIMPLELOCOMOTION_API FSimpleTransitionSet
  * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleGaitSet
+struct SIMPLELOCOMOTION_API FSimpleStrafeGaitSet
 {
 	GENERATED_BODY()
 
-	FSimpleGaitSet();
+	FSimpleStrafeGaitSet();
 
 	/** Map tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
-	TMap<FGameplayTag, FSimpleLocomotionSet> Sets;
+	TMap<FGameplayTag, FSimpleStrafeLocomotionSet> Sets;
+
+	/** If requested Gait is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+
+	void SetCardinalType(ESimpleCardinalType CardinalType);
+};
+
+/**
+ * Holds FSimpleLocomotionSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Handles fallback when the requested gait is unavailable
+ * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStartGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStartGaitSet();
+
+	/** Map tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	TMap<FGameplayTag, FSimpleStartLocomotionSet> Sets;
+
+	/** If requested Gait is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+
+	void SetCardinalType(ESimpleCardinalType CardinalType);
+};
+
+/**
+ * Holds FSimpleTurnLocomotionSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Handles fallback when the requested gait is unavailable
+ * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleTurnGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleTurnGaitSet();
+
+	/** Map tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	TMap<FGameplayTag, FSimpleTurnLocomotionSet> Sets;
 
 	/** If requested Gait is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
@@ -241,15 +475,57 @@ struct SIMPLELOCOMOTION_API FSimpleStanceSet
  * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleStanceToGaitSet
+struct SIMPLELOCOMOTION_API FSimpleStanceToStrafeGaitSet
 {
 	GENERATED_BODY()
 
-	FSimpleStanceToGaitSet();
+	FSimpleStanceToStrafeGaitSet();
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
-	TMap<FGameplayTag, FSimpleGaitSet> Sets;
+	TMap<FGameplayTag, FSimpleStrafeGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleLocomotionSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Handles fallback when the requested gait is unavailable
+ * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStanceToStartGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStanceToStartGaitSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	TMap<FGameplayTag, FSimpleStartGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleTurnLocomotionSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Handles fallback when the requested gait is unavailable
+ * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStanceToTurnGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStanceToTurnGaitSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	TMap<FGameplayTag, FSimpleTurnGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
@@ -262,15 +538,15 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToGaitSet
  * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleStateToGaitSet
+struct SIMPLELOCOMOTION_API FSimpleStateToStrafeGaitSet
 {
 	GENERATED_BODY()
 
-	FSimpleStateToGaitSet();
+	FSimpleStateToStrafeGaitSet();
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
-	TMap<FGameplayTag, FSimpleGaitSet> Sets;
+	TMap<FGameplayTag, FSimpleStrafeGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
@@ -283,18 +559,108 @@ struct SIMPLELOCOMOTION_API FSimpleStateToGaitSet
  * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FSimpleStateToStanceToGaitSet
+struct SIMPLELOCOMOTION_API FSimpleStateToStartGaitSet
 {
 	GENERATED_BODY()
 
-	FSimpleStateToStanceToGaitSet();
+	FSimpleStateToStartGaitSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleStartGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Handles fallback when the requested state is unavailable
+ * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToTurnGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToTurnGaitSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleTurnGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Handles fallback when the requested state is unavailable
+ * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToStanceToStrafeGaitSet();
 	
 	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleLocomotionSet DummySet;
+	FSimpleStrafeLocomotionSet DummySet;
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
-	TMap<FGameplayTag, FSimpleStanceToGaitSet> Sets;
+	TMap<FGameplayTag, FSimpleStanceToStrafeGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Handles fallback when the requested state is unavailable
+ * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStartGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToStanceToStartGaitSet();
+	
+	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
+	FSimpleStartLocomotionSet DummySet;
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleStanceToStartGaitSet> Sets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Handles fallback when the requested state is unavailable
+ * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTurnGaitSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToStanceToTurnGaitSet();
+	
+	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
+	FSimpleTurnLocomotionSet DummySet;
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	TMap<FGameplayTag, FSimpleStanceToTurnGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
@@ -380,48 +746,121 @@ class SIMPLELOCOMOTION_API USimpleLocomotionSets : public UBlueprintFunctionLibr
 
 public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Cardinal"))
-	static UAnimSequence* SimpleLocomotionSet(const FSimpleLocomotionSet& Set, FGameplayTag Cardinal)
+	static UAnimSequence* SimpleStrafeLocomotionSet(const FSimpleStrafeLocomotionSet& Set, FGameplayTag Cardinal)
+	{
+		return Set.GetAnimation(Cardinal);
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Cardinal"))
+	static UAnimSequence* SimpleStartLocomotionSet(const FSimpleStartLocomotionSet& Set, FGameplayTag Cardinal)
+	{
+		return Set.GetAnimation(Cardinal);
+	}
+	
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Cardinal"))
+	static UAnimSequence* SimpleTurnLocomotionSet(const FSimpleTurnLocomotionSet& Set, FGameplayTag Cardinal)
 	{
 		return Set.GetAnimation(Cardinal);
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Gait,Simple.Cardinal"))
-	static UAnimSequence* SimpleGaitSet(const FSimpleGaitSet& Set, FGameplayTag Gait, FGameplayTag Cardinal)
+	static UAnimSequence* SimpleStrafeGaitSet(const FSimpleStrafeGaitSet& Set, FGameplayTag Gait, FGameplayTag Cardinal)
 	{
-		const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, Set.Sets, Set.Fallbacks);
+		const FSimpleStrafeLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocomotionSet>(Gait, Set.Sets, Set.Fallbacks);
+		return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+	}
+	
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Gait,Simple.Cardinal"))
+	static UAnimSequence* SimpleStartGaitSet(const FSimpleStartGaitSet& Set, FGameplayTag Gait, FGameplayTag Cardinal)
+	{
+		const FSimpleStartLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStartLocomotionSet>(Gait, Set.Sets, Set.Fallbacks);
 		return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Gait,Simple.Stance,Simple.Cardinal"))
-	static UAnimSequence* SimpleStanceToGaitSet(const FSimpleStanceToGaitSet& Set, FGameplayTag Stance, FGameplayTag Gait, FGameplayTag Cardinal)
+	static UAnimSequence* SimpleStanceToStrafeGaitSet(const FSimpleStanceToStrafeGaitSet& Set, FGameplayTag Stance, FGameplayTag Gait, FGameplayTag Cardinal)
 	{ 
-		if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, Set.Sets, Set.Fallbacks))
+		if (const FSimpleStrafeGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(Stance, Set.Sets, Set.Fallbacks))
 		{
-			const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			const FSimpleStrafeLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		}
+		return nullptr;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Gait,Simple.Stance,Simple.Cardinal"))
+	static UAnimSequence* SimpleStanceToStartGaitSet(const FSimpleStanceToStartGaitSet& Set, FGameplayTag Stance, FGameplayTag Gait, FGameplayTag Cardinal)
+	{ 
+		if (const FSimpleStartGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(Stance, Set.Sets, Set.Fallbacks))
+		{
+			const FSimpleStartLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStartLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
 			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
 		}
 		return nullptr;
 	}
 	
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Gait,Simple.Cardinal"))
-	static UAnimSequence* SimpleStateToGaitSet(const FSimpleStateToGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
+	static UAnimSequence* SimpleStateToStrafeGaitSet(const FSimpleStateToStrafeGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
 	{
-		if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const FSimpleStrafeGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(State, Set.Sets, Set.Fallbacks))
 		{
-			const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			const FSimpleStrafeLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
+			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
+		}
+		return nullptr;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Gait,Simple.Cardinal"))
+	static UAnimSequence* SimpleStateToStartGaitSet(const FSimpleStateToStartGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
+	{
+		if (const FSimpleStartGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(State, Set.Sets, Set.Fallbacks))
+		{
+			const FSimpleStartLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStartLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
 			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
 		}
 		return nullptr;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
-	static const FSimpleLocomotionSet& SimpleStateToStanceToGaitSet(const FSimpleStateToStanceToGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
+	static const FSimpleStrafeLocomotionSet& SimpleStateToStanceToStrafeGaitSet(const FSimpleStateToStanceToStrafeGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
 	{
-		if (const FSimpleStanceToGaitSet* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const FSimpleStanceToStrafeGaitSet* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStrafeGaitSet>(State, Set.Sets, Set.Fallbacks))
 		{
-			if (const FSimpleGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
+			if (const FSimpleStrafeGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
 			{
-				if (const FSimpleLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks))
+				if (const FSimpleStrafeLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks))
+				{
+					return *LocoSet;
+				}
+			}
+		}
+		return Set.DummySet;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
+	static const FSimpleStartLocomotionSet& SimpleStateToStanceToStartGaitSet(const FSimpleStateToStanceToStartGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
+	{
+		if (const FSimpleStanceToStartGaitSet* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStartGaitSet>(State, Set.Sets, Set.Fallbacks))
+		{
+			if (const FSimpleStartGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
+			{
+				if (const FSimpleStartLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleStartLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks))
+				{
+					return *LocoSet;
+				}
+			}
+		}
+		return Set.DummySet;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
+	static const FSimpleTurnLocomotionSet& SimpleStateToStanceToTurnGaitSet(const FSimpleStateToStanceToTurnGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
+	{
+		if (const FSimpleStanceToTurnGaitSet* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToTurnGaitSet>(State, Set.Sets, Set.Fallbacks))
+		{
+			if (const FSimpleTurnGaitSet* GaitSet = FSimpleGetter::GetSet<FSimpleTurnGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
+			{
+				if (const FSimpleTurnLocomotionSet* LocoSet = FSimpleGetter::GetSet<FSimpleTurnLocomotionSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks))
 				{
 					return *LocoSet;
 				}
