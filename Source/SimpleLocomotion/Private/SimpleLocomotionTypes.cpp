@@ -195,9 +195,9 @@ float FSimpleCardinals::GetDirectionAngle(ESimpleCardinalType CardinalType) cons
 	return 0.f;
 }
 
-void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset)
+void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation)
 {
-	ThreadSafeUpdate_Internal(World2D, WorldRotation, RootYawOffset);
+	ThreadSafeUpdate_Internal(World2D, WorldRotation);
 
 	// Update all cardinals - these are bound in USimpleAnimInstance::NativeInitializeAnimation
 	for (auto& CardinalItr : GetCardinals())
@@ -213,7 +213,7 @@ void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FR
 	bHasEverUpdated = true;
 }
 
-void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset)
+void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation)
 {
 	if (!bHasCachedCardinals)
 	{

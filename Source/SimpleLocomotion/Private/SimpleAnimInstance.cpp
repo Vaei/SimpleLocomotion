@@ -189,7 +189,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	// Update cardinal properties
 	// if (bWantsCardinalsUpdated)
 	{
-		Cardinals.ThreadSafeUpdate(World2D, WorldRotation, RootYawOffset);
+		Cardinals.ThreadSafeUpdate(World2D, WorldRotation);
 	}
 
 	// Update gait modes

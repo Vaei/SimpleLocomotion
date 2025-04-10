@@ -160,7 +160,7 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 		, bHasCachedCardinals(false)
 	{
 		ConstructDefaultCardinals();
-		ThreadSafeUpdate_Internal(World2D, WorldRotation, RootYawOffset);
+		ThreadSafeUpdate_Internal(World2D, WorldRotation);
 	}
 
 	void ConstructDefaultCardinals();
@@ -193,7 +193,7 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	
 	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
 
-	void ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset);
+	void ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation);
 
 	static float CalculateDirection(const FVector& Velocity, const FRotator& BaseRotation);
 
@@ -216,6 +216,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(GameplayTagFilter="Simple.Mode"))
 	TMap<FGameplayTag, FSimpleCardinal> CachedCardinals;
 
-	void ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation, float RootYawOffset);
+	void ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation);
 };
 
