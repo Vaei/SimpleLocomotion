@@ -6,7 +6,7 @@
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
 #include "SimpleLocomotionStatics.h"
-#include "SimpleGameplayTags.h"
+#include "SimpleTags.h"
 #include "GameFramework/Pawn.h"
 
 #include "Logging/MessageLog.h"
@@ -38,12 +38,12 @@ namespace SimpleAnimInstanceCVars
 USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Gait = FSimpleGameplayTags::Simple_Gait_Run;
-	GaitSpeed = FSimpleGameplayTags::Simple_Gait_Run;
-	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
-	StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-	State = FSimpleGameplayTags::Simple_State_Default;
-	Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+	Gait = FSimpleTags::Simple_Gait_Run;
+	GaitSpeed = FSimpleTags::Simple_Gait_Run;
+	StartGait = FSimpleTags::Simple_Gait_Run;
+	StopGait = FSimpleTags::Simple_Gait_Run;
+	State = FSimpleTags::Simple_State_Default;
+	Stance = FSimpleTags::Simple_Stance_Stand;
 }
 
 FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
@@ -264,65 +264,65 @@ void USimpleAnimInstance::ThreadSafeUpdateLeanAngles(float DeltaTime)
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 {
 	// Start Gait Mode: Use the intended mode
-	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
+	StartGait = FSimpleTags::Simple_Gait_Run;
 	if (bWantsSprinting)
 	{
 		// We will probably start sprinting next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Sprint;
+		StartGait = FSimpleTags::Simple_Gait_Sprint;
 	}
 	else if (bWantsWalking)
 	{
 		// We will probably start walking next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Walk;
+		StartGait = FSimpleTags::Simple_Gait_Walk;
 	}
 	else if (bWantsStrolling)
 	{
 		// We will probably start strolling next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Stroll;
+		StartGait = FSimpleTags::Simple_Gait_Stroll;
 	}
 
 	// Gait Mode: Use the current mode
 	const FGameplayTag PrevGait = Gait;
 	if (bIsSprinting)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Sprint;
+		Gait = FSimpleTags::Simple_Gait_Sprint;
 	}
 	else if (bIsWalking)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Walk;
+		Gait = FSimpleTags::Simple_Gait_Walk;
 	}
 	else if (bIsStrolling)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Stroll;
+		Gait = FSimpleTags::Simple_Gait_Stroll;
 	}
 	else
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Run;
+		Gait = FSimpleTags::Simple_Gait_Run;
 	}
 	bGaitChanged = Gait != PrevGait;
 
 	// const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
-	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Walk);
-	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Run);
-	const float MaxSpeedSprint = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Sprint);
+	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Walk);
+	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Run);
+	const float MaxSpeedSprint = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Sprint);
 	
 	// Gait Mode at Speed: Use the current mode based on speed
 	GaitSpeed = Gait;
 	if (Speed < MaxSpeedWalk)
 	{
-		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Stroll;
+		GaitSpeed = FSimpleTags::Simple_Gait_Stroll;
 	}
 	else if (Speed < MaxSpeedRun)
 	{
-		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Walk;
+		GaitSpeed = FSimpleTags::Simple_Gait_Walk;
 	}
 	else if (Speed < MaxSpeedSprint)
 	{
-		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Run;
+		GaitSpeed = FSimpleTags::Simple_Gait_Run;
 	}
 	else
 	{
-		GaitSpeed = FSimpleGameplayTags::Simple_Gait_Sprint;
+		GaitSpeed = FSimpleTags::Simple_Gait_Sprint;
 	}
 
 	// Stop Gait Mode: Use the previous mode
@@ -338,15 +338,15 @@ void USimpleAnimInstance::NativeThreadSafeUpdateStance(float DeltaTime)
 	const FGameplayTag PrevStance = Stance;
 	if (bIsProned)
 	{
-		Stance = FSimpleGameplayTags::Simple_Stance_Prone;
+		Stance = FSimpleTags::Simple_Stance_Prone;
 	}
 	else if (bIsCrouched)
 	{
-		Stance = FSimpleGameplayTags::Simple_Stance_Crouch;
+		Stance = FSimpleTags::Simple_Stance_Crouch;
 	}
 	else
 	{
-		Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+		Stance = FSimpleTags::Simple_Stance_Stand;
 	}
 	bStanceChanged = Stance != PrevStance;
 }

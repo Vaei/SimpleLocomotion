@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleGameplayTags.h"
+#include "SimpleTags.h"
 
-namespace FSimpleGameplayTags
+namespace FSimpleTags
 {
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Simple_State_Default, TEXT("Simple.State.Default"), "Represents the overarching anim state your character is in, this will be project specific, e.g. combat state.");
 	

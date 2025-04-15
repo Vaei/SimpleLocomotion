@@ -6,7 +6,7 @@
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
 #include "IPropertyUtilities.h"
-#include "SimpleGameplayTags.h"
+#include "SimpleTags.h"
 #include "SimpleLocomotionSets.h"
 #include "System/SimpleLocomotionVersioning.h"
 
@@ -54,8 +54,8 @@ void FSimpleTurnLocomotionSetPropertyCustomization::CustomizeChildren(TSharedRef
 	}
 	
 	// Form booleans to conditionally toggle visibility
-	const bool b4Way = ModeTag == FSimpleGameplayTags::Simple_Mode_Turn_4Way;
-	const bool b8Way = ModeTag == FSimpleGameplayTags::Simple_Mode_Turn_8Way;
+	const bool b4Way = ModeTag == FSimpleTags::Simple_Mode_Turn_4Way;
+	const bool b8Way = ModeTag == FSimpleTags::Simple_Mode_Turn_8Way;
 	
 	// Add with conditional visibility
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocomotionSet, ForwardLeft)), b8Way);

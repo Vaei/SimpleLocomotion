@@ -4,7 +4,7 @@
 
 #include "NativeGameplayTags.h"
 
-namespace FSimpleGameplayTags
+namespace FSimpleTags
 {
 	SIMPLELOCOMOTION_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Simple_State_Default);
 	

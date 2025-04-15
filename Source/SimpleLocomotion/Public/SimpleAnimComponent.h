@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SimpleGameplayTags.h"
+#include "SimpleTags.h"
 #include "SimpleLocomotionTypes.h"
 #include "Components/ActorComponent.h"
 #include "SimpleAnimComponent.generated.h"
@@ -38,7 +38,7 @@ protected:
 	
 public:
 	/** A mode pertaining to your specific project, representing the state of the character, e.g. in combat */
-	virtual FGameplayTag GetSimpleAnimState() const { return FSimpleGameplayTags::Simple_State_Default; }
+	virtual FGameplayTag GetSimpleAnimState() const { return FSimpleTags::Simple_State_Default; }
 	
 	/** AActor::GetVelocity() */
 	virtual FVector GetSimpleVelocity() const PURE_VIRTUAL(, return FVector::ZeroVector;);
