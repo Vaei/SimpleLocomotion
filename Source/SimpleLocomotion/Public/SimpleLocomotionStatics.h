@@ -62,6 +62,16 @@ public:
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag GetSimpleOppositeCardinal(const FGameplayTag& CardinalTag);
 
+	/**
+	 * Downgrade a cardinal to a basic cardinal, e.g. Simple.Cardinal.Left.Away to Simple.Cardinal.Left
+	 * Downgrade a turn backwards cardinal to a strafe backwards cardinal, e.g. Simple.Cardinal.BackwardTurnLeft to Simple.Cardinal.Backward
+	 * Downgrade an 8-way cardinal to a 4-way cardinal, e.g. Simple.Cardinal.Forward.Left to Simple.Cardinal.Forward
+	 * @warning Does not downgrade strafe cardinals to 1-way
+	 * @return The downgraded cardinal tag, or FGameplayTag::EmptyTag if no downgrade occurred
+	 */
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	static FGameplayTag GetDowngradedCardinal(const FGameplayTag& CardinalTag);
+
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static bool IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity, const FVector& ActorRightVector);
 };
