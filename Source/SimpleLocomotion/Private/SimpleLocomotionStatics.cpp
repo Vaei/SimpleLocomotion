@@ -542,6 +542,25 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplay
 	return FGameplayTag::EmptyTag;
 }
 
+FGameplayTag USimpleLocomotionStatics::GetDowngradedCardinal(const FGameplayTag& CardinalTag)
+{
+	// Back-facing strafes to forward-facing
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Left_Away) { return FSimpleTags::Simple_Cardinal_Left; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Right_Away) { return FSimpleTags::Simple_Cardinal_Right; }
+
+	// Backward turns to strafe backwards
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_BackwardTurnLeft) { return FSimpleTags::Simple_Cardinal_Backward; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_BackwardTurnRight) { return FSimpleTags::Simple_Cardinal_Backward; }
+
+	// 8-way to 4-way
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left) { return FSimpleTags::Simple_Cardinal_Left; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Right) { return FSimpleTags::Simple_Cardinal_Right; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Backward_Left) { return FSimpleTags::Simple_Cardinal_Backward; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Backward_Right) { return FSimpleTags::Simple_Cardinal_Backward; }
+
+	return FGameplayTag::EmptyTag;
+}
+
 bool USimpleLocomotionStatics::IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity,
 	const FVector& ActorRightVector)
 {
