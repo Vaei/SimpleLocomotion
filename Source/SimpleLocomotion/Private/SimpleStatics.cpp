@@ -1,36 +1,36 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleLocomotionStatics.h"
+#include "SimpleStatics.h"
 
 #include "SimpleTags.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTypes.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionStatics)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleStatics)
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocomotionSet& Set)
+FGameplayTag USimpleStatics::GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set)
 {
 	return Cardinals.GetCurrentCardinal(Set);
 }
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleStartCardinal(const FSimpleCardinals& Cardinals,
-	const FSimpleStartLocomotionSet& Set)
+FGameplayTag USimpleStatics::GetSimpleStartCardinal(const FSimpleCardinals& Cardinals,
+	const FSimpleStartLocoSet& Set)
 {
 	return Cardinals.GetCurrentCardinal(Set);
 }
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals,
-	const FSimpleTurnLocomotionSet& Set)
+FGameplayTag USimpleStatics::GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals,
+	const FSimpleTurnLocoSet& Set)
 {
 	return Cardinals.GetCurrentCardinal(Set);
 }
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
+FGameplayTag USimpleStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
 {
 	return Cardinals.GetCurrentCardinal(CardinalMode, CardinalType);
 }
 
-FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
+FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)
 {
 	if (CardinalMode == FSimpleTags::Simple_Mode_Strafe_1Way)
 	{
@@ -324,7 +324,7 @@ FGameplayTag USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(const FGame
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag USimpleLocomotionStatics::SelectBasicCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle)
+FGameplayTag USimpleStatics::SelectBasicCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle)
 {
 	if (CardinalMode == FSimpleTags::Simple_Mode_Strafe_1Way)
 	{
@@ -527,7 +527,7 @@ FGameplayTag USimpleLocomotionStatics::SelectBasicCardinalFromAngle(const FGamep
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplayTag& CardinalTag)
+FGameplayTag USimpleStatics::GetSimpleOppositeCardinal(const FGameplayTag& CardinalTag)
 {
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward) { return FSimpleTags::Simple_Cardinal_Backward; }
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left) { return FSimpleTags::Simple_Cardinal_Backward_Right; }
@@ -542,7 +542,7 @@ FGameplayTag USimpleLocomotionStatics::GetSimpleOppositeCardinal(const FGameplay
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag USimpleLocomotionStatics::GetDowngradedCardinal(const FGameplayTag& CardinalTag)
+FGameplayTag USimpleStatics::GetDowngradedCardinal(const FGameplayTag& CardinalTag)
 {
 	// Back-facing strafes to forward-facing
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Left_Away) { return FSimpleTags::Simple_Cardinal_Left; }
@@ -561,7 +561,7 @@ FGameplayTag USimpleLocomotionStatics::GetDowngradedCardinal(const FGameplayTag&
 	return FGameplayTag::EmptyTag;
 }
 
-bool USimpleLocomotionStatics::IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity,
+bool USimpleStatics::IsMovementTurningRight(const FVector& Acceleration, const FVector& Velocity,
 	const FVector& ActorRightVector)
 {
 	const FVector VelDir = Velocity.GetSafeNormal();

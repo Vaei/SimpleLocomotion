@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "IPropertyTypeCustomization.h"
 
-class SIMPLELOCOMOTIONEDITOR_API FSimpleStrafeLocomotionSetPropertyCustomization : public IPropertyTypeCustomization
+class SIMPLELOCOMOTIONEDITOR_API FSimpleStartLocoSetCustomization : public IPropertyTypeCustomization
 {
 public:
 	static TSharedRef<IPropertyTypeCustomization> MakeInstance();
