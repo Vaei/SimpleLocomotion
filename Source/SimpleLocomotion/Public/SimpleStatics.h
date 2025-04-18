@@ -4,31 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "SimpleLocomotionSets.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleSets.h"
+#include "SimpleTypes.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "SimpleLocomotionStatics.generated.h"
+#include "SimpleStatics.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SIMPLELOCOMOTION_API USimpleLocomotionStatics : public UBlueprintFunctionLibrary
+class SIMPLELOCOMOTION_API USimpleStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocomotionSet& Set);
+	static FGameplayTag GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set);
 
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleStartCardinal(const FSimpleCardinals& Cardinals, const FSimpleStartLocomotionSet& Set);
+	static FGameplayTag GetSimpleStartCardinal(const FSimpleCardinals& Cardinals, const FSimpleStartLocoSet& Set);
 	
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals, const FSimpleTurnLocomotionSet& Set);
+	static FGameplayTag GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals, const FSimpleTurnLocoSet& Set);
 
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))

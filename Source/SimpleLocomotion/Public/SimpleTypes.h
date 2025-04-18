@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 
-#include "SimpleLocomotionTypes.generated.h"
+#include "SimpleTypes.generated.h"
 
 /** Call from ACharacter::Landed or equivalent */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FSimpleLandedSignature, const FHitResult&, Hit);
@@ -196,12 +196,12 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	 */
 	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const;
 
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocomotionSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocomotionSet* LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocomotionSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocomotionSet* LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocomotionSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocomotionSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet& LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet* LocomotionSet) const;
 	
 	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
 

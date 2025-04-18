@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleLocomotionSets.h"
+#include "SimpleSets.h"
 
 #include "SimpleTags.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTypes.h"
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionSets)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleSets)
 
 
-FSimpleStrafeLocomotionSet::FSimpleStrafeLocomotionSet()
+FSimpleStrafeLocoSet::FSimpleStrafeLocoSet()
 	: Mode(FSimpleTags::Simple_Mode_Strafe_4Way)
 	, InertialBlendTime(0.2f)
 	, Forward(nullptr)
@@ -25,7 +25,7 @@ FSimpleStrafeLocomotionSet::FSimpleStrafeLocomotionSet()
 	, CardinalType(ESimpleCardinalType::Velocity)
 {}
 
-UAnimSequence* FSimpleStrafeLocomotionSet::GetAnimation(const FGameplayTag& CardinalTag) const
+UAnimSequence* FSimpleStrafeLocoSet::GetAnimation(const FGameplayTag& CardinalTag) const
 {
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward)			{ return Forward; }
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left)	{ return ForwardLeft; }
@@ -41,7 +41,7 @@ UAnimSequence* FSimpleStrafeLocomotionSet::GetAnimation(const FGameplayTag& Card
 	return nullptr;
 }
 
-FSimpleStartLocomotionSet::FSimpleStartLocomotionSet()
+FSimpleStartLocoSet::FSimpleStartLocoSet()
 	: Mode(FSimpleTags::Simple_Mode_Start_1Way)
 	, Forward(nullptr)
 	, ForwardLeft(nullptr)
@@ -55,7 +55,7 @@ FSimpleStartLocomotionSet::FSimpleStartLocomotionSet()
 	, CardinalType(ESimpleCardinalType::Acceleration)
 {}
 
-UAnimSequence* FSimpleStartLocomotionSet::GetAnimation(const FGameplayTag& CardinalTag) const
+UAnimSequence* FSimpleStartLocoSet::GetAnimation(const FGameplayTag& CardinalTag) const
 {
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward)				{ return Forward; }
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left)		{ return ForwardLeft; }
@@ -70,7 +70,7 @@ UAnimSequence* FSimpleStartLocomotionSet::GetAnimation(const FGameplayTag& Cardi
 	return nullptr;
 }
 
-FSimpleTurnLocomotionSet::FSimpleTurnLocomotionSet()
+FSimpleTurnLocoSet::FSimpleTurnLocoSet()
 	: Mode(FSimpleTags::Simple_Mode_Turn_1Way)
 	, AngleTolerance(30.f)
 	, ForwardLeft(nullptr)
@@ -84,7 +84,7 @@ FSimpleTurnLocomotionSet::FSimpleTurnLocomotionSet()
 	, CardinalType(ESimpleCardinalType::Acceleration)
 {}
 
-UAnimSequence* FSimpleTurnLocomotionSet::GetAnimation(const FGameplayTag& CardinalTag) const
+UAnimSequence* FSimpleTurnLocoSet::GetAnimation(const FGameplayTag& CardinalTag) const
 {
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left)		{ return ForwardLeft; }
 	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Right)		{ return ForwardRight; }
@@ -131,7 +131,7 @@ void FSimpleStrafeGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
 	for (auto& GaitItr : Sets)
 	{
-		FSimpleStrafeLocomotionSet& LocoSet = GaitItr.Value;
+		FSimpleStrafeLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
 	}
 }
@@ -169,7 +169,7 @@ void FSimpleStartGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
 	for (auto& GaitItr : Sets)
 	{
-		FSimpleStartLocomotionSet& LocoSet = GaitItr.Value;
+		FSimpleStartLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
 	}
 }
@@ -207,7 +207,7 @@ void FSimpleTurnGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
 	for (auto& GaitItr : Sets)
 	{
-		FSimpleTurnLocomotionSet& LocoSet = GaitItr.Value;
+		FSimpleTurnLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
 	}
 }

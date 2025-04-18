@@ -8,7 +8,7 @@
 /**
  * 
  */
-class FSimpleAnimInstanceDetailsCustomization : public IDetailCustomization
+class FSimpleAnimInstanceCustomization : public IDetailCustomization
 {
 public:
 	static TSharedRef<IDetailCustomization> MakeInstance();

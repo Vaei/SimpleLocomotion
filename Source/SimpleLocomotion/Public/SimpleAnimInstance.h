@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SimpleAnimInstanceBase.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTypes.h"
 #include "SimpleAnimInstance.generated.h"
 
 class USimpleAnimComponent;
@@ -126,6 +126,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	float TimeToJumpApex = 0.f;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	float GroundDistance = 0.f;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsCurrentFloorWalkable = true;
@@ -257,7 +260,7 @@ public:
 	virtual void NativeThreadSafePostUpdateMovementProperties(float DeltaTime) {}
 	virtual void NativeThreadSafeUpdateFalling(float DeltaTime);
 	virtual void NativeThreadSafePreUpdateInAirProperties(float DeltaTime) {}
-	virtual void NativeThreadSafeUpdateAnimationPreCompletion(float DeltaTime) {}
+	virtual void NativeThreadSafePostUpdateAnimation(float DeltaTime) {}
 
 	virtual void NativePostEvaluateAnimation() override;
 

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTypes.h"
 
 #include "SimpleTags.h"
-#include "SimpleLocomotionSets.h"
+#include "SimpleSets.h"
 
 
-#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleLocomotionTypes)
+#include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleTypes)
 
 DEFINE_LOG_CATEGORY_STATIC(LogSimpleTypes, Log, All);
 
@@ -289,12 +289,12 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocomotionSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet& LocomotionSet) const
 {
 	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocomotionSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet* LocomotionSet) const
 {
 	if (LocomotionSet)
 	{
@@ -303,12 +303,12 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocomotionS
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocomotionSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet& LocomotionSet) const
 {
 	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocomotionSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet* LocomotionSet) const
 {
 	if (LocomotionSet)
 	{
@@ -317,7 +317,7 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocomotionSe
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocomotionSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet* LocomotionSet) const
 {
 	if (LocomotionSet)
 	{
@@ -326,7 +326,7 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocomotionSet
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocomotionSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet& LocomotionSet) const
 {
 	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
 }

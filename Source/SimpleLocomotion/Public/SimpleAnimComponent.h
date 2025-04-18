@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SimpleTags.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTypes.h"
 #include "Components/ActorComponent.h"
 #include "SimpleAnimComponent.generated.h"
 

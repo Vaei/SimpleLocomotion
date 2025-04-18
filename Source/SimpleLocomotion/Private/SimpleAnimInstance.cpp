@@ -5,7 +5,7 @@
 
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
-#include "SimpleLocomotionStatics.h"
+#include "SimpleStatics.h"
 #include "SimpleTags.h"
 #include "GameFramework/Pawn.h"
 
@@ -227,7 +227,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	NativeThreadSafeUpdateFalling(DeltaTime);
 
 	// Extension point
-	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
+	NativeThreadSafePostUpdateAnimation(DeltaTime);
 
 	bFirstUpdate = false;
 }
@@ -400,10 +400,10 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 
 	// CardinalMode is Simple.Mode
 	
-	Cardinal.Acceleration = USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(
+	Cardinal.Acceleration = USimpleStatics::SelectSimpleCardinalFromAngle(
 		CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
 	
-	Cardinal.Velocity = USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(
+	Cardinal.Velocity = USimpleStatics::SelectSimpleCardinalFromAngle(
 		CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
 }
 
