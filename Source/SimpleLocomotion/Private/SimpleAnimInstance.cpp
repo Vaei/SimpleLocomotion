@@ -129,6 +129,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 	bIsCurrentFloorWalkable = OwnerComponent->IsSimpleCurrentFloorWalkable();
 	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround() && bIsCurrentFloorWalkable;
+	bWasInAir = bInAir;
 	bInAir = OwnerComponent->GetSimpleIsFalling() || !bIsCurrentFloorWalkable;
 	bCanJump = OwnerComponent->GetSimpleCanJump();
 	GravityZ = OwnerComponent->GetSimpleGravityZ();
