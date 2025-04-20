@@ -286,6 +286,7 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	{
 		UE_LOG(LogSimpleTypes, Warning, TEXT("[ %s ] wants Cardinal { %s } but it has not been enabled"), *FString(__FUNCTION__), *CardinalModeTag.ToString());
 	}
+	ensure(false);  // This cardinal hasn't been enabled on the layer!
 	return FGameplayTag::EmptyTag;
 }
 
