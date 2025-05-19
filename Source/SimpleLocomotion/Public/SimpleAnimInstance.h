@@ -214,6 +214,9 @@ public:
 
 protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bStateChanged = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bStanceChanged = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)

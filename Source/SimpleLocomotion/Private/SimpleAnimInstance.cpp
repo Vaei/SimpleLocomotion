@@ -107,7 +107,9 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
 	bLocallyControlled = OwnerComponent->GetSimpleIsLocallyControlled();
 
+	const FGameplayTag PrevState = State;
 	State = OwnerComponent->GetSimpleAnimState();
+	bStateChanged = State != PrevState;
 
 	World.Velocity = OwnerComponent->GetSimpleVelocity();
 	World.Acceleration = OwnerComponent->GetSimpleAcceleration();
