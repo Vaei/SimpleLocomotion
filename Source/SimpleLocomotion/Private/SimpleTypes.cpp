@@ -275,7 +275,9 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	{
 		return FGameplayTag::EmptyTag;
 	}
-	if (const FSimpleCardinal* MatchingCardinal = GetCardinals().Find(CardinalModeTag))
+	
+	const TMap<FGameplayTag, FSimpleCardinal>& CurrentCardinals = GetCardinals();
+	if (const FSimpleCardinal* MatchingCardinal = CurrentCardinals.Find(CardinalModeTag))
 	{
 		if (LIKELY(ensure(MatchingCardinal->bEnabled)))  // Probably shouldn't have been cached if it can be false
 		{
