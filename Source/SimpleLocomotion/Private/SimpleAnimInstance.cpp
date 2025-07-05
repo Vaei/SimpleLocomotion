@@ -51,6 +51,12 @@ FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
 	return new FSimpleAnimInstanceProxy(this);
 }
 
+bool USimpleAnimInstance::IsLODEnabled(int32 LODThreshold) const
+{
+	const int32 LODLevel = AnimInstanceProxy->GetLODLevel();
+	return LODThreshold == INDEX_NONE || LODLevel <= LODThreshold;
+}
+
 void USimpleAnimInstance::NativeInitializeAnimation()
 {
 	Owner = GetOwningActor();

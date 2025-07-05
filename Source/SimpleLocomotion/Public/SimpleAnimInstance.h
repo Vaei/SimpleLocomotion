@@ -254,6 +254,8 @@ public:
 	
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override;
 
+	bool IsLODEnabled(int32 LODThreshold) const;
+
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
