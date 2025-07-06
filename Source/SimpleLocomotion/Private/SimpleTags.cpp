@@ -5,6 +5,7 @@
 
 namespace FSimpleTags
 {
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Simple_State, TEXT("Simple.State"), "Represents the overarching anim state your character is in, this will be project specific, e.g. combat state.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Simple_State_Default, TEXT("Simple.State.Default"), "Represents the overarching anim state your character is in, this will be project specific, e.g. combat state.");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Simple_Gait_Idle, TEXT("Simple.Gait.Idle"), "Idle - Standing still. NOT used, exists for extension only. This could be used for a stance transition system that has both idle and moving gait-based transitions, e.g. sprint to prone");
