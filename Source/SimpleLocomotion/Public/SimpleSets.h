@@ -4,10 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-
+#include "SimpleTags.h"
 #include "SimpleSets.generated.h"
 
 enum class ESimpleCardinalType : uint8;
+
+enum class ESetType : uint8
+{
+	None,
+	AnimState,
+};
 
 /**
  * Custom FGameplayTagContainer that maintains order
@@ -53,7 +59,8 @@ protected:
 /** Getter for Simple Animation Sets */
 struct SIMPLELOCOMOTION_API FSimpleGetter
 {
-	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, UAnimSequence*>& Anims, const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks)
+	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, UAnimSequence*>& Anims,
+		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
 	{
 		// Return this anim if available
 		if (UAnimSequence* const* Anim = Anims.Find(KeyTag))
@@ -73,12 +80,32 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 			}
 		}
 
+		// If this is an AnimState and no fallbacks are provided, return the default state
+		if (SetType == ESetType::AnimState)
+		{
+			UAnimSequence* const* Anim = Anims.Find(FSimpleTags::Simple_State_Default);
+			if (ensure(Anim))  // Did we accidentally mark as AnimState?
+			{
+				return *Anim;
+			}
+		}
+
 		// No available anim
 		return nullptr;
 	}
 
+	/**
+	 * Get the set of animations for the specified key tag
+	 * 
+	 * @param KeyTag The tag to look up
+	 * @param Sets The map of sets to search
+	 * @param Fallbacks The map of fallback tags to search if the key tag is not found
+	 * @param SetType For AnimStates use an automatic fallback to default state if no fallbacks are provided
+	 * @return Pointer to the set of animations, or nullptr if not found
+	 */
 	template<typename T>
-	static const T* GetSet(const FGameplayTag& KeyTag, const TMap<FGameplayTag, T>& Sets, const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks)
+	static const T* GetSet(const FGameplayTag& KeyTag, const TMap<FGameplayTag, T>& Sets, const TMap<FGameplayTag,
+		FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
 	{
 		// Return this set if available
 		if (const T* Set = Sets.Find(KeyTag))
@@ -95,6 +122,16 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 				{
 					return Set;
 				}
+			}
+		}
+
+		// If this is an AnimState and no fallbacks are provided, return the default state
+		if (SetType == ESetType::AnimState)
+		{
+			const T* DefaultSet = Sets.Find(FSimpleTags::Simple_State_Default);
+			if (ensure(DefaultSet))  // Did we accidentally mark as AnimState?
+			{
+				return DefaultSet;
 			}
 		}
 
@@ -802,7 +839,7 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Gait,Simple.Cardinal"))
 	static UAnimSequence* SimpleStateToStrafeGaitSet(const FSimpleStateToStrafeGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
 	{
-		if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			const auto* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocoSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
 			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
@@ -813,7 +850,7 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Gait,Simple.Cardinal"))
 	static UAnimSequence* SimpleStateToStartGaitSet(const FSimpleStateToStartGaitSet& Set, FGameplayTag State, FGameplayTag Gait, FGameplayTag Cardinal)
 	{
-		if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			const auto* LocoSet = FSimpleGetter::GetSet<FSimpleStartLocoSet>(Gait, GaitSet->Sets, GaitSet->Fallbacks);
 			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
@@ -824,7 +861,7 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
 	static const FSimpleStrafeLocoSet& SimpleStateToStanceToStrafeGaitSet(const FSimpleStateToStanceToStrafeGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
 	{
-		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStrafeGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStrafeGaitSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStrafeGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
 			{
@@ -840,7 +877,7 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
 	static const FSimpleStartLocoSet& SimpleStateToStanceToStartGaitSet(const FSimpleStateToStanceToStartGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
 	{
-		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStartGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStartGaitSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleStartGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
 			{
@@ -856,7 +893,7 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
 	static const FSimpleTurnLocoSet& SimpleStateToStanceToTurnGaitSet(const FSimpleStateToStanceToTurnGaitSet& Set, FGameplayTag State, FGameplayTag Stance, FGameplayTag Gait)
 	{
-		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToTurnGaitSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToTurnGaitSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			if (const auto* GaitSet = FSimpleGetter::GetSet<FSimpleTurnGaitSet>(Stance, StanceSet->Sets, StanceSet->Fallbacks))
 			{
@@ -885,14 +922,14 @@ public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))
 	static UAnimSequence* SimpleStateToStanceSet(const FSimpleStateToStanceSet& Set, FGameplayTag State, FGameplayTag Stance)
 	{
-		const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceSet>(State, Set.Sets, Set.Fallbacks);
+		const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState);
 		return FSimpleGetter::GetAnim(Stance, StanceSet->Animations, StanceSet->Fallbacks);
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))
 	static const FSimpleTransitionSet& SimpleStateToStanceToTransitionSet(const FSimpleStateToStanceToTransitionSet& Set, FGameplayTag State, FGameplayTag Stance)
 	{
-		if (const auto* StanceToTransitionSet = FSimpleGetter::GetSet<FSimpleStanceToTransitionSet>(State, Set.Sets, Set.Fallbacks))
+		if (const auto* StanceToTransitionSet = FSimpleGetter::GetSet<FSimpleStanceToTransitionSet>(State, Set.Sets, Set.Fallbacks, ESetType::AnimState))
 		{
 			return SimpleStanceToTransitionSet(*StanceToTransitionSet, Stance);
 		}
