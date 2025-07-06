@@ -271,12 +271,18 @@ void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalModeTag, b
 
 FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const
 {
-	if (CardinalModeTag == FGameplayTag::EmptyTag)
+	if (CardinalModeTag == FGameplayTag::EmptyTag || !bHasEverUpdated)
 	{
 		return FGameplayTag::EmptyTag;
 	}
 	
-	const TMap<FGameplayTag, FSimpleCardinal>& CurrentCardinals = GetCardinals();
+	const TMap<FGameplayTag, FSimpleCardinal>& CurrentCardinals = GetCardinals(ESimpleCardinalCache::CachedEnabledOnly);
+	if (CurrentCardinals.Num() == 0)
+	{
+		// Cardinals have not been initialized, likely due to race condition with anim layer initialization
+		return FGameplayTag::EmptyTag;
+	}
+	
 	if (const FSimpleCardinal* MatchingCardinal = CurrentCardinals.Find(CardinalModeTag))
 	{
 		if (LIKELY(ensure(MatchingCardinal->bEnabled)))  // Probably shouldn't have been cached if it can be false
