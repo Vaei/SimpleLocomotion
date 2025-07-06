@@ -36,7 +36,7 @@ FGameplayTag FSimpleCardinal::GetCardinal(ESimpleCardinalType CardinalType) cons
 	return FGameplayTag::EmptyTag;
 }
 
-void FSimpleCardinals::ConstructDefaultCardinals()
+void FSimpleCardinals::ConstructDefaultCardinals(bool bEnableDefaultCardinals)
 {
 	// 1-Way
 	{
@@ -54,7 +54,7 @@ void FSimpleCardinals::ConstructDefaultCardinals()
 	{
 		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleTags::Simple_Mode_Strafe_4Way);
 		Cardinal.Tags = ConstructCardinalTags_4Way();
-		Cardinal.bEnabled = true;
+		Cardinal.bEnabled = bEnableDefaultCardinals;
 	}
 	// 6-Way
 	{
@@ -79,7 +79,7 @@ void FSimpleCardinals::ConstructDefaultCardinals()
 	{
 		FSimpleCardinal& Cardinal = Cardinals.Add(FSimpleTags::Simple_Mode_Start_1Way);
 		Cardinal.Tags = ConstructCardinalTags_Start_1Way();
-		Cardinal.bEnabled = true;
+		Cardinal.bEnabled = bEnableDefaultCardinals;
 	}
 	// Start 2-Way
 	{

@@ -162,7 +162,8 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 		ThreadSafeUpdate_Internal(World2D, WorldRotation);
 	}
 
-	void ConstructDefaultCardinals();
+	void ConstructDefaultCardinals(bool bEnableDefaultCardinals = true);
+	
 	static FGameplayTagContainer ConstructCardinalTags_1Way();
 	static FGameplayTagContainer ConstructCardinalTags_2Way();
 	static FGameplayTagContainer ConstructCardinalTags_4Way();
