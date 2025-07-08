@@ -226,6 +226,9 @@ protected:
 	TEnumAsByte<ENetRole> LocalRole = ROLE_AutonomousProxy;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
+	bool bDedicatedServer = false;
+	
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bLocallyControlled = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)

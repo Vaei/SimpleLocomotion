@@ -111,6 +111,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
+	bDedicatedServer = IsRunningDedicatedServer() || OwnerComponent->GetNetMode() == NM_DedicatedServer;
 	bLocallyControlled = OwnerComponent->GetSimpleIsLocallyControlled();
 
 	const FGameplayTag PrevState = State;
