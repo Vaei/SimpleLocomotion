@@ -429,11 +429,11 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeGaitSet
 	FSimpleStrafeGaitSet();
 
 	/** Map tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStrafeLocoSet> Sets;
 
 	/** If requested Gait is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 
 	void SetCardinalType(ESimpleCardinalType CardinalType);
@@ -452,11 +452,11 @@ struct SIMPLELOCOMOTION_API FSimpleStartGaitSet
 	FSimpleStartGaitSet();
 
 	/** Map tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStartLocoSet> Sets;
 
 	/** If requested Gait is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 
 	void SetCardinalType(ESimpleCardinalType CardinalType);
@@ -475,11 +475,11 @@ struct SIMPLELOCOMOTION_API FSimpleTurnGaitSet
 	FSimpleTurnGaitSet();
 
 	/** Map tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTurnLocoSet> Sets;
 
 	/** If requested Gait is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Gait", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 
 	void SetCardinalType(ESimpleCardinalType CardinalType);
@@ -498,11 +498,11 @@ struct SIMPLELOCOMOTION_API FSimpleStanceSet
 	FSimpleStanceSet();
 
 	/** Map tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, UAnimSequence*> Animations;
 
 	/** If requested Stance is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -519,11 +519,11 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToStrafeGaitSet
 	FSimpleStanceToStrafeGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStrafeGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -540,11 +540,11 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToStartGaitSet
 	FSimpleStanceToStartGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStartGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -561,11 +561,11 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToTurnGaitSet
 	FSimpleStanceToTurnGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTurnGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -582,11 +582,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStrafeGaitSet
 	FSimpleStateToStrafeGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStrafeGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -603,11 +603,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStartGaitSet
 	FSimpleStateToStartGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStartGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -624,11 +624,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToTurnGaitSet
 	FSimpleStateToTurnGaitSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTurnGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -648,11 +648,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeGaitSet
 	FSimpleStrafeLocoSet DummySet;
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceToStrafeGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -672,11 +672,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStartGaitSet
 	FSimpleStartLocoSet DummySet;
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceToStartGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -696,11 +696,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTurnGaitSet
 	FSimpleTurnLocoSet DummySet;
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceToTurnGaitSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -720,11 +720,11 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToTransitionSet
 	FSimpleTransitionSet DummySet;
 	
 	/** Map tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTransitionSet> Sets;
 
 	/** If requested Stance is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -741,11 +741,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceSet
 	FSimpleStateToStanceSet();
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
@@ -765,11 +765,11 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTransitionSet
 	FSimpleTransitionSet DummySet;
 
 	/** Maps tags to sets */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceToTransitionSet> Sets;
 
 	/** If requested State is not available, fallback to the next match. Order represents priority */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
