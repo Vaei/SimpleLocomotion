@@ -46,7 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Settings)
 	FSimpleCardinals Cardinals;
 	
-protected:
+public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	FSimpleMovement World;
 	
