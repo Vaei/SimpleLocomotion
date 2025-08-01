@@ -1,23 +1,23 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleAnimInstanceDetailsCustomization.h"
+#include "SimpleAnimInstanceCustomization.h"
 
 #include "DetailLayoutBuilder.h"
-#include "SimpleAnimInstance.h"
+#include "SimpleAnimInstanceBase.h"
 
 
-TSharedRef<IDetailCustomization> FSimpleAnimInstanceDetailsCustomization::MakeInstance()
+TSharedRef<IDetailCustomization> FSimpleAnimInstanceCustomization::MakeInstance()
 {
-	return MakeShared<FSimpleAnimInstanceDetailsCustomization>();
+	return MakeShared<FSimpleAnimInstanceCustomization>();
 }
 
-void FSimpleAnimInstanceDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FSimpleAnimInstanceCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	TArray<TWeakObjectPtr<UObject>> Objects;
 	DetailBuilder.GetObjectsBeingCustomized(Objects);
 
-	USimpleAnimInstance* SimpleAnimInstance = Objects.IsValidIndex(0) ? Cast<USimpleAnimInstance>(Objects[0]) : nullptr;
+	USimpleAnimInstanceBase* SimpleAnimInstance = Objects.IsValidIndex(0) ? Cast<USimpleAnimInstanceBase>(Objects[0]) : nullptr;
 	if (!SimpleAnimInstance)
 	{
 		return;
@@ -38,8 +38,8 @@ void FSimpleAnimInstanceDetailsCustomization::CustomizeDetails(IDetailLayoutBuil
 	}
 	else
 	{
-		const TSharedPtr<IPropertyHandle> EditorProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstance, HideEditorCategories));
-		const TSharedPtr<IPropertyHandle> ImportantProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstance, ImportantEditorCategories));
+		const TSharedPtr<IPropertyHandle> EditorProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstanceBase, HideEditorCategories));
+		const TSharedPtr<IPropertyHandle> ImportantProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(USimpleAnimInstanceBase, ImportantEditorCategories));
 		DetailBuilder.HideProperty(EditorProperty);
 		DetailBuilder.HideProperty(ImportantProperty);
 	}
