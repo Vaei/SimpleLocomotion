@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SimpleLocomotionTypes.h"
+#include "SimpleTags.h"
+#include "SimpleTypes.h"
 #include "Components/ActorComponent.h"
 #include "SimpleAnimComponent.generated.h"
 
@@ -36,6 +37,9 @@ protected:
 	virtual void SetUpdatedCharacter() {}
 	
 public:
+	/** A mode pertaining to your specific project, representing the state of the character, e.g. in combat */
+	virtual FGameplayTag GetSimpleAnimState() const { return FSimpleTags::Simple_State_Default; }
+	
 	/** AActor::GetVelocity() */
 	virtual FVector GetSimpleVelocity() const PURE_VIRTUAL(, return FVector::ZeroVector;);
 
@@ -63,10 +67,13 @@ public:
 	virtual FSimpleGaitSpeed GetSimpleMaxGaitSpeeds() const PURE_VIRTUAL(, return {};);
 	
 	/** Change the rate at which the additive lean occurs optionally based on stance, gait, or other state */
-	virtual float GetSimpleLeanRate() const { return 3.75f; };
+	virtual float GetSimpleLeanRate() const { return 3.75f; }
+	
+	/** Change the rate at which the additive lean occurs for start state optionally based on stance, gait, or other state */
+	virtual float GetSimpleStartLeanRate() const { return 3.75f; }
 	
 	/** Used with TurnInPlace systems where usually a mesh offset is applied */
-	virtual float GetSimpleRootYawOffset() const { return 0.f; };
+	virtual float GetSimpleRootYawOffset() const { return 0.f; }
 
 	/** UCharacterMovementComponent::GetGravityZ()  */
 	virtual float GetSimpleGravityZ() const { return 1.f; }
@@ -84,7 +91,10 @@ public:
 	virtual bool GetSimpleCanJump() const { return false; }
 
 	/** ACharacter::bIsCrouched */
-	virtual bool GetSimpleIsCrouching() const { return false; }
+	virtual bool GetSimpleIsCrouched() const { return false; }
+
+	/** AMyCharacter::bIsProned */
+	virtual bool GetSimpleIsProned() const { return false; }
 
 	/** e.g. AStrollCharacter::IsStrolling() */
 	virtual bool GetSimpleIsStrolling() const { return false; }
@@ -113,8 +123,17 @@ public:
 	/** e.g. AMantleCharacter::IsMantling() */
 	virtual bool WantsFrameLockOnLanding() const { return false; }
 
+	/** e.g. ACharacter::IsPlayingNetworkedRootMotionMontage() */
+	virtual bool IsPlayingNetworkedRootMotionMontage() const { return false; }
+
+	/** Optional to pause anim system until fully initialized the character */
+	virtual bool GetSimpleOwnerHasInitialized() const PURE_VIRTUAL(, return true;)
+	
 	/** AActor::GetLocalRole() */
 	virtual ENetRole GetSimpleLocalRole() const PURE_VIRTUAL(, return ROLE_None;)
+
+	/** ACharacter::IsLocallyControlled() */
+	virtual bool GetSimpleIsLocallyControlled() const PURE_VIRTUAL(, return false;)
 	
 	/**
 	 * Add to your actor that owns this component:
@@ -128,7 +147,7 @@ public:
 	 * When they land, e.g. ACharacter::Landed():
 	 *
 	 * Super::Landed(Hit);
-	 * (void)ThisComponent->AnimLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
+	 * (void)SimpleLandedDelegate.ExecuteIfBound(Hit);  // (void) uses the return value so IDE doesn't complain
 	 */
 	virtual FSimpleLandedSignature* GetSimpleOnLandedDelegate() { return nullptr; }
 };

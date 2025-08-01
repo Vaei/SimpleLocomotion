@@ -1,10 +1,12 @@
 ﻿#include "SimpleLocomotionEditor.h"
 
 #include "SimpleAnimComponent.h"
-#include "SimpleAnimComponentDetailsCustomization.h"
-#include "SimpleAnimInstance.h"
-#include "SimpleAnimInstanceDetailsCustomization.h"
-#include "SimpleLocomotionSetPropertyCustomization.h"
+#include "SimpleAnimComponentCustomization.h"
+#include "SimpleAnimInstanceBase.h"
+#include "SimpleAnimInstanceCustomization.h"
+#include "SimpleStartLocoSetCustomization.h"
+#include "SimpleStrafeLocoSetCustomization.h"
+#include "SimpleTurnLocoSetCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FSimpleLocomotionEditorModule"
 
@@ -14,19 +16,27 @@ void FSimpleLocomotionEditorModule::StartupModule()
 
 	// Anim Instance
 	PropertyModule.RegisterCustomClassLayout(
-		USimpleAnimInstance::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimInstanceDetailsCustomization::MakeInstance)
+		USimpleAnimInstanceBase::StaticClass()->GetFName(),
+		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimInstanceCustomization::MakeInstance)
 	);
 
 	// Anim Component
 	PropertyModule.RegisterCustomClassLayout(
 		USimpleAnimComponent::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimComponentDetailsCustomization::MakeInstance)
+		FOnGetDetailCustomizationInstance::CreateStatic(&FSimpleAnimComponentCustomization::MakeInstance)
 	);
 
-	// FSimpleLocomotionSet (SimpleLocomotionTypes)
-	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleLocomotionSet"),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleLocomotionSetPropertyCustomization::MakeInstance));
+	// FSimpleStrafeLocoSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleStrafeLocoSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleStrafeLocoSetCustomization::MakeInstance));
+
+	// FSimpleStartLocoSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleStartLocoSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleStartLocoSetCustomization::MakeInstance));
+	
+	// FSimpleTurnLocoSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleTurnLocoSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleTurnLocoSetCustomization::MakeInstance));
 }
 
 void FSimpleLocomotionEditorModule::ShutdownModule()
@@ -34,10 +44,12 @@ void FSimpleLocomotionEditorModule::ShutdownModule()
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
 	{
 		FPropertyEditorModule* PropertyModule = FModuleManager::Get().GetModulePtr<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstance::StaticClass()->GetFName());
+		PropertyModule->UnregisterCustomClassLayout(USimpleAnimInstanceBase::StaticClass()->GetFName());
 		PropertyModule->UnregisterCustomClassLayout(USimpleAnimComponent::StaticClass()->GetFName());
 
-		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleLocomotionSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStrafeLocoSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStartLocoSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleTurnLocoSet");
 	}
 }
 

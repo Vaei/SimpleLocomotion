@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Jared Taylor. All Rights Reserved
 
 
-#include "SimpleAnimComponentDetailsCustomization.h"
+#include "SimpleAnimComponentCustomization.h"
 
 #include "DetailLayoutBuilder.h"
 #include "SimpleAnimComponent.h"
 
 
-TSharedRef<IDetailCustomization> FSimpleAnimComponentDetailsCustomization::MakeInstance()
+TSharedRef<IDetailCustomization> FSimpleAnimComponentCustomization::MakeInstance()
 {
-	return MakeShared<FSimpleAnimComponentDetailsCustomization>();
+	return MakeShared<FSimpleAnimComponentCustomization>();
 }
 
-void FSimpleAnimComponentDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FSimpleAnimComponentCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	TArray<TWeakObjectPtr<UObject>> Objects;
 	DetailBuilder.GetObjectsBeingCustomized(Objects);

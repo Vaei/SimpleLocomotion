@@ -5,15 +5,15 @@
 
 #include "SimpleAnimComponent.h"
 #include "SimpleAnimInstanceProxy.h"
-#include "SimpleLocomotionStatics.h"
-#include "SimpleGameplayTags.h"
+#include "SimpleStatics.h"
+#include "SimpleTags.h"
 #include "GameFramework/Pawn.h"
 
 #include "Logging/MessageLog.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleAnimInstance)
 
-DEFINE_LOG_CATEGORY_STATIC(LogSimpleAnim, Log, All);
+// DEFINE_LOG_CATEGORY_STATIC(LogSimpleAnim, Log, All);
 
 namespace SimpleAnimInstanceCVars
 {
@@ -38,10 +38,12 @@ namespace SimpleAnimInstanceCVars
 USimpleAnimInstance::USimpleAnimInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Gait = FSimpleGameplayTags::Simple_Gait_Run;
-	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
-	StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-	Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+	Gait = FSimpleTags::Simple_Gait_Run;
+	GaitSpeed = FSimpleTags::Simple_Gait_Run;
+	StartGait = FSimpleTags::Simple_Gait_Run;
+	StopGait = FSimpleTags::Simple_Gait_Run;
+	State = FSimpleTags::Simple_State_Default;
+	Stance = FSimpleTags::Simple_Stance_Stand;
 }
 
 FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
@@ -49,9 +51,16 @@ FAnimInstanceProxy* USimpleAnimInstance::CreateAnimInstanceProxy()
 	return new FSimpleAnimInstanceProxy(this);
 }
 
+bool USimpleAnimInstance::IsLODEnabled(int32 LODThreshold) const
+{
+	const int32 LODLevel = AnimInstanceProxy->GetLODLevel();
+	return LODThreshold == INDEX_NONE || LODLevel <= LODThreshold;
+}
+
 void USimpleAnimInstance::NativeInitializeAnimation()
 {
-	Owner = TryGetPawnOwner();
+	Owner = GetOwningActor();
+	PawnOwner = TryGetPawnOwner();
 	OwnerComponent = Owner ? Owner->GetComponentByClass<USimpleAnimComponent>() : nullptr;
 
 	if (!Owner || !OwnerComponent)
@@ -59,18 +68,8 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 		return;
 	}
 
-	// Bind landed delegate
-	if (OwnerComponent)
-	{
-		if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
-		{
-			if (LandedDelegatePtr->IsBoundToObject(this))
-			{
-				LandedDelegatePtr->Unbind();
-			}
-			LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
-		}
-	}
+	// Check optional initialization of owner
+	bOwnerHasInitialized = OwnerComponent->GetSimpleOwnerHasInitialized();
 
 	// Bind cardinal update delegates
 	for (auto& CardinalItr : Cardinals.GetCardinals())
@@ -85,16 +84,39 @@ void USimpleAnimInstance::NativeInitializeAnimation()
 	bFirstUpdate = true;
 }
 
+void USimpleAnimInstance::NativeBeginPlay()
+{
+	// Bind landed delegate -- cannot do this in NativeInitializeAnimation because the owner is CD0 there
+	if (FSimpleLandedSignature* LandedDelegatePtr = OwnerComponent->GetSimpleOnLandedDelegate())
+	{
+		if (LandedDelegatePtr->IsBoundToObject(this))
+		{
+			LandedDelegatePtr->Unbind();
+		}
+		LandedDelegatePtr->BindDynamic(this, &ThisClass::OnLanded);
+	}
+}
+
 void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	if (!IsAnimValidToUpdate(DeltaTime))
 	{
+		if (!bOwnerHasInitialized && IsValid(Owner) && OwnerComponent)
+		{
+			bOwnerHasInitialized = OwnerComponent->GetSimpleOwnerHasInitialized();
+		}
 		return;
 	}
 
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
 
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
+	bDedicatedServer = IsRunningDedicatedServer() || OwnerComponent->GetNetMode() == NM_DedicatedServer;
+	bLocallyControlled = OwnerComponent->GetSimpleIsLocallyControlled();
+
+	const FGameplayTag PrevState = State;
+	State = OwnerComponent->GetSimpleAnimState();
+	bStateChanged = State != PrevState;
 
 	World.Velocity = OwnerComponent->GetSimpleVelocity();
 	World.Acceleration = OwnerComponent->GetSimpleAcceleration();
@@ -105,21 +127,25 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	WorldRotation = Owner->GetActorRotation();
 	ControlRotation = OwnerComponent->GetSimpleControlRotation();
 	BaseAimRotation = OwnerComponent->GetSimpleBaseAimRotation();
-	
+
+	PrevMaxSpeed = MaxSpeed;
 	MaxSpeed = OwnerComponent->GetSimpleMaxSpeed();
 	MaxGaitSpeeds = OwnerComponent->GetSimpleMaxGaitSpeeds();
 	LeanRate = LeanRateOverride >= 0.f ? LeanRateOverride : OwnerComponent->GetSimpleLeanRate();
+	StartLeanRate = StartLeanRateOverride >= 0.f ? StartLeanRateOverride : OwnerComponent->GetSimpleStartLeanRate();
 
 	RootYawOffset = OwnerComponent->GetSimpleRootYawOffset();
 
 	bIsCurrentFloorWalkable = OwnerComponent->IsSimpleCurrentFloorWalkable();
 	bIsMovingOnGround = OwnerComponent->GetSimpleIsMovingOnGround() && bIsCurrentFloorWalkable;
+	bWasInAir = bInAir;
 	bInAir = OwnerComponent->GetSimpleIsFalling() || !bIsCurrentFloorWalkable;
 	bCanJump = OwnerComponent->GetSimpleCanJump();
 	GravityZ = OwnerComponent->GetSimpleGravityZ();
 	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
 
-	bIsCrouching = OwnerComponent->GetSimpleIsCrouching();
+	bIsCrouched = OwnerComponent->GetSimpleIsCrouched();
+	bIsProned = OwnerComponent->GetSimpleIsProned();
 
 	bIsStrolling = OwnerComponent->GetSimpleIsStrolling();
 	bIsWalking = OwnerComponent->GetSimpleIsWalking();
@@ -133,6 +159,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsMoveModeValid = OwnerComponent->GetSimpleIsMoveModeValid();
 	
 	bIsAnyMontagePlaying = IsAnyMontagePlaying();
+	bIsPlayingNetworkedRootMotionMontage = OwnerComponent->IsPlayingNetworkedRootMotionMontage();
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
@@ -141,6 +168,9 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	{
 		return;
 	}
+
+	// Extension point
+	NativeThreadSafePreUpdateMovementProperties(DeltaTime);
 
 	// Movement properties
 	Local = World.GetLocal(WorldRotation);
@@ -152,13 +182,16 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	Speed2D = Local2D.Velocity.Size();
 	Speed = bIsMovingOnGround ? Speed3D : Speed2D;
 	const float SpeedSq = Speed * Speed;
+	const float Speed2DSq = Speed2D * Speed2D;
 
 	const float AccelMag3D = Local.Acceleration.SizeSquared();
 	const float AccelMag2D = Local2D.Acceleration.SizeSquared();
 	const float AccelSq = bMovementIs3D ? AccelMag3D : AccelMag2D;
 	
 	bHasVelocity = !FMath::IsNearlyZero(SpeedSq);
+	bHasVelocity2D = !FMath::IsNearlyZero(Speed2DSq);
 	bHasAcceleration = !FMath::IsNearlyZero(AccelSq);
+	bHasAcceleration2D = !FMath::IsNearlyZero(AccelMag2D);
 
 	// Rotation properties
 	if (LocalRole != ROLE_SimulatedProxy)
@@ -170,7 +203,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	// Update cardinal properties
 	// if (bWantsCardinalsUpdated)
 	{
-		Cardinals.ThreadSafeUpdate(World2D, WorldRotation, RootYawOffset);
+		Cardinals.ThreadSafeUpdate(World2D, WorldRotation);
 	}
 
 	// Update gait modes
@@ -182,22 +215,8 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	// Extension point
 	NativeThreadSafePostUpdateMovementProperties(DeltaTime);
 
-	if (bFirstUpdate)
-	{
-		// There is no valid delta on the first frame
-		LeanAngle = 0.f;
-	}
-	else if (bWantsLeansUpdated)
-	{
-		const float YawDelta = WorldRotation.Yaw - PrevWorldRotation.Yaw;
-		const float YawDeltaSpeed = YawDelta / DeltaTime;
-		const float ScaledLeanRate = LeanRate / 100.f;  // 3.75 is a friendlier number than 0.0375 for designers
-		LeanAngle = YawDeltaSpeed * ScaledLeanRate;
-	}
-	else
-	{
-		LeanAngle = 0.f;
-	}
+	// Lean angles
+	ThreadSafeUpdateLeanAngles(DeltaTime);
 
 	// Extension point
 	NativeThreadSafePreUpdateInAirProperties(DeltaTime);
@@ -218,102 +237,108 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	NativeThreadSafeUpdateFalling(DeltaTime);
 
 	// Extension point
-	NativeThreadSafeUpdateAnimationPreCompletion(DeltaTime);
+	NativeThreadSafePostUpdateAnimation(DeltaTime);
 
 	bFirstUpdate = false;
+}
+
+void USimpleAnimInstance::ThreadSafeUpdateLeanAngles(float DeltaTime)
+{
+	if (bFirstUpdate)
+	{
+		// There is no valid delta on the first frame
+		LeanAngle = 0.f;
+		StartLeanAngle = 0.f;
+	}
+	else if (bWantsLeansUpdated)
+	{
+		// Compute lean delta
+		const float YawDelta = WorldRotation.Yaw - PrevWorldRotation.Yaw;
+		const float YawDeltaSpeed = YawDelta / DeltaTime;
+
+		// 3.75 is a friendlier number than 0.0375 for designers so we divide by 100
+		const float ScaledLeanRate = LeanRate / 100.f;  
+		const float ScaledStartLeanRate = StartLeanRate / 100.f;
+
+		// Apply lean rate
+		LeanAngle = YawDeltaSpeed * ScaledLeanRate;
+		StartLeanAngle = YawDeltaSpeed * ScaledStartLeanRate;
+	}
+	else
+	{
+		LeanAngle = 0.f;
+		StartLeanAngle = 0.f;
+	}
 }
 
 void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 {
 	// Start Gait Mode: Use the intended mode
-	StartGait = FSimpleGameplayTags::Simple_Gait_Run;
+	StartGait = FSimpleTags::Simple_Gait_Run;
 	if (bWantsSprinting)
 	{
 		// We will probably start sprinting next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Sprint;
+		StartGait = FSimpleTags::Simple_Gait_Sprint;
 	}
 	else if (bWantsWalking)
 	{
 		// We will probably start walking next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Walk;
+		StartGait = FSimpleTags::Simple_Gait_Walk;
 	}
 	else if (bWantsStrolling)
 	{
 		// We will probably start strolling next frame
-		StartGait = FSimpleGameplayTags::Simple_Gait_Stroll;
+		StartGait = FSimpleTags::Simple_Gait_Stroll;
 	}
 
 	// Gait Mode: Use the current mode
 	const FGameplayTag PrevGait = Gait;
 	if (bIsSprinting)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Sprint;
+		Gait = FSimpleTags::Simple_Gait_Sprint;
 	}
 	else if (bIsWalking)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Walk;
+		Gait = FSimpleTags::Simple_Gait_Walk;
 	}
 	else if (bIsStrolling)
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Stroll;
+		Gait = FSimpleTags::Simple_Gait_Stroll;
 	}
 	else
 	{
-		Gait = FSimpleGameplayTags::Simple_Gait_Run;
+		Gait = FSimpleTags::Simple_Gait_Run;
 	}
 	bGaitChanged = Gait != PrevGait;
 
-	const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
-	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Walk);
-	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Run);
+	// const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
+	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Walk);
+	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Run);
+	const float MaxSpeedSprint = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Sprint);
 	
+	// Gait Mode at Speed: Use the current mode based on speed
+	GaitSpeed = Gait;
+	if (Speed < MaxSpeedWalk)
+	{
+		GaitSpeed = FSimpleTags::Simple_Gait_Stroll;
+	}
+	else if (Speed < MaxSpeedRun)
+	{
+		GaitSpeed = FSimpleTags::Simple_Gait_Walk;
+	}
+	else if (Speed < MaxSpeedSprint)
+	{
+		GaitSpeed = FSimpleTags::Simple_Gait_Run;
+	}
+	else
+	{
+		GaitSpeed = FSimpleTags::Simple_Gait_Sprint;
+	}
+
 	// Stop Gait Mode: Use the previous mode
 	if (bHasAcceleration)
 	{
-		StopGait = Gait;
-		if (Gait == FSimpleGameplayTags::Simple_Gait_Stroll)
-		{
-			// If strolling and needing to stop, default to stroll stop, don't need to do anything here
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Walk)
-		{
-			// If walking and needing to stop, default to walk stop, don't need to do anything here
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Run)
-		{
-			// If not at run speed, use strolling stop
-			if (Speed < MaxSpeedStroll)
-			{
-				// Use stroll speed if we haven't even reached our max walk speed yet
-				StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
-			}
-			else if (Speed < MaxSpeedWalk)
-			{
-				// Use walk speed if we haven't even reached our max walk speed yet
-				StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-			}
-			else if (Speed < MaxSpeedRun)
-			{
-				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
-			}
-		}
-		else if (Gait == FSimpleGameplayTags::Simple_Gait_Sprint)
-		{
-			if (Speed < MaxSpeedRun)
-			{
-				ComputeSlowStopGait(MaxSpeedStroll, MaxSpeedWalk, MaxSpeedRun);
-			}
-			else
-			{
-				// Sprint always results in a sprint stop, provided we have exceeded run speed
-				StopGait = FSimpleGameplayTags::Simple_Gait_Sprint;
-			}
-		}
-		else if (SimpleAnimInstanceCVars::bPrintInvalidGameplayTagStates)
-		{
-			FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
-			Proxy.AddPendingMessage(FString::Printf(TEXT("Invalid Gait Mode: %s"), *Gait.ToString()));
-		}
+		StopGait = GaitSpeed;  // We stop based on the speed we are at rather than intent
 	}
 }
 
@@ -321,13 +346,17 @@ void USimpleAnimInstance::NativeThreadSafeUpdateStance(float DeltaTime)
 {
 	// Stance
 	const FGameplayTag PrevStance = Stance;
-	if (bIsCrouching)
+	if (bIsProned)
 	{
-		Stance = FSimpleGameplayTags::Simple_Stance_Crouch;
+		Stance = FSimpleTags::Simple_Stance_Prone;
+	}
+	else if (bIsCrouched)
+	{
+		Stance = FSimpleTags::Simple_Stance_Crouch;
 	}
 	else
 	{
-		Stance = FSimpleGameplayTags::Simple_Stance_Stand;
+		Stance = FSimpleTags::Simple_Stance_Stand;
 	}
 	bStanceChanged = Stance != PrevStance;
 }
@@ -364,36 +393,6 @@ void USimpleAnimInstance::NativePostEvaluateAnimation()
 	Proxy.ResetPendingMessageLogs();
 }
 
-void USimpleAnimInstance::ComputeSlowStopGait(const float MaxSpeedStroll, const float MaxSpeedWalk, const float MaxSpeedRun)
-{
-	// Stroll vs Walk
-	if (Speed < MaxSpeedWalk)
-	{
-		// Use the gait mode that our speed is closer to
-		if ((Speed - MaxSpeedStroll) < (MaxSpeedWalk - Speed))
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Stroll;
-		}
-		else
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-		}
-	}
-	// Walk vs Run
-	else
-	{
-		// Use the gait mode that our speed is closer to
-		if ((Speed - MaxSpeedWalk) < (MaxSpeedRun - Speed))
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Walk;
-		}
-		else
-		{
-			StopGait = FSimpleGameplayTags::Simple_Gait_Run;
-		}
-	}
-}
-
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
 {
 	bLandingFrameLock = true;
@@ -409,10 +408,13 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	// Consider not updating the properties you don't need to optimize performance!
 	const float DeadZone = GetCardinalDeadZone(CardinalMode);
 
-	Cardinal.Acceleration			= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
-	Cardinal.AccelerationNoOffset	= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.AccelerationNoOffset, DeadZone, Cardinal.AccelerationNoOffset, bWasMovingLastUpdate);
-	Cardinal.Velocity				= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
-	Cardinal.VelocityNoOffset		= USimpleLocomotionStatics::SelectSimpleCardinalFromAngle(CardinalMode, InCardinals.VelocityNoOffset, DeadZone, Cardinal.VelocityNoOffset, bWasMovingLastUpdate);
+	// CardinalMode is Simple.Mode
+	
+	Cardinal.Acceleration = USimpleStatics::SelectSimpleCardinalFromAngle(
+		CardinalMode, InCardinals.Acceleration, DeadZone, Cardinal.Acceleration, bWasMovingLastUpdate);
+	
+	Cardinal.Velocity = USimpleStatics::SelectSimpleCardinalFromAngle(
+		CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
 }
 
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const
@@ -422,7 +424,7 @@ float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType Cardin
 
 bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 {
-	const bool bValid = IsValid(Owner) && OwnerComponent;
+	const bool bValid = IsValid(Owner) && OwnerComponent && bOwnerHasInitialized;
 	const bool bValidDeltaTime = DeltaTime > 1e-6f;
 
 #if WITH_EDITORONLY_DATA
@@ -447,6 +449,13 @@ bool USimpleAnimInstance::IsAnimValidToUpdate(float DeltaTime) const
 	if (!bValid)
 	{
 		OnAnimNotValidToUpdate("");
+	}
+#endif
+
+#if WITH_EDITOR
+	if (!GetWorld() || !GetWorld()->IsGameWorld())
+	{
+		return false;
 	}
 #endif
 	
