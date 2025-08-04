@@ -59,11 +59,11 @@ protected:
 /** Getter for Simple Animation Sets */
 struct SIMPLELOCOMOTION_API FSimpleGetter
 {
-	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, UAnimSequence*>& Anims,
+	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UAnimSequence>>& Anims,
 		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
 	{
 		// Return this anim if available
-		if (UAnimSequence* const* Anim = Anims.Find(KeyTag))
+		if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(KeyTag))
 		{
 			return *Anim;
 		}
@@ -73,7 +73,7 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 		{
 			for (const FGameplayTag& Tag : Fallback->GetGameplayTagArray())
 			{
-				if (UAnimSequence* const* Anim = Anims.Find(Tag))
+				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(KeyTag))
 				{
 					return *Anim;
 				}
@@ -83,7 +83,7 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 		// If this is an AnimState and no fallbacks are provided, return the default state
 		if (SetType == ESetType::AnimState)
 		{
-			UAnimSequence* const* Anim = Anims.Find(FSimpleTags::Simple_State_Default);
+			const TObjectPtr<UAnimSequence>* Anim = Anims.Find(FSimpleTags::Simple_State_Default);
 			if (ensure(Anim))  // Did we accidentally mark as AnimState?
 			{
 				return *Anim;
@@ -161,43 +161,43 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeLocoSet
 
 	/** Moving 0º forward */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Forward;
+	TObjectPtr<UAnimSequence> Forward;
 
 	/** Strafing -45º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardLeft;
+	TObjectPtr<UAnimSequence> ForwardLeft;
 
 	/** Strafing 45º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardRight;
+	TObjectPtr<UAnimSequence> ForwardRight;
 	
 	/** Strafing -90º to the left while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Left;
+	TObjectPtr<UAnimSequence> Left;
 	
 	/** Strafing 90º to the right while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Right;
+	TObjectPtr<UAnimSequence> Right;
 	
 	/** Strafing -90º to the left while pelvis faces away from the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* LeftAway;
+	TObjectPtr<UAnimSequence> LeftAway;
 	
 	/** Strafing 90º to the right while pelvis faces away from the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* RightAway;
+	TObjectPtr<UAnimSequence> RightAway;
 	
 	/** Strafing 180º backwards */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Backward;
+	TObjectPtr<UAnimSequence> Backward;
 	
 	/** Strafing -135º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardLeft;
+	TObjectPtr<UAnimSequence> BackwardLeft;
 	
 	/** Strafing 135º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardRight;
+	TObjectPtr<UAnimSequence> BackwardRight;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	ESimpleCardinalType CardinalType;
@@ -249,39 +249,39 @@ struct SIMPLELOCOMOTION_API FSimpleStartLocoSet
 
 	/** Turning 0º forward - moving straight */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Forward;
+	TObjectPtr<UAnimSequence> Forward;
 	
 	/** Turning -45º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardLeft;
+	TObjectPtr<UAnimSequence> ForwardLeft;
 
 	/** Turning 45º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardRight;
+	TObjectPtr<UAnimSequence> ForwardRight;
 	
 	/** Turning -90º to the left while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Left;
+	TObjectPtr<UAnimSequence> Left;
 	
 	/** Turning 90º to the right while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Right;
+	TObjectPtr<UAnimSequence> Right;
 	
 	/** Turning 180º backwards to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardTurnLeft;
+	TObjectPtr<UAnimSequence> BackwardTurnLeft;
 
 	/** Turning 180º backwards to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardTurnRight;
+	TObjectPtr<UAnimSequence> BackwardTurnRight;
 	
 	/** Turning -135º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardLeft;
+	TObjectPtr<UAnimSequence> BackwardLeft;
 	
 	/** Turning 135º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardRight;
+	TObjectPtr<UAnimSequence> BackwardRight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	ESimpleCardinalType CardinalType;
@@ -334,35 +334,35 @@ struct SIMPLELOCOMOTION_API FSimpleTurnLocoSet
 
 	/** Turning -45º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardLeft;
+	TObjectPtr<UAnimSequence> ForwardLeft;
 
 	/** Turning 45º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* ForwardRight;
+	TObjectPtr<UAnimSequence> ForwardRight;
 	
 	/** Turning -90º to the left while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Left;
+	TObjectPtr<UAnimSequence> Left;
 	
 	/** Turning 90º to the right while pelvis faces toward the movement direction */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Right;
+	TObjectPtr<UAnimSequence> Right;
 	
 	/** Turning 180º backwards to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardTurnLeft;
+	TObjectPtr<UAnimSequence> BackwardTurnLeft;
 
 	/** Turning 180º backwards to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardTurnRight;
+	TObjectPtr<UAnimSequence> BackwardTurnRight;
 	
 	/** Turning -135º to the left */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardLeft;
+	TObjectPtr<UAnimSequence> BackwardLeft;
 	
 	/** Turning 135º to the right */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* BackwardRight;
+	TObjectPtr<UAnimSequence> BackwardRight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	ESimpleCardinalType CardinalType;
@@ -407,13 +407,13 @@ struct SIMPLELOCOMOTION_API FSimpleTransitionSet
 	{}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Entry;
+	TObjectPtr<UAnimSequence> Entry;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Exit;
+	TObjectPtr<UAnimSequence> Exit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	UAnimSequence* Loop;
+	TObjectPtr<UAnimSequence> Loop;
 };
 
 /**
@@ -499,7 +499,7 @@ struct SIMPLELOCOMOTION_API FSimpleStanceSet
 
 	/** Map tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
-	TMap<FGameplayTag, UAnimSequence*> Animations;
+	TMap<FGameplayTag, TObjectPtr<UAnimSequence>> Animations;
 
 	/** If requested Stance is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
