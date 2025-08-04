@@ -1,7 +1,7 @@
 ﻿{
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0.0",
+	"VersionName": "1.0.1",
 	"FriendlyName": "SimpleLocomotion",
 	"Description": "Simple locomotion system code functionality to extend from, with respect to updating in worker threads for maximum performance optimization.",
 	"Category": "Animation",
