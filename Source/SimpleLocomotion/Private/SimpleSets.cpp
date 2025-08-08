@@ -100,7 +100,7 @@ UAnimSequence* FSimpleTurnLocoSet::GetAnimation(const FGameplayTag& CardinalTag)
 
 FSimpleStrafeGaitSet::FSimpleStrafeGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Gait_Run);
+	GaitSets.Add(FSimpleTags::Simple_Gait_Run);
 
 	// Strolling should fall back to walk if unavailable, otherwise run, otherwise sprint
 	FSimpleGameplayTagArray& StrollFallback = Fallbacks.Add(FSimpleTags::Simple_Gait_Stroll);
@@ -129,7 +129,7 @@ FSimpleStrafeGaitSet::FSimpleStrafeGaitSet()
 
 void FSimpleStrafeGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
-	for (auto& GaitItr : Sets)
+	for (auto& GaitItr : GaitSets)
 	{
 		FSimpleStrafeLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
@@ -138,7 +138,7 @@ void FSimpleStrafeGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 
 FSimpleStartGaitSet::FSimpleStartGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Gait_Run);
+	GaitSets.Add(FSimpleTags::Simple_Gait_Run);
 
 	// Strolling should fall back to walk if unavailable, otherwise run, otherwise sprint
 	FSimpleGameplayTagArray& StrollFallback = Fallbacks.Add(FSimpleTags::Simple_Gait_Stroll);
@@ -167,7 +167,7 @@ FSimpleStartGaitSet::FSimpleStartGaitSet()
 
 void FSimpleStartGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
-	for (auto& GaitItr : Sets)
+	for (auto& GaitItr : GaitSets)
 	{
 		FSimpleStartLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
@@ -176,7 +176,7 @@ void FSimpleStartGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 
 FSimpleTurnGaitSet::FSimpleTurnGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Gait_Run);
+	GaitSets.Add(FSimpleTags::Simple_Gait_Run);
 
 	// Strolling should fall back to walk if unavailable, otherwise run, otherwise sprint
 	FSimpleGameplayTagArray& StrollFallback = Fallbacks.Add(FSimpleTags::Simple_Gait_Stroll);
@@ -205,7 +205,7 @@ FSimpleTurnGaitSet::FSimpleTurnGaitSet()
 
 void FSimpleTurnGaitSet::SetCardinalType(ESimpleCardinalType CardinalType)
 {
-	for (auto& GaitItr : Sets)
+	for (auto& GaitItr : GaitSets)
 	{
 		FSimpleTurnLocoSet& LocoSet = GaitItr.Value;
 		LocoSet.CardinalType = CardinalType;
@@ -227,7 +227,7 @@ FSimpleStanceSet::FSimpleStanceSet()
 
 FSimpleStanceToStrafeGaitSet::FSimpleStanceToStrafeGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Stance_Stand);
+	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
 
 	// Crouch falls back to standing
 	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Crouch);
@@ -240,7 +240,7 @@ FSimpleStanceToStrafeGaitSet::FSimpleStanceToStrafeGaitSet()
 
 FSimpleStanceToStartGaitSet::FSimpleStanceToStartGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Stance_Stand);
+	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
 
 	// Crouch falls back to standing
 	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Crouch);
@@ -253,7 +253,7 @@ FSimpleStanceToStartGaitSet::FSimpleStanceToStartGaitSet()
 
 FSimpleStanceToTurnGaitSet::FSimpleStanceToTurnGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_Stance_Stand);
+	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
 
 	// Crouch falls back to standing
 	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Crouch);
@@ -266,37 +266,37 @@ FSimpleStanceToTurnGaitSet::FSimpleStanceToTurnGaitSet()
 
 FSimpleStateToStrafeGaitSet::FSimpleStateToStrafeGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToStartGaitSet::FSimpleStateToStartGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToTurnGaitSet::FSimpleStateToTurnGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToStanceToStrafeGaitSet::FSimpleStateToStanceToStrafeGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToStanceToStartGaitSet::FSimpleStateToStanceToStartGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToStanceToTurnGaitSet::FSimpleStateToStanceToTurnGaitSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStanceToTransitionSet::FSimpleStanceToTransitionSet()
 {
-	Sets.Add(FSimpleTags::Simple_Stance_Stand);
+	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
 	
 	// Crouch falls back to standing
 	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Crouch);
@@ -309,10 +309,10 @@ FSimpleStanceToTransitionSet::FSimpleStanceToTransitionSet()
 
 FSimpleStateToStanceSet::FSimpleStateToStanceSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
 FSimpleStateToStanceToTransitionSet::FSimpleStateToStanceToTransitionSet()
 {
-	Sets.Add(FSimpleTags::Simple_State_Default);
+	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
