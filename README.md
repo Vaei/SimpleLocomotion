@@ -36,6 +36,12 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.4
+
+_For this version only the DefaultSimpleLocomotion.ini will be included with redirectors - If you skipped over this version then download it directly and add it to the plugin's config folder_
+
+* Refactor Sets based on tag to reduce ambiguity
+
 ### 1.0.3
 * Query `GaitSpeed` based on speed mid points instead of >= MaxSpeed
 * Add gait mode debug drawing `a.SimpleAnim.DrawGaitModes 1`
