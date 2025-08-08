@@ -38,7 +38,7 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ### 1.0.4
 
-_For this version only the DefaultSimpleLocomotion.ini will be included with redirectors - If you skipped over this version then download it directly and add it to the plugin's config folder_
+_You need to add `DefaultSimpleLocomotion.ini` for redirectors - [Get it here](https://github.com/Vaei/SimpleLocomotion/commit/d5060dd2bb24e15952acb2e6067b0c67e3955791) and add it to the plugin's config folder_
 
 * Refactor Sets based on tag to reduce ambiguity
 
