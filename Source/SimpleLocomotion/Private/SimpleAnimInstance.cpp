@@ -25,6 +25,15 @@ namespace SimpleAnimInstanceCVars
 		TEXT("Prints failed validation to message log instead of output log."),
 		ECVF_Default);
 #endif
+
+#if UE_ENABLE_DEBUG_DRAWING
+	static bool bDrawGaitModes = false;
+	FAutoConsoleVariableRef CVarDrawGaitModes(
+		TEXT("a.SimpleAnim.DrawGaitModes"),
+		bDrawGaitModes,
+		TEXT("Draws current gait modes to screen."),
+		ECVF_Default);
+#endif
 	
 	static bool bPrintInvalidGameplayTagStates = true;
 	FAutoConsoleVariableRef CVarPrintInvalidGameplayTagStates(
@@ -310,22 +319,27 @@ void USimpleAnimInstance::NativeThreadSafeUpdateGaitMode(float DeltaTime)
 	}
 	bGaitChanged = Gait != PrevGait;
 
-	// const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleGameplayTags::Simple_Gait_Stroll);
+	const float MaxSpeedStroll = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Stroll);
 	const float MaxSpeedWalk = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Walk);
 	const float MaxSpeedRun = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Run);
 	const float MaxSpeedSprint = MaxGaitSpeeds.GetMaxSpeed(FSimpleTags::Simple_Gait_Sprint);
+
+	// Midpoints - use the gait we are closest to
+	const float MidSpeedWalk = (MaxSpeedWalk + MaxSpeedStroll) * 0.5f;
+	const float MidSpeedRun = (MaxSpeedRun + MaxSpeedWalk) * 0.5f;
+	const float MidSpeedSprint = (MaxSpeedSprint + MaxSpeedRun) * 0.5f;
 	
 	// Gait Mode at Speed: Use the current mode based on speed
 	GaitSpeed = Gait;
-	if (Speed < MaxSpeedWalk)
+	if (Speed < MidSpeedWalk)
 	{
 		GaitSpeed = FSimpleTags::Simple_Gait_Stroll;
 	}
-	else if (Speed < MaxSpeedRun)
+	else if (Speed < MidSpeedRun)
 	{
 		GaitSpeed = FSimpleTags::Simple_Gait_Walk;
 	}
-	else if (Speed < MaxSpeedSprint)
+	else if (Speed < MidSpeedSprint)
 	{
 		GaitSpeed = FSimpleTags::Simple_Gait_Run;
 	}
@@ -382,6 +396,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateFalling(float DeltaTime)
 
 void USimpleAnimInstance::NativePostEvaluateAnimation()
 {
+	// Print any pending message logs to the message log
 	FSimpleAnimInstanceProxy& Proxy = GetProxyOnAnyThread<FSimpleAnimInstanceProxy>();
 	for (auto& PendingLogs : Proxy.GetPendingMessageLogs())
 	{
@@ -390,6 +405,16 @@ void USimpleAnimInstance::NativePostEvaluateAnimation()
 	}
 
 	Proxy.ResetPendingMessageLogs();
+
+	// Draw debug information if enabled
+#if UE_ENABLE_DEBUG_DRAWING
+	if (SimpleAnimInstanceCVars::bDrawGaitModes && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(211062, 1.f, FColor::Purple,
+			FString::Printf(TEXT("Gait: %s\nSpeed: %s\nStart: %s\nStop: %s"),
+				*Gait.ToString(), *GaitSpeed.ToString(), *StartGait.ToString(), *StopGait.ToString()));
+	}
+#endif
 }
 
 void USimpleAnimInstance::OnLanded(const FHitResult& Hit)
