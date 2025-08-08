@@ -36,6 +36,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.3
+* Query `GaitSpeed` based on speed mid points instead of >= MaxSpeed
+* Add gait mode debug drawing `a.SimpleAnim.DrawGaitModes 1`
+
 ### 1.0.2
 * Add cardinal support for wall movement
 
