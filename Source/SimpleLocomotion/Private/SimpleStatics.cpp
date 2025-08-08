@@ -8,26 +8,24 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleStatics)
 
-FGameplayTag USimpleStatics::GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set)
+FGameplayTag USimpleStatics::GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set, bool bOnWall)
 {
-	return Cardinals.GetCurrentCardinal(Set);
+	return Cardinals.GetCurrentCardinal(Set, bOnWall);
 }
 
-FGameplayTag USimpleStatics::GetSimpleStartCardinal(const FSimpleCardinals& Cardinals,
-	const FSimpleStartLocoSet& Set)
+FGameplayTag USimpleStatics::GetSimpleStartCardinal(const FSimpleCardinals& Cardinals, const FSimpleStartLocoSet& Set, bool bOnWall)
 {
-	return Cardinals.GetCurrentCardinal(Set);
+	return Cardinals.GetCurrentCardinal(Set, bOnWall);
 }
 
-FGameplayTag USimpleStatics::GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals,
-	const FSimpleTurnLocoSet& Set)
+FGameplayTag USimpleStatics::GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals, const FSimpleTurnLocoSet& Set, bool bOnWall)
 {
-	return Cardinals.GetCurrentCardinal(Set);
+	return Cardinals.GetCurrentCardinal(Set, bOnWall);
 }
 
-FGameplayTag USimpleStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType)
+FGameplayTag USimpleStatics::GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode, ESimpleCardinalType CardinalType, bool bOnWall)
 {
-	return Cardinals.GetCurrentCardinal(CardinalMode, CardinalType);
+	return Cardinals.GetCurrentCardinal(CardinalMode, CardinalType, bOnWall);
 }
 
 FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& CardinalMode, float Angle, float DeadZone, const FGameplayTag& CurrentDirection, bool bWasMovingLastUpdate)

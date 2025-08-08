@@ -31,10 +31,6 @@ public:
 	bool bOwnerHasInitialized = false;
 
 public:
-	/** Required for CardinalMovement to update. If true, NativeThreadSafeUpdateAnimation() calls CardinalMovement.ThreadSafeUpdate() */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
-	bool bWantsCardinalsUpdated = true;
-
 	/** Required for LeanAngle to update. If true, NativeThreadSafeUpdateAnimation() updates LeanAngle. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bWantsLeansUpdated = true;
@@ -153,6 +149,9 @@ public:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bMovementIs3D = false;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
+	bool bMovementOnWall = false;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=Properties)
 	bool bIsCrouched = false;
@@ -236,6 +235,9 @@ protected:
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bWasMovingLastUpdate = false;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
+	bool bWasMovingLastUpdateWall = false;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=System)
 	bool bWantsLandingFrameLock = false;
