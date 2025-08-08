@@ -20,20 +20,20 @@ class SIMPLELOCOMOTION_API USimpleStatics : public UBlueprintFunctionLibrary
 public:
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set);
+	static FGameplayTag GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set, bool bOnWall = false);
 
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleStartCardinal(const FSimpleCardinals& Cardinals, const FSimpleStartLocoSet& Set);
+	static FGameplayTag GetSimpleStartCardinal(const FSimpleCardinals& Cardinals, const FSimpleStartLocoSet& Set, bool bOnWall = false);
 	
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
-	static FGameplayTag GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals, const FSimpleTurnLocoSet& Set);
+	static FGameplayTag GetSimpleTurnCardinal(const FSimpleCardinals& Cardinals, const FSimpleTurnLocoSet& Set, bool bOnWall = false);
 
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag GetSimpleCardinalForTag(const FSimpleCardinals& Cardinals, FGameplayTag CardinalMode,
-		ESimpleCardinalType CardinalType);
+		ESimpleCardinalType CardinalType, bool bOnWall = false);
 
 	/**
 	 * Commonly used for splitting a float angle into cardinal sections, e.g. 90.0f becomes Right - Takes a Simple.Mode and outputs Simple.Cardinal

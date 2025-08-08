@@ -109,6 +109,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	}
 
 	bWasMovingLastUpdate = !Local2D.Velocity.IsZero();
+	bWasMovingLastUpdateWall = bMovementOnWall && !Local.Velocity.IsZero();
 
 	LocalRole = OwnerComponent->GetSimpleLocalRole();
 	bDedicatedServer = IsRunningDedicatedServer() || OwnerComponent->GetNetMode() == NM_DedicatedServer;
@@ -143,6 +144,7 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bCanJump = OwnerComponent->GetSimpleCanJump();
 	GravityZ = OwnerComponent->GetSimpleGravityZ();
 	bMovementIs3D = OwnerComponent->GetSimpleMovementIs3D();
+	bMovementOnWall = OwnerComponent->GetSimpleMovementOnWall();
 
 	bIsCrouched = OwnerComponent->GetSimpleIsCrouched();
 	bIsProned = OwnerComponent->GetSimpleIsProned();
@@ -201,10 +203,7 @@ void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 	}
 
 	// Update cardinal properties
-	// if (bWantsCardinalsUpdated)
-	{
-		Cardinals.ThreadSafeUpdate(World2D, WorldRotation);
-	}
+	Cardinals.ThreadSafeUpdate(World2D, World, WorldRotation, bMovementOnWall);
 
 	// Update gait modes
 	NativeThreadSafeUpdateGaitMode(DeltaTime);
@@ -415,6 +414,15 @@ void USimpleAnimInstance::UpdateCardinal(const FGameplayTag& CardinalMode, FSimp
 	
 	Cardinal.Velocity = USimpleStatics::SelectSimpleCardinalFromAngle(
 		CardinalMode, InCardinals.Velocity, DeadZone, Cardinal.Velocity, bWasMovingLastUpdate);
+
+	if (bMovementOnWall)
+	{
+		Cardinal.AccelerationWall = USimpleStatics::SelectSimpleCardinalFromAngle(
+			CardinalMode, InCardinals.AccelerationWall, DeadZone, Cardinal.AccelerationWall, bWasMovingLastUpdateWall);
+	
+		Cardinal.VelocityWall = USimpleStatics::SelectSimpleCardinalFromAngle(
+			CardinalMode, InCardinals.VelocityWall, DeadZone, Cardinal.VelocityWall, bWasMovingLastUpdateWall);
+	}
 }
 
 float USimpleAnimInstance::GetLocomotionCardinalAngle(ESimpleCardinalType CardinalType) const

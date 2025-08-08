@@ -36,6 +36,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.2
+* Add cardinal support for wall movement
+
 ### 1.0.1
 * Replace native ptr with TObjectPtr
 

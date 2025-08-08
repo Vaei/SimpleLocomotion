@@ -26,12 +26,12 @@ float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& GaitTag)
 	return 0.f;
 }
 
-FGameplayTag FSimpleCardinal::GetCardinal(ESimpleCardinalType CardinalType) const
+FGameplayTag FSimpleCardinal::GetCardinal(ESimpleCardinalType CardinalType, bool bOnWall) const
 {
 	switch (CardinalType)
 	{
-		case ESimpleCardinalType::Acceleration: return Acceleration;
-		case ESimpleCardinalType::Velocity: return Velocity;
+	case ESimpleCardinalType::Acceleration: return bOnWall ? AccelerationWall : Acceleration;
+	case ESimpleCardinalType::Velocity: return bOnWall ? VelocityWall : Velocity;
 	}
 	return FGameplayTag::EmptyTag;
 }
@@ -269,7 +269,7 @@ void FSimpleCardinals::SetCardinalEnabled(const FGameplayTag& CardinalModeTag, b
 	}
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType, bool bOnWall) const
 {
 	if (CardinalModeTag == FGameplayTag::EmptyTag || !bHasEverUpdated)
 	{
@@ -287,7 +287,7 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	{
 		if (LIKELY(ensure(MatchingCardinal->bEnabled)))  // Probably shouldn't have been cached if it can be false
 		{
-			return MatchingCardinal->GetCardinal(CardinalType);
+			return MatchingCardinal->GetCardinal(CardinalType, bOnWall);
 		}
 	}
 	else
@@ -298,61 +298,61 @@ FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FGameplayTag& CardinalMo
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet& LocomotionSet, bool bOnWall) const
 {
-	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
+	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType, bOnWall);
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStrafeLocoSet* LocomotionSet, bool bOnWall) const
 {
 	if (LocomotionSet)
 	{
-		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType, bOnWall);
 	}
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet& LocomotionSet, bool bOnWall) const
 {
-	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
+	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType, bOnWall);
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleStartLocoSet* LocomotionSet, bool bOnWall) const
 {
 	if (LocomotionSet)
 	{
-		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType, bOnWall);
 	}
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet* LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet* LocomotionSet, bool bOnWall) const
 {
 	if (LocomotionSet)
 	{
-		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType);
+		return GetCurrentCardinal(LocomotionSet->Mode, LocomotionSet->CardinalType, bOnWall);
 	}
 	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet& LocomotionSet) const
+FGameplayTag FSimpleCardinals::GetCurrentCardinal(const FSimpleTurnLocoSet& LocomotionSet, bool bOnWall) const
 {
-	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType);
+	return GetCurrentCardinal(LocomotionSet.Mode, LocomotionSet.CardinalType, bOnWall);
 }
 
-float FSimpleCardinals::GetDirectionAngle(ESimpleCardinalType CardinalType) const
+float FSimpleCardinals::GetDirectionAngle(ESimpleCardinalType CardinalType, bool bHorizontal) const
 {
 	switch (CardinalType)
 	{
-		case ESimpleCardinalType::Acceleration: return Acceleration;
-		case ESimpleCardinalType::Velocity: return Velocity;
+	case ESimpleCardinalType::Acceleration: return bHorizontal ? Acceleration : AccelerationWall;
+	case ESimpleCardinalType::Velocity: return bHorizontal ? Velocity : VelocityWall;
 	}
 	return 0.f;
 }
 
-void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation)
+void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FSimpleMovement& World, const FRotator& WorldRotation, bool bOnWall)
 {
-	ThreadSafeUpdate_Internal(World2D, WorldRotation);
+	ThreadSafeUpdate_Internal(World2D, World, WorldRotation, bOnWall);
 
 	// Update all cardinals - these are bound in USimpleAnimInstance::NativeInitializeAnimation
 	for (auto& CardinalItr : GetCardinals())
@@ -368,7 +368,7 @@ void FSimpleCardinals::ThreadSafeUpdate(const FSimpleMovement& World2D, const FR
 	bHasEverUpdated = true;
 }
 
-void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation)
+void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FSimpleMovement& World, const FRotator& WorldRotation, bool bOnWall)
 {
 	if (!bHasCachedCardinals)
 	{
@@ -377,6 +377,17 @@ void FSimpleCardinals::ThreadSafeUpdate_Internal(const FSimpleMovement& World2D,
 	
 	Velocity = CalculateDirection(World2D.Velocity, WorldRotation);
 	Acceleration = CalculateDirection(World2D.Acceleration, WorldRotation);
+	
+	if (bOnWall)
+	{
+		VelocityWall = CalculateDirectionWall(World.Velocity, WorldRotation);
+		AccelerationWall = CalculateDirectionWall(World.Acceleration, WorldRotation);
+	}
+	else
+	{
+		VelocityWall = 0.f;
+		AccelerationWall = 0.f;
+	}
 }
 
 float FSimpleCardinals::CalculateDirection(const FVector& Velocity, const FRotator& BaseRotation)
@@ -403,6 +414,33 @@ float FSimpleCardinals::CalculateDirection(const FVector& Velocity, const FRotat
 		}
 
 		return ForwardDeltaDegree;
+	}
+
+	return 0.f;
+}
+
+float FSimpleCardinals::CalculateDirectionWall(const FVector& Velocity, const FRotator& BaseRotation)
+{
+	if (!Velocity.IsNearlyZero())
+	{
+		const FMatrix RotMatrix = FRotationMatrix(BaseRotation);
+		const FVector UpVector = RotMatrix.GetScaledAxis(EAxis::Z);
+		const FVector RightVector = RotMatrix.GetScaledAxis(EAxis::Y);
+		const FVector NormalizedVel = Velocity.GetSafeNormal();
+
+		// get a cos(alpha) of up vector vs velocity
+		const float UpwardCosAngle = FVector::DotProduct(UpVector, NormalizedVel);
+		// now get the alpha and convert to degree
+		float UpwardDeltaDegree = FMath::RadiansToDegrees(FMath::Acos(UpwardCosAngle));
+
+		// depending on where right vector is, flip it
+		const float RightCosAngle = static_cast<float>(FVector::DotProduct(RightVector, NormalizedVel));
+		if (RightCosAngle < 0.f)
+		{
+			UpwardDeltaDegree *= -1.f;
+		}
+		
+		return UpwardDeltaDegree;
 	}
 
 	return 0.f;

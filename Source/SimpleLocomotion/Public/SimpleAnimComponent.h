@@ -116,6 +116,9 @@ public:
 
 	/** e.g. UCharacterMovementComponent::IsSwimming() || UCharacterMovementComponent::IsFlying() */
 	virtual bool GetSimpleMovementIs3D() const { return false; }
+
+	/** e.g. UCharacterMovementComponent::IsClimbingLadder || UCharacterMovementComponent::IsClimbingWall */
+	virtual bool GetSimpleMovementOnWall() const { return false; }
 	
 	/** UCharacterMovementComponent::MovementMode != MOVE_None */
 	virtual bool GetSimpleIsMoveModeValid() const { return true; };

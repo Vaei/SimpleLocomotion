@@ -124,10 +124,18 @@ struct SIMPLELOCOMOTION_API FSimpleCardinal
 	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(GameplayTagFilter="Simple.Cardinal"))
 	FGameplayTag Velocity;
 
+	/** Used for climbing walls, ladders, etc. */
+	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(GameplayTagFilter="Simple.Cardinal"))
+	FGameplayTag AccelerationWall;
+
+	/** Used for climbing walls, ladders, etc. */
+	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(GameplayTagFilter="Simple.Cardinal"))
+	FGameplayTag VelocityWall;
+
 	/** Bound in USimpleAnimInstance::NativeInitializeAnimation */
 	FSimpleCardinalUpdate UpdateDelegate;
 
-	FGameplayTag GetCardinal(ESimpleCardinalType CardinalType) const;
+	FGameplayTag GetCardinal(ESimpleCardinalType CardinalType, bool bOnWall = false) const;
 };
 
 /**
@@ -141,10 +149,14 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	
 	FSimpleCardinals(
 		float InVelocity = 0.f,
-		float InAcceleration = 0.f
+		float InAcceleration = 0.f,
+		float InVelocity3D = 0.f,
+		float InAcceleration3D = 0.f
 		)
 		: Velocity(InVelocity)
 		, Acceleration(InAcceleration)
+		, VelocityWall(InVelocity3D)
+		, AccelerationWall(InAcceleration3D)
 		, bHasEverUpdated(false)
 		, bHasCachedCardinals(false)
 	{
@@ -153,13 +165,15 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	
 	FSimpleCardinals(
 		const FSimpleMovement& World2D,
-		const FRotator& WorldRotation
+		const FSimpleMovement& World,
+		const FRotator& WorldRotation,
+		bool bOnWall
 		)
 		: bHasEverUpdated(false)
 		, bHasCachedCardinals(false)
 	{
 		ConstructDefaultCardinals();
-		ThreadSafeUpdate_Internal(World2D, WorldRotation);
+		ThreadSafeUpdate_Internal(World2D, World, WorldRotation, bOnWall);
 	}
 
 	void ConstructDefaultCardinals(bool bEnableDefaultCardinals = true);
@@ -189,26 +203,33 @@ struct SIMPLELOCOMOTION_API FSimpleCardinals
 	float Acceleration;
 
 	UPROPERTY(BlueprintReadOnly, Category=Properties)
+	float VelocityWall;
+
+	UPROPERTY(BlueprintReadOnly, Category=Properties)
+	float AccelerationWall;
+	
+	UPROPERTY(BlueprintReadOnly, Category=Properties)
 	bool bHasEverUpdated;
 
 	/**
 	 * Get current cardinal based on Simple.Mode and CardinalType, e.g. Simple.Mode.Strafe.1Way and ESimpleCardinalType::Acceleration
 	 * @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left
 	 */
-	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType) const;
+	FGameplayTag GetCurrentCardinal(const FGameplayTag& CardinalModeTag, ESimpleCardinalType CardinalType, bool bOnWall = false) const;
 
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet* LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet* LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet& LocomotionSet) const;
-	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet* LocomotionSet) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet& LocomotionSet, bool bOnWall = false) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStrafeLocoSet* LocomotionSet, bool bOnWall = false) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet& LocomotionSet, bool bOnWall = false) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleStartLocoSet* LocomotionSet, bool bOnWall = false) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet& LocomotionSet, bool bOnWall = false) const;
+	FGameplayTag GetCurrentCardinal(const struct FSimpleTurnLocoSet* LocomotionSet, bool bOnWall = false) const;
 	
-	float GetDirectionAngle(ESimpleCardinalType CardinalType) const;
+	float GetDirectionAngle(ESimpleCardinalType CardinalType, bool bHorizontal = true) const;
 
-	void ThreadSafeUpdate(const FSimpleMovement& World2D, const FRotator& WorldRotation);
+	void ThreadSafeUpdate(const FSimpleMovement& World2D, const FSimpleMovement& World, const FRotator& WorldRotation, bool bOnWall = false);
 
 	static float CalculateDirection(const FVector& Velocity, const FRotator& BaseRotation);
+	static float CalculateDirectionWall(const FVector& Velocity, const FRotator& BaseRotation);
 
 	void UpdateCardinals(const TMap<FGameplayTag, FSimpleCardinal>& NewCardinals);
 	const TMap<FGameplayTag, FSimpleCardinal>& GetDefaultCardinals() const { return Cardinals; }
@@ -229,6 +250,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category=Properties, meta=(GameplayTagFilter="Simple.Mode"))
 	TMap<FGameplayTag, FSimpleCardinal> CachedCardinals;
 
-	void ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FRotator& WorldRotation);
+	void ThreadSafeUpdate_Internal(const FSimpleMovement& World2D, const FSimpleMovement& World, const FRotator& WorldRotation, bool bOnWall = false);
 };
 
