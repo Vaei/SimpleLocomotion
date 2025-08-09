@@ -152,6 +152,21 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeLocoSet
 
 	FSimpleStrafeLocoSet();
 
+#if WITH_EDITORONLY_DATA
+	// Details customization
+	
+	UPROPERTY()
+	bool bDisableAway = false;
+
+	UPROPERTY()
+	bool bDisableInertialBlending = false;
+
+	UPROPERTY()
+	bool bDisableCardinalType = false;
+	
+	// ~Details customization
+#endif
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Strafe"))
 	FGameplayTag Mode;
 	
@@ -244,6 +259,15 @@ struct SIMPLELOCOMOTION_API FSimpleStartLocoSet
 
 	FSimpleStartLocoSet();
 
+#if WITH_EDITORONLY_DATA
+	// Details customization
+
+	UPROPERTY()
+	bool bDisableCardinalType = false;
+	
+	// ~Details customization
+#endif
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Start"))
 	FGameplayTag Mode;
 
@@ -325,6 +349,15 @@ struct SIMPLELOCOMOTION_API FSimpleTurnLocoSet
 
 	FSimpleTurnLocoSet();
 
+#if WITH_EDITORONLY_DATA
+	// Details customization
+
+	UPROPERTY()
+	bool bDisableCardinalType = false;
+	
+	// ~Details customization
+#endif
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Turn"))
 	FGameplayTag Mode;
 

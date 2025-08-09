@@ -39,6 +39,30 @@ void FSimpleStrafeLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHa
 #endif
 	}));
 
+	// Check if we disabled inertial blending via FSimpleStrafeLocoSet::bDisableInertialBlending
+	const TSharedPtr<IPropertyHandle> DisableInertialBlendingProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, bDisableInertialBlending));
+	bool bDisableInertialBlending = false;
+	if (DisableInertialBlendingProperty.IsValid())
+	{
+		DisableInertialBlendingProperty->GetValue(bDisableInertialBlending);
+	}
+	
+	// Check if we disabled cardinal type via FSimpleStrafeLocoSet::bDisableCardinalType
+	const TSharedPtr<IPropertyHandle> DisableCardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, bDisableCardinalType));
+	bool bDisableCardinalType = false;
+	if (DisableCardinalTypeProperty.IsValid())
+	{
+		DisableCardinalTypeProperty->GetValue(bDisableCardinalType);
+	}
+	
+	// Check if we disabled away strafes via FSimpleStrafeLocoSet::bDisableAway
+	const TSharedPtr<IPropertyHandle> DisableAwayProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, bDisableAway));
+	bool bDisableAway = false;
+	if (DisableAwayProperty.IsValid())
+	{
+		DisableAwayProperty->GetValue(bDisableAway);
+	}
+	
 	// Determine the mode tag
 	FString ModeTagName;
 	FGameplayTag ModeTag;
@@ -61,10 +85,10 @@ void FSimpleStrafeLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHa
 	const bool bStrafe = b4Way || b6Way || b8Way || b10Way;
 	const bool bLateral = bStrafe || b2Way;
 	const bool bDiagonal = b8Way || b10Way;
-	const bool bAway = b6Way || b10Way;
-	
+	const bool bAway = (b6Way || b10Way) && !bDisableAway;
+
 	// Add with conditional visibility
-	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, InertialBlendTime)), true);
+	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, InertialBlendTime)), !bDisableInertialBlending);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, Forward)), !b2Way);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, ForwardLeft)), bDiagonal);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, ForwardRight)), bDiagonal);
@@ -75,10 +99,7 @@ void FSimpleStrafeLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHa
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, Backward)), bStrafe);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, BackwardLeft)), bDiagonal);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, BackwardRight)), bDiagonal);
-
-	// Add CardinalType property
-	const TSharedPtr<IPropertyHandle> CardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, CardinalType));
-	ChildBuilder.AddProperty(CardinalTypeProperty.ToSharedRef());
+	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, CardinalType)), !bDisableCardinalType);
 }
 
 void FSimpleStrafeLocoSetCustomization::AddPropertyWithVisibility(IDetailChildrenBuilder& ChildBuilder, const TSharedPtr<IPropertyHandle>& PropertyHandle, bool bVisible)

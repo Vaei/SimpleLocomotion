@@ -40,7 +40,15 @@ void FSimpleTurnLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 		CustomizationUtils.GetPropertyUtilities().Get()->ForceRefresh();
 #endif
 	}));
-
+	
+	// Check if we disabled cardinal type via FSimpleStrafeLocoSet::bDisableCardinalType
+	const TSharedPtr<IPropertyHandle> DisableCardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStrafeLocoSet, bDisableCardinalType));
+	bool bDisableCardinalType = false;
+	if (DisableCardinalTypeProperty.IsValid())
+	{
+		DisableCardinalTypeProperty->GetValue(bDisableCardinalType);
+	}
+	
 	// Determine the mode tag
 	FString ModeTagName;
 	FGameplayTag ModeTag;
@@ -66,10 +74,7 @@ void FSimpleTurnLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocoSet, BackwardTurnRight)), true);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocoSet, BackwardLeft)), b8Way);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocoSet, BackwardRight)), b8Way);
-
-	// Add CardinalType property
-	const TSharedPtr<IPropertyHandle> CardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocoSet, CardinalType));
-	ChildBuilder.AddProperty(CardinalTypeProperty.ToSharedRef());
+	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleTurnLocoSet, CardinalType)), !bDisableCardinalType);
 }
 
 void FSimpleTurnLocoSetCustomization::AddPropertyWithVisibility(IDetailChildrenBuilder& ChildBuilder, const TSharedPtr<IPropertyHandle>& PropertyHandle, bool bVisible)
