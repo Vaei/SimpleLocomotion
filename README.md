@@ -36,6 +36,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.5
+* Add `FSimpleStrafeMontageSet`
+* Details customization can hide unused properties for directional loco sets (C++ only)
+
 ### 1.0.4
 
 _You need to add `DefaultSimpleLocomotion.ini` for redirectors - [Get it here](https://github.com/Vaei/SimpleLocomotion/commit/d5060dd2bb24e15952acb2e6067b0c67e3955791) and add it to the plugin's config folder_

@@ -248,6 +248,79 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeLocoSet
 };
 
 /**
+ * Container holding each possible cardinal animation
+ * Has a property type customization that hides any that are not currently in use based on the assigned Mode
+ * Contained by FSimpleGaitSet, allowing separate locomotion set for each gait mode
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStrafeMontageSet
+{
+	GENERATED_BODY()
+
+	FSimpleStrafeMontageSet();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Mode.Strafe.1Way,Simple.Mode.Strafe.2Way,Simple.Mode.Strafe.4Way,Simple.Mode.Strafe.8Way"))
+	FGameplayTag Mode;
+
+	/** Moving 0º forward */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> Forward;
+
+	/** Strafing -45º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> ForwardLeft;
+
+	/** Strafing 45º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> ForwardRight;
+	
+	/** Strafing -90º to the left while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> Left;
+	
+	/** Strafing 90º to the right while pelvis faces toward the movement direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> Right;
+
+	/** Strafing 180º backwards */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> Backward;
+	
+	/** Strafing -135º to the left */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> BackwardLeft;
+	
+	/** Strafing 135º to the right */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<UAnimMontage> BackwardRight;
+
+	bool operator==(const FSimpleStrafeMontageSet& Other) const
+	{
+		return Mode == Other.Mode &&
+			Forward == Other.Forward &&
+			ForwardLeft == Other.ForwardLeft &&
+			ForwardRight == Other.ForwardRight &&
+			Left == Other.Left &&
+			Right == Other.Right &&
+			Backward == Other.Backward &&
+			BackwardLeft == Other.BackwardLeft &&
+			BackwardRight == Other.BackwardRight;
+	}
+
+	bool operator!=(const FSimpleStrafeMontageSet& Other) const
+	{
+		return !(*this == Other);
+	}
+	
+	bool IsValid() const
+	{
+		return *this != FSimpleStrafeMontageSet();
+	}
+
+	UAnimMontage* GetMontage(const FGameplayTag& CardinalTag) const;
+};
+
+/**
  * Start moving locomotion set
  * For forward-facing movement only
  * Strafe uses the FSimpleLocoSet even for starts
