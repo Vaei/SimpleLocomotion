@@ -8,6 +8,12 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleStatics)
 
+UAnimMontage* USimpleStatics::GetSimpleMontageFromSet(const FSimpleStrafeMontageSet& Set,
+	const FGameplayTag& CardinalTag)
+{
+	return Set.GetMontage(CardinalTag);
+}
+
 FGameplayTag USimpleStatics::GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set, bool bOnWall)
 {
 	return Cardinals.GetCurrentCardinal(Set, bOnWall);

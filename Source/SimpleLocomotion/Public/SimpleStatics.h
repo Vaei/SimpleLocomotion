@@ -18,6 +18,11 @@ class SIMPLELOCOMOTION_API USimpleStatics : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	/** @return The montage for the given cardinal tag, or nullptr if not found */
+	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
+	static UAnimMontage* GetSimpleMontageFromSet(const FSimpleStrafeMontageSet& Set, const FGameplayTag& CardinalTag);
+	
+public:
 	/** @return Simple.Cardinal, e.g. Simple.Cardinal.Forward.Left */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static FGameplayTag GetSimpleStrafeCardinal(const FSimpleCardinals& Cardinals, const FSimpleStrafeLocoSet& Set, bool bOnWall = false);
