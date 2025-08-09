@@ -38,7 +38,15 @@ void FSimpleStartLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHan
 		CustomizationUtils.GetPropertyUtilities().Get()->ForceRefresh();
 #endif
 	}));
-
+	
+	// Check if we disabled cardinal type via FSimpleStrafeLocoSet::bDisableCardinalType
+	const TSharedPtr<IPropertyHandle> DisableCardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, bDisableCardinalType));
+	bool bDisableCardinalType = false;
+	if (DisableCardinalTypeProperty.IsValid())
+	{
+		DisableCardinalTypeProperty->GetValue(bDisableCardinalType);
+	}
+	
 	// Determine the mode tag
 	FString ModeTagName;
 	FGameplayTag ModeTag;
@@ -66,10 +74,7 @@ void FSimpleStartLocoSetCustomization::CustomizeChildren(TSharedRef<IPropertyHan
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, BackwardTurnRight)), !b1Way);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, BackwardLeft)), b8Way);
 	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, BackwardRight)), b8Way);
-
-	// Add CardinalType property
-	const TSharedPtr<IPropertyHandle> CardinalTypeProperty = PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, CardinalType));
-	ChildBuilder.AddProperty(CardinalTypeProperty.ToSharedRef());
+	AddPropertyWithVisibility(ChildBuilder, PropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSimpleStartLocoSet, CardinalType)), !bDisableCardinalType);
 }
 
 void FSimpleStartLocoSetCustomization::AddPropertyWithVisibility(IDetailChildrenBuilder& ChildBuilder, const TSharedPtr<IPropertyHandle>& PropertyHandle, bool bVisible)
