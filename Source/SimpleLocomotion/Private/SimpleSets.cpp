@@ -41,6 +41,32 @@ UAnimSequence* FSimpleStrafeLocoSet::GetAnimation(const FGameplayTag& CardinalTa
 	return nullptr;
 }
 
+FSimpleStrafeMontageSet::FSimpleStrafeMontageSet()
+	: Mode(FSimpleTags::Simple_Mode_Strafe_4Way)
+	, Forward(nullptr)
+	, ForwardLeft(nullptr)
+	, ForwardRight(nullptr)
+	, Left(nullptr)
+	, Right(nullptr)
+	, Backward(nullptr)
+	, BackwardLeft(nullptr)
+	, BackwardRight(nullptr)
+{}
+
+UAnimMontage* FSimpleStrafeMontageSet::GetMontage(const FGameplayTag& CardinalTag) const
+{
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward)				{ return Forward; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Left)		{ return ForwardLeft; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Forward_Right)		{ return ForwardRight; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Left)				{ return Left; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Right)				{ return Right; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Backward)			{ return Backward; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Backward_Left)		{ return BackwardLeft; }
+	if (CardinalTag == FSimpleTags::Simple_Cardinal_Backward_Right)		{ return BackwardRight; }
+	ensure(false);  // Did you enable the cardinals you are trying to use?
+	return nullptr;
+}
+
 FSimpleStartLocoSet::FSimpleStartLocoSet()
 	: Mode(FSimpleTags::Simple_Mode_Start_1Way)
 	, Forward(nullptr)

@@ -6,6 +6,7 @@
 #include "SimpleAnimInstanceCustomization.h"
 #include "SimpleStartLocoSetCustomization.h"
 #include "SimpleStrafeLocoSetCustomization.h"
+#include "SimpleStrafeMontageSetCustomization.h"
 #include "SimpleTurnLocoSetCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FSimpleLocomotionEditorModule"
@@ -37,6 +38,10 @@ void FSimpleLocomotionEditorModule::StartupModule()
 	// FSimpleTurnLocoSet (SimpleLocomotionTypes)
 	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleTurnLocoSet"),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleTurnLocoSetCustomization::MakeInstance));
+
+	// FSimpleStrafeMontageSet (SimpleLocomotionTypes)
+	PropertyModule.RegisterCustomPropertyTypeLayout(TEXT("SimpleStrafeMontageSet"),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSimpleStrafeMontageSetCustomization::MakeInstance));
 }
 
 void FSimpleLocomotionEditorModule::ShutdownModule()
@@ -50,6 +55,7 @@ void FSimpleLocomotionEditorModule::ShutdownModule()
 		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStrafeLocoSet");
 		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStartLocoSet");
 		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleTurnLocoSet");
+		PropertyModule->UnregisterCustomPropertyTypeLayout("SimpleStrafeMontageSet");
 	}
 }
 
