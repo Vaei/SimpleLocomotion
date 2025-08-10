@@ -47,6 +47,14 @@ struct SIMPLELOCOMOTION_API FBlendByBool
 {
 	GENERATED_BODY()
 
+	FBlendByBool(float InTrueBlendTime = 0.1f, float InFalseBlendTime = 0.1f,
+		EAlphaBlendOption InBlendType = EAlphaBlendOption::HermiteCubic, UCurveFloat* InCustomBlendCurve = nullptr)
+		: TrueBlendTime(InTrueBlendTime)
+		, FalseBlendTime(InFalseBlendTime)
+		, BlendType(InBlendType)
+		, CustomBlendCurve(InCustomBlendCurve)
+	{}
+
 	/** Blend time (in seconds) when transitioning from false → true. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
 	float TrueBlendTime = 0.1f;
