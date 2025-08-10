@@ -34,46 +34,46 @@ void FBlendByBoolState::Initialize(bool bActive, const FBlendByBool& Params)
 	RemainingTime = 0.f;
 }
 
-float FBlendByBool::Update(bool bActive, FBlendByBoolState& State, float DeltaTime) const
+float FBlendByBoolState::Update(bool bActive, const FBlendByBool& Params, float DeltaTime)
 {
 	// Initialize the state if it hasn't been done yet
-	if (!State.bInitialized)
+	if (!bInitialized)
 	{
-		State.Initialize(bActive, *this);
+		Initialize(bActive, Params);
 		if (DeltaTime < 1e-6f)
 		{
 			// Assuming this was called with no delta, we only wanted to initialize the state
-			return State.Weight;
+			return Weight;
 		}
 	}
 
 	// Detect activation change
-	if (bActive != State.bWasActive)
+	if (bActive != bWasActive)
 	{
 		// Set up the blend to move from current weight to target weight
 		const float TargetAlpha = bActive ? 1.f : 0.f;
-		const float CurrentWeight = State.Weight;
+		const float CurrentWeight = Weight;
 
-		State.Blend.SetBlendTime(bActive ? TrueBlendTime : FalseBlendTime);
-		State.Blend.SetValueRange(CurrentWeight, TargetAlpha);
-		State.StartAlpha = CurrentWeight;
-		State.RemainingTime = bActive ? TrueBlendTime : FalseBlendTime;
+		Blend.SetBlendTime(bActive ? Params.TrueBlendTime : Params.FalseBlendTime);
+		Blend.SetValueRange(CurrentWeight, TargetAlpha);
+		StartAlpha = CurrentWeight;
+		RemainingTime = bActive ? Params.TrueBlendTime : Params.FalseBlendTime;
 
 		// Reset the blend so it starts counting from 0 time
-		State.Blend.ResetAlpha();
+		Blend.ResetAlpha();
 	}
 
 	// Advance the blend
-	State.Blend.Update(DeltaTime);
-	State.RemainingTime = FMath::Max(State.RemainingTime - DeltaTime, 0.f);
+	Blend.Update(DeltaTime);
+	RemainingTime = FMath::Max(RemainingTime - DeltaTime, 0.f);
 
 	// Get final weight
-	State.Weight = State.Blend.GetBlendedValue();
+	Weight = Blend.GetBlendedValue();
 
 	// Cache the active state
-	State.bWasActive = bActive;
+	bWasActive = bActive;
 
-	return State.Weight;
+	return Weight;
 }
 
 float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& GaitTag)

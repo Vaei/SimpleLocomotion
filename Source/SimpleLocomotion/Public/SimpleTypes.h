@@ -7,7 +7,6 @@
 
 #include "SimpleTypes.generated.h"
 
-struct FBlendByBool;
 class UAnimSequence;
 
 /** Call from ACharacter::Landed or equivalent */
@@ -34,6 +33,35 @@ enum class ESimpleCardinalType : uint8
 {
 	Acceleration			UMETA(Tooltip="Local Space Acceleration"),
 	Velocity				UMETA(Tooltip="Local Space Velocity"),
+};
+
+/**
+ * Parameters for a "Blend Poses by Bool" operation.
+ * Encapsulates the timings, blend curve, and blend type used to control transitions
+ * between a "true" and "false" animation pose.
+ *
+ * @see USimpleStatics::BlendByBool()
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FBlendByBool
+{
+	GENERATED_BODY()
+
+	/** Blend time (in seconds) when transitioning from false → true. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	float TrueBlendTime = 0.1f;
+
+	/** Blend time (in seconds) when transitioning from true → false. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	float FalseBlendTime = 0.1f;
+
+	/** Blend curve type used for interpolation (e.g., linear, cubic, etc.). */
+	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
+	EAlphaBlendOption BlendType = EAlphaBlendOption::HermiteCubic;
+
+	/** Optional custom blend curve. Overrides BlendType if provided. */
+	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
+	TObjectPtr<UCurveFloat> CustomBlendCurve = nullptr;
 };
 
 /**
@@ -75,44 +103,15 @@ struct SIMPLELOCOMOTION_API FBlendByBoolState
 	 * @param Params  - Blend parameters (times, curves, blend type).
 	 */
 	void Initialize(bool bActive, const FBlendByBool& Params);
-};
-
-/**
- * Parameters for a "Blend Poses by Bool" operation.
- * Encapsulates the timings, blend curve, and blend type used to control transitions
- * between a "true" and "false" animation pose.
- *
- * @see USimpleStatics::BlendByBool()
- */
-USTRUCT(BlueprintType)
-struct SIMPLELOCOMOTION_API FBlendByBool
-{
-	GENERATED_BODY()
-
-	/** Blend time (in seconds) when transitioning from false → true. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	float TrueBlendTime = 0.1f;
-
-	/** Blend time (in seconds) when transitioning from true → false. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
-	float FalseBlendTime = 0.1f;
-
-	/** Blend curve type used for interpolation (e.g., linear, cubic, etc.). */
-	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
-	EAlphaBlendOption BlendType = EAlphaBlendOption::HermiteCubic;
-
-	/** Optional custom blend curve. Overrides BlendType if provided. */
-	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
-	TObjectPtr<UCurveFloat> CustomBlendCurve = nullptr;
 
 	/**
 	 * Updates the blend state based on the current bool value.
 	 * @param bActive - Current bool value (true or false pose active).
-	 * @param State   - Persistent blend state to update.
+	 * @param Params - Blend parameters (times, curves, blend type).
 	 * @param DeltaTime - Time step in seconds since the last update.
 	 * @return The new blended weight after updating (0.0 to 1.0).
 	 */
-	float Update(bool bActive, FBlendByBoolState& State, float DeltaTime) const;
+	float Update(bool bActive, const FBlendByBool& Params, float DeltaTime);
 };
 
 /**

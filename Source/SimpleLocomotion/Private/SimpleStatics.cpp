@@ -10,7 +10,7 @@
 
 float USimpleStatics::BlendByBool(bool bActive, const FBlendByBool& Blend, FBlendByBoolState& State, float DeltaTime)
 {
-	return Blend.Update(bActive, State, DeltaTime);
+	return State.Update(bActive, Blend, DeltaTime);
 }
 
 UAnimMontage* USimpleStatics::GetSimpleMontageFromSet(const FSimpleStrafeMontageSet& Set,
