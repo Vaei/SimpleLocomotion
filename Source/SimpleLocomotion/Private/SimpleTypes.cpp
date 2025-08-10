@@ -11,6 +11,71 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogSimpleTypes, Log, All);
 
+void FBlendByBoolState::Initialize(bool bActive, const FBlendByBool& Params)
+{
+	// Mark the state as initialized so Update() knows it’s ready for use
+	bInitialized = true;
+
+	// Configure blend curve type and optional custom curve
+	Blend.SetBlendOption(Params.BlendType);
+	Blend.SetCustomCurve(Params.CustomBlendCurve);
+
+	// Determine the starting alpha value (1.0 if active, 0.0 if inactive)
+	StartAlpha = bActive ? 1.f : 0.f;
+
+	// Immediately set the blend to this alpha and keep it there (no interpolation)
+	Blend.SetBlendTime(0.f);
+	Blend.SetValueRange(StartAlpha, StartAlpha);
+	Blend.SetAlpha(1.f); // Progress = fully blended to StartAlpha
+	
+	// Cache state
+	bWasActive = bActive;
+	Weight = StartAlpha;
+	RemainingTime = 0.f;
+}
+
+float FBlendByBool::Update(bool bActive, FBlendByBoolState& State, float DeltaTime) const
+{
+	// Initialize the state if it hasn't been done yet
+	if (!State.bInitialized)
+	{
+		State.Initialize(bActive, *this);
+		if (DeltaTime < 1e-6f)
+		{
+			// Assuming this was called with no delta, we only wanted to initialize the state
+			return State.Weight;
+		}
+	}
+
+	// Detect activation change
+	if (bActive != State.bWasActive)
+	{
+		// Set up the blend to move from current weight to target weight
+		const float TargetAlpha = bActive ? 1.f : 0.f;
+		const float CurrentWeight = State.Weight;
+
+		State.Blend.SetBlendTime(bActive ? TrueBlendTime : FalseBlendTime);
+		State.Blend.SetValueRange(CurrentWeight, TargetAlpha);
+		State.StartAlpha = CurrentWeight;
+		State.RemainingTime = bActive ? TrueBlendTime : FalseBlendTime;
+
+		// Reset the blend so it starts counting from 0 time
+		State.Blend.ResetAlpha();
+	}
+
+	// Advance the blend
+	State.Blend.Update(DeltaTime);
+	State.RemainingTime = FMath::Max(State.RemainingTime - DeltaTime, 0.f);
+
+	// Get final weight
+	State.Weight = State.Blend.GetBlendedValue();
+
+	// Cache the active state
+	State.bWasActive = bActive;
+
+	return State.Weight;
+}
+
 float FSimpleGaitSpeed::GetMaxSpeed(const FGameplayTag& GaitTag)
 {
 	if (const float* MaxSpeed = MaxSpeeds.Find(GaitTag))

@@ -18,6 +18,20 @@ class SIMPLELOCOMOTION_API USimpleStatics : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Performs the same blending as the "Blend Poses by Bool" anim node.
+	 * Smoothly interpolates between two states (true/false) based on the provided bool value.
+	 *
+	 * @param bActive    - Current bool value that determines which pose should be active.
+	 * @param Blend      - Blend parameters (timings, curve type, optional custom curve).
+	 * @param State      - Persistent blend state used to track blend progress across frames. Passed by reference so it can be updated and reused.
+	 * @param DeltaTime  - Time step in seconds since the last update call.
+	 * @return The current blend weight after updating (0.0 = false pose, 1.0 = true pose).
+	 */
+	UFUNCTION(BlueprintCallable, Category=Animation, meta=(BlueprintThreadSafe))
+	static float BlendByBool(bool bActive, const FBlendByBool& Blend, UPARAM(ref) FBlendByBoolState& State, float DeltaTime);
+	
+public:
 	/** @return The montage for the given cardinal tag, or nullptr if not found */
 	UFUNCTION(BlueprintPure, Category=Animation, meta=(BlueprintThreadSafe))
 	static UAnimMontage* GetSimpleMontageFromSet(const FSimpleStrafeMontageSet& Set, const FGameplayTag& CardinalTag);

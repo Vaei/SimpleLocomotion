@@ -7,12 +7,13 @@
 
 #include "SimpleTypes.generated.h"
 
+struct FBlendByBool;
+class UAnimSequence;
+
 /** Call from ACharacter::Landed or equivalent */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FSimpleLandedSignature, const FHitResult&, Hit);
 
 DECLARE_DELEGATE_ThreeParams(FSimpleCardinalUpdate, const FGameplayTag&, struct FSimpleCardinal&, const struct FSimpleCardinals&);
-
-class UAnimSequence;
 
 UENUM(BlueprintType)
 enum class ESimpleIsValidResult : uint8
@@ -33,6 +34,85 @@ enum class ESimpleCardinalType : uint8
 {
 	Acceleration			UMETA(Tooltip="Local Space Acceleration"),
 	Velocity				UMETA(Tooltip="Local Space Velocity"),
+};
+
+/**
+ * Runtime state for a single "Blend by Bool" operation.
+ * Stores blending progress, weight, and timing information for use across frames.
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FBlendByBoolState
+{
+	GENERATED_BODY()
+
+	/** Internal alpha blend controller that handles smooth interpolation between weights. */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	FAlphaBlend Blend;
+
+	/** Whether the bool input was active in the previous frame (used to detect state changes). */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	bool bWasActive = false;
+
+	/** Current blended weight after the last update (0.0 to 1.0). */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	float Weight = 0.f;
+
+	/** Remaining time (in seconds) until the current blend completes. */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	float RemainingTime = 0.f;
+
+	/** Alpha value at the start of the most recent blend transition. */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	float StartAlpha = 0.f;
+
+	/** Whether this state has been initialized. Prevents using uninitialized blend values. */
+	UPROPERTY(BlueprintReadOnly, Category=Animation)
+	bool bInitialized = false;
+
+	/**
+	 * Initializes the blend state for the first time.
+	 * @param bActive - Initial bool value (true/false pose selection).
+	 * @param Params  - Blend parameters (times, curves, blend type).
+	 */
+	void Initialize(bool bActive, const FBlendByBool& Params);
+};
+
+/**
+ * Parameters for a "Blend Poses by Bool" operation.
+ * Encapsulates the timings, blend curve, and blend type used to control transitions
+ * between a "true" and "false" animation pose.
+ *
+ * @see USimpleStatics::BlendByBool()
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FBlendByBool
+{
+	GENERATED_BODY()
+
+	/** Blend time (in seconds) when transitioning from false → true. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	float TrueBlendTime = 0.1f;
+
+	/** Blend time (in seconds) when transitioning from true → false. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	float FalseBlendTime = 0.1f;
+
+	/** Blend curve type used for interpolation (e.g., linear, cubic, etc.). */
+	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
+	EAlphaBlendOption BlendType = EAlphaBlendOption::HermiteCubic;
+
+	/** Optional custom blend curve. Overrides BlendType if provided. */
+	UPROPERTY(EditAnywhere, Category=BlendType, meta=(FoldProperty))
+	TObjectPtr<UCurveFloat> CustomBlendCurve = nullptr;
+
+	/**
+	 * Updates the blend state based on the current bool value.
+	 * @param bActive - Current bool value (true or false pose active).
+	 * @param State   - Persistent blend state to update.
+	 * @param DeltaTime - Time step in seconds since the last update.
+	 * @return The new blended weight after updating (0.0 to 1.0).
+	 */
+	float Update(bool bActive, FBlendByBoolState& State, float DeltaTime) const;
 };
 
 /**
