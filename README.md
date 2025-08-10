@@ -36,6 +36,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.6
+* Add structs mimicking blending from Blend Poses by Bool: `USimpleStatics::BlendByBool()`
+* Fixed copyright notice
+
 ### 1.0.5
 * Add `FSimpleStrafeMontageSet`
 * Details customization can hide unused properties for directional loco sets (C++ only)

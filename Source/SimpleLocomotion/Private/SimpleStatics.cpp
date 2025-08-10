@@ -8,6 +8,11 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleStatics)
 
+float USimpleStatics::BlendByBool(bool bActive, const FBlendByBool& Blend, FBlendByBoolState& State, float DeltaTime)
+{
+	return Blend.Update(bActive, State, DeltaTime);
+}
+
 UAnimMontage* USimpleStatics::GetSimpleMontageFromSet(const FSimpleStrafeMontageSet& Set,
 	const FGameplayTag& CardinalTag)
 {
