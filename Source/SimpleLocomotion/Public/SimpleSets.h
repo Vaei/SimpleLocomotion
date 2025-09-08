@@ -872,7 +872,7 @@ class SIMPLELOCOMOTION_API USimpleSets : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	static FSimpleStrafeLocoSet DummyStrafeLocoSet;
 	static FSimpleStartLocoSet DummyStartLocoSet;
 	static FSimpleTurnLocoSet DummyTurnLocoSet;
