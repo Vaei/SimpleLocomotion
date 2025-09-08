@@ -749,9 +749,6 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeGaitSet
 	GENERATED_BODY()
 
 	FSimpleStateToStanceToStrafeGaitSet();
-	
-	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleStrafeLocoSet DummySet;
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
@@ -773,9 +770,6 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStartGaitSet
 	GENERATED_BODY()
 
 	FSimpleStateToStanceToStartGaitSet();
-	
-	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleStartLocoSet DummySet;
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
@@ -797,9 +791,6 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTurnGaitSet
 	GENERATED_BODY()
 
 	FSimpleStateToStanceToTurnGaitSet();
-	
-	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleTurnLocoSet DummySet;
 
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
@@ -822,9 +813,6 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToTransitionSet
 
 	FSimpleStanceToTransitionSet();
 
-	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleTransitionSet DummySet;
-	
 	/** Map tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTransitionSet> StanceSets;
@@ -867,9 +855,6 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTransitionSet
 
 	FSimpleStateToStanceToTransitionSet();
 
-	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
-	FSimpleTransitionSet DummySet;
-
 	/** Maps tags to sets */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStanceToTransitionSet> StateSets;
@@ -887,6 +872,12 @@ class SIMPLELOCOMOTION_API USimpleSets : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+public:
+	static FSimpleStrafeLocoSet DummyStrafeLocoSet;
+	static FSimpleStartLocoSet DummyStartLocoSet;
+	static FSimpleTurnLocoSet DummyTurnLocoSet;
+	static FSimpleTransitionSet DummyTransitionSet;
+	
 public:
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Cardinal"))
 	static UAnimSequence* SimpleStrafeLocoSet(const FSimpleStrafeLocoSet& Set, FGameplayTag Cardinal)
@@ -977,7 +968,7 @@ public:
 				}
 			}
 		}
-		return Set.DummySet;
+		return DummyStrafeLocoSet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
@@ -993,7 +984,7 @@ public:
 				}
 			}
 		}
-		return Set.DummySet;
+		return DummyStartLocoSet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))
@@ -1009,7 +1000,7 @@ public:
 				}
 			}
 		}
-		return Set.DummySet;
+		return DummyTurnLocoSet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Stance"))
@@ -1022,7 +1013,7 @@ public:
 	static const FSimpleTransitionSet& SimpleStanceToTransitionSet(const FSimpleStanceToTransitionSet& Set, FGameplayTag Stance)
 	{
 		const auto* TransitionSet = FSimpleGetter::GetSet<FSimpleTransitionSet>(Stance, Set.StanceSets, Set.Fallbacks);
-		return TransitionSet ? *TransitionSet : Set.DummySet;
+		return TransitionSet ? *TransitionSet : DummyTransitionSet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))
@@ -1039,6 +1030,6 @@ public:
 		{
 			return SimpleStanceToTransitionSet(*StanceToTransitionSet, Stance);
 		}
-		return Set.DummySet;
+		return DummyTransitionSet;
 	}
 };

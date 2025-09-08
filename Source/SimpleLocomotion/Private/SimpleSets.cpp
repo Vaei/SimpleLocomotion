@@ -8,6 +8,10 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(SimpleSets)
 
+FSimpleStrafeLocoSet USimpleSets::DummyStrafeLocoSet = {};
+FSimpleStartLocoSet USimpleSets::DummyStartLocoSet = {};
+FSimpleTurnLocoSet USimpleSets::DummyTurnLocoSet = {};
+FSimpleTransitionSet USimpleSets::DummyTransitionSet = {};
 
 FSimpleStrafeLocoSet::FSimpleStrafeLocoSet()
 	: Mode(FSimpleTags::Simple_Mode_Strafe_4Way)
