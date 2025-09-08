@@ -36,6 +36,10 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.7
+* Fix bug with fallback getter using wrong tag for TMap
+* Change how dummy sets are handled (to clean up structs)
+
 ### 1.0.6
 * Add structs mimicking blending from Blend Poses by Bool: `USimpleStatics::BlendByBool()`
 * Fixed copyright notice
