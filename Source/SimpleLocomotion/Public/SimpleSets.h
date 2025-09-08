@@ -73,7 +73,7 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 		{
 			for (const FGameplayTag& Tag : Fallback->GetGameplayTagArray())
 			{
-				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(KeyTag))
+				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(Tag))
 				{
 					return *Anim;
 				}
