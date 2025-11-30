@@ -36,6 +36,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.7
+* Remove Git LFS
+
 ### 1.0.6
 * Add structs mimicking blending from Blend Poses by Bool: `USimpleStatics::BlendByBool()`
 * Fixed copyright notice
