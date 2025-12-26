@@ -856,6 +856,26 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceSet
 };
 
 /**
+ * Holds UAnimSequence for each animation state
+ * Handles fallback when the requested state is unavailable
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToAnimSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToAnimSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, TObjectPtr<UAnimSequence>> Animations;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
  * Holds FSimpleStanceTransitionSet for each stance that is in use (e.g. Stand, Crouch, Prone)
  * Handles fallback when the requested stance is unavailable
  * e.g. if we request the Crouch stance, but we only have Stand, it could fall back to the Stand set
@@ -1030,6 +1050,12 @@ public:
 	{
 		const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceSet>(State, Set.StateSets, Set.Fallbacks, ESetType::AnimState);
 		return FSimpleGetter::GetAnim(Stance, StanceSet->Animations, StanceSet->Fallbacks);
+	}
+	
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State"))
+	static UAnimSequence* SimpleStateToAnimSet(const FSimpleStateToAnimSet& Set, FGameplayTag State)
+	{
+		return FSimpleGetter::GetAnim(State, Set.Animations, Set.Fallbacks, ESetType::AnimState);
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))

@@ -338,6 +338,11 @@ FSimpleStateToStanceSet::FSimpleStateToStanceSet()
 	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
 
+FSimpleStateToAnimSet::FSimpleStateToAnimSet()
+{
+	Animations.Add(FSimpleTags::Simple_State_Default);
+}
+
 FSimpleStateToStanceToTransitionSet::FSimpleStateToStanceToTransitionSet()
 {
 	StateSets.Add(FSimpleTags::Simple_State_Default);

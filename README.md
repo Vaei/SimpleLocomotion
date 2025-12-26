@@ -36,6 +36,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.0.8
+* Add `FSimpleStateToAnimSet`
+
 ### 1.0.7
 * Remove Git LFS
 
