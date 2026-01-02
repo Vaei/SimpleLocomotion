@@ -343,6 +343,11 @@ FSimpleStateToAnimSet::FSimpleStateToAnimSet()
 	Animations.Add(FSimpleTags::Simple_State_Default);
 }
 
+FSimpleStateToBlendSpaceSet::FSimpleStateToBlendSpaceSet()
+{
+	BlendSpaces.Add(FSimpleTags::Simple_State_Default);
+}
+
 FSimpleStateToStanceToTransitionSet::FSimpleStateToStanceToTransitionSet()
 {
 	StateSets.Add(FSimpleTags::Simple_State_Default);

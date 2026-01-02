@@ -93,6 +93,41 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 		// No available anim
 		return nullptr;
 	}
+	
+	static UBlendSpace* GetBlendSpace(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UBlendSpace>>& BlendSpaces,
+		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
+	{
+		// Return this blend space if available
+		if (const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(KeyTag))
+		{
+			return *BlendSpace;
+		}
+
+		// Otherwise fallback to the closest available
+		if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(KeyTag))
+		{
+			for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
+			{
+				if (const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(FallbackTag))
+				{
+					return *BlendSpace;
+				}
+			}
+		}
+
+		// If this is an AnimState and no fallbacks are provided, return the default state
+		if (SetType == ESetType::AnimState)
+		{
+			const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(FSimpleTags::Simple_State_Default);
+			if (ensure(BlendSpace))  // Did we accidentally mark as AnimState?
+			{
+				return *BlendSpace;
+			}
+		}
+
+		// No available blend space
+		return nullptr;
+	}
 
 	/**
 	 * Get the set of animations for the specified key tag
@@ -876,6 +911,26 @@ struct SIMPLELOCOMOTION_API FSimpleStateToAnimSet
 };
 
 /**
+ * Holds UBlendSpace for each animation state
+ * Handles fallback when the requested state is unavailable
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToBlendSpaceSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToBlendSpaceSet();
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, TObjectPtr<UBlendSpace>> BlendSpaces;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
  * Holds FSimpleStanceTransitionSet for each stance that is in use (e.g. Stand, Crouch, Prone)
  * Handles fallback when the requested stance is unavailable
  * e.g. if we request the Crouch stance, but we only have Stand, it could fall back to the Stand set
@@ -1056,6 +1111,12 @@ public:
 	static UAnimSequence* SimpleStateToAnimSet(const FSimpleStateToAnimSet& Set, FGameplayTag State)
 	{
 		return FSimpleGetter::GetAnim(State, Set.Animations, Set.Fallbacks, ESetType::AnimState);
+	}
+	
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State"))
+	static UBlendSpace* SimpleStateToBlendSpaceSet(const FSimpleStateToBlendSpaceSet& Set, FGameplayTag State)
+	{
+		return FSimpleGetter::GetBlendSpace(State, Set.BlendSpaces, Set.Fallbacks, ESetType::AnimState);
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))
