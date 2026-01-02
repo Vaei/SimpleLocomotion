@@ -71,9 +71,9 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 		// Otherwise fallback to the closest available
 		if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(KeyTag))
 		{
-			for (const FGameplayTag& Tag : Fallback->GetGameplayTagArray())
+			for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
 			{
-				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(KeyTag))
+				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(FallbackTag))
 				{
 					return *Anim;
 				}
