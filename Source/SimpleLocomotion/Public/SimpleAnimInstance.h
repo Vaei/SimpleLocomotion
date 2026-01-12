@@ -211,7 +211,7 @@ public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	FGameplayTag Stance;
 
-protected:
+public:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=State)
 	bool bStateChanged = false;
 	
