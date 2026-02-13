@@ -179,11 +179,7 @@ struct SIMPLELOCOMOTION_API FSimpleGetter
 	}
 };
 
-/**
- * Container holding each possible cardinal animation
- * Has a property type customization that hides any that are not currently in use based on the assigned Mode
- * Contained by FSimpleGaitSet, allowing separate locomotion set for each gait mode
- */
+/** Cardinal direction animations for strafing locomotion (1-way through 10-way) */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStrafeLocoSet
 {
@@ -286,11 +282,7 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeLocoSet
 	UAnimSequence* GetAnimation(const FGameplayTag& CardinalTag) const;
 };
 
-/**
- * Container holding each possible cardinal animation
- * Has a property type customization that hides any that are not currently in use based on the assigned Mode
- * Contained by FSimpleGaitSet, allowing separate locomotion set for each gait mode
- */
+/** Cardinal direction montages for strafing (1-way through 8-way) */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStrafeMontageSet
 {
@@ -562,9 +554,8 @@ struct SIMPLELOCOMOTION_API FSimpleTransitionSet
 };
 
 /**
- * Holds FSimpleLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Holds FSimpleStrafeLocoSet for each gait (e.g. Walk, Run, Sprint)
  * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStrafeGaitSet
@@ -585,9 +576,8 @@ struct SIMPLELOCOMOTION_API FSimpleStrafeGaitSet
 };
 
 /**
- * Holds FSimpleLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Holds FSimpleStartLocoSet for each gait (e.g. Walk, Run, Sprint)
  * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStartGaitSet
@@ -608,9 +598,8 @@ struct SIMPLELOCOMOTION_API FSimpleStartGaitSet
 };
 
 /**
- * Holds FSimpleTurnLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
+ * Holds FSimpleTurnLocoSet for each gait (e.g. Walk, Run, Sprint)
  * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleTurnGaitSet
@@ -652,9 +641,8 @@ struct SIMPLELOCOMOTION_API FSimpleStanceSet
 };
 
 /**
- * Holds FSimpleLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
- * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ * Holds FSimpleStrafeGaitSet for each stance (e.g. Stand, Crouch, Prone)
+ * Handles fallback when the requested stance is unavailable
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStanceToStrafeGaitSet
@@ -667,15 +655,14 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToStrafeGaitSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStrafeGaitSet> StanceSets;
 
-	/** If requested State is not available, fallback to the next match. Order represents priority */
+	/** If requested Stance is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
 /**
- * Holds FSimpleLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
- * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ * Holds FSimpleStartGaitSet for each stance (e.g. Stand, Crouch, Prone)
+ * Handles fallback when the requested stance is unavailable
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStanceToStartGaitSet
@@ -688,15 +675,14 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToStartGaitSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleStartGaitSet> StanceSets;
 
-	/** If requested State is not available, fallback to the next match. Order represents priority */
+	/** If requested Stance is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
 /**
- * Holds FSimpleTurnLocoSet for each gait that is in use (e.g. Walk, Run, Sprint)
- * Handles fallback when the requested gait is unavailable
- * e.g. if we request the Run gait, but we only have walk, it could fall back to the Walk set
+ * Holds FSimpleTurnGaitSet for each stance (e.g. Stand, Crouch, Prone)
+ * Handles fallback when the requested stance is unavailable
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStanceToTurnGaitSet
@@ -709,15 +695,14 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToTurnGaitSet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleTurnGaitSet> StanceSets;
 
-	/** If requested State is not available, fallback to the next match. Order represents priority */
+	/** If requested Stance is not available, fallback to the next match. Order represents priority */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
 	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleStrafeGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStrafeGaitSet
@@ -736,9 +721,8 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStrafeGaitSet
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleStartGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStartGaitSet
@@ -757,9 +741,8 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStartGaitSet
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleTurnGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToTurnGaitSet
@@ -826,9 +809,9 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeLocoSet
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleStanceToStrafeGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ * State -> Stance -> Gait -> StrafeLocoSet
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeGaitSet
@@ -850,9 +833,9 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeGaitSet
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleStanceToStartGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ * State -> Stance -> Gait -> StartLocoSet
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStartGaitSet
@@ -874,9 +857,9 @@ struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStartGaitSet
 };
 
 /**
- * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
+ * Holds FSimpleStanceToTurnGaitSet for each state (e.g. Default, ADS)
  * Handles fallback when the requested state is unavailable
- * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
+ * State -> Stance -> Gait -> TurnLocoSet
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTurnGaitSet
@@ -922,9 +905,9 @@ struct SIMPLELOCOMOTION_API FSimpleStanceToTransitionSet
 };
 
 /**
- * Holds FSimpleStanceSet for each stance that is in use (e.g. Stand, Crouch, Prone)
- * Handles fallback when the requested stance is unavailable
- * e.g. if we request the Crouch stance, but we only have Stand, it could fall back to the Stand set
+ * Holds FSimpleStanceSet for each state (e.g. Default, ADS)
+ * Handles fallback when the requested state is unavailable
+ * State -> Stance -> UAnimSequence
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStanceSet
@@ -983,9 +966,9 @@ struct SIMPLELOCOMOTION_API FSimpleStateToBlendSpaceSet
 };
 
 /**
- * Holds FSimpleStanceTransitionSet for each stance that is in use (e.g. Stand, Crouch, Prone)
- * Handles fallback when the requested stance is unavailable
- * e.g. if we request the Crouch stance, but we only have Stand, it could fall back to the Stand set
+ * Holds FSimpleStanceToTransitionSet for each state (e.g. Default, ADS)
+ * Handles fallback when the requested state is unavailable
+ * State -> Stance -> TransitionSet
  */
 USTRUCT(BlueprintType)
 struct SIMPLELOCOMOTION_API FSimpleStateToStanceToTransitionSet
