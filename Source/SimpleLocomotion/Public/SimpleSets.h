@@ -5,8 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "SimpleTags.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SimpleSets.generated.h"
 
+class UAnimSequence;
+class UAnimMontage;
+class UBlendSpace;
 enum class ESimpleCardinalType : uint8;
 
 enum class ESetType : uint8
@@ -774,6 +778,54 @@ struct SIMPLELOCOMOTION_API FSimpleStateToTurnGaitSet
 };
 
 /**
+ * Holds FSimpleStrafeLocoSet for each stance that is in use (e.g. Stand, Crouch, Prone)
+ * Handles fallback when the requested stance is unavailable
+ * Skips the gait level - uses StrafeLocoSet directly per stance
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStanceToStrafeLocoSet
+{
+	GENERATED_BODY()
+
+	FSimpleStanceToStrafeLocoSet();
+
+	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
+	FSimpleStrafeLocoSet DummySet;
+
+	/** Map tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleStrafeLocoSet> StanceSets;
+
+	/** If requested Stance is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.Stance", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
+ * Holds FSimpleStanceToStrafeLocoSet for each state that is in use
+ * Handles fallback when the requested state is unavailable
+ * State -> Stance -> StrafeLocoSet (no gait level)
+ */
+USTRUCT(BlueprintType)
+struct SIMPLELOCOMOTION_API FSimpleStateToStanceToStrafeLocoSet
+{
+	GENERATED_BODY()
+
+	FSimpleStateToStanceToStrafeLocoSet();
+
+	UPROPERTY()  // Allows the use of reference in getter to avoid copying structs because blueprint cannot use ptr
+	FSimpleStrafeLocoSet DummySet;
+
+	/** Maps tags to sets */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleStanceToStrafeLocoSet> StateSets;
+
+	/** If requested State is not available, fallback to the next match. Order represents priority */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation, meta=(GameplayTagFilter="Simple.State", ForceInlineRow))
+	TMap<FGameplayTag, FSimpleGameplayTagArray> Fallbacks;
+};
+
+/**
  * Holds FSimpleGaitSet for each state that is in use (e.g. Idle, Walk, Run)
  * Handles fallback when the requested state is unavailable
  * e.g. if we request the Walk gait, but we only have Idle, it could fall back to the Idle set
@@ -1037,6 +1089,29 @@ public:
 			return LocoSet ? LocoSet->GetAnimation(Cardinal) : nullptr;
 		}
 		return nullptr;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.Stance"))
+	static const FSimpleStrafeLocoSet& SimpleStanceToStrafeLocoSet(const FSimpleStanceToStrafeLocoSet& Set, FGameplayTag Stance)
+	{
+		if (const auto* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocoSet>(Stance, Set.StanceSets, Set.Fallbacks))
+		{
+			return *LocoSet;
+		}
+		return Set.DummySet;
+	}
+
+	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance"))
+	static const FSimpleStrafeLocoSet& SimpleStateToStanceToStrafeLocoSet(const FSimpleStateToStanceToStrafeLocoSet& Set, FGameplayTag State, FGameplayTag Stance)
+	{
+		if (const auto* StanceSet = FSimpleGetter::GetSet<FSimpleStanceToStrafeLocoSet>(State, Set.StateSets, Set.Fallbacks, ESetType::AnimState))
+		{
+			if (const auto* LocoSet = FSimpleGetter::GetSet<FSimpleStrafeLocoSet>(Stance, StanceSet->StanceSets, StanceSet->Fallbacks))
+			{
+				return *LocoSet;
+			}
+		}
+		return Set.DummySet;
 	}
 
 	UFUNCTION(BlueprintPure, Category=SimpleLocomotion, meta=(BlueprintThreadSafe, Keywords="Get,Getter", GameplayTagFilter="Simple.State,Simple.Stance,Simple.Gait"))

@@ -251,6 +251,19 @@ FSimpleStanceSet::FSimpleStanceSet()
 	ProneFallback.AddTagFast(FSimpleTags::Simple_Stance_Crouch);
 }
 
+FSimpleStanceToStrafeLocoSet::FSimpleStanceToStrafeLocoSet()
+{
+	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
+
+	// Crouch falls back to standing
+	FSimpleGameplayTagArray& CrouchFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Crouch);
+	CrouchFallback.AddTagFast(FSimpleTags::Simple_Stance_Stand);
+
+	// Prone falls back to crouch
+	FSimpleGameplayTagArray& ProneFallback = Fallbacks.Add(FSimpleTags::Simple_Stance_Prone);
+	ProneFallback.AddTagFast(FSimpleTags::Simple_Stance_Crouch);
+}
+
 FSimpleStanceToStrafeGaitSet::FSimpleStanceToStrafeGaitSet()
 {
 	StanceSets.Add(FSimpleTags::Simple_Stance_Stand);
@@ -301,6 +314,11 @@ FSimpleStateToStartGaitSet::FSimpleStateToStartGaitSet()
 }
 
 FSimpleStateToTurnGaitSet::FSimpleStateToTurnGaitSet()
+{
+	StateSets.Add(FSimpleTags::Simple_State_Default);
+}
+
+FSimpleStateToStanceToStrafeLocoSet::FSimpleStateToStanceToStrafeLocoSet()
 {
 	StateSets.Add(FSimpleTags::Simple_State_Default);
 }
