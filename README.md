@@ -40,6 +40,9 @@ You will likely run into fast path warnings on your animation state transitions.
 * Add `FSimpleStateToStanceToStrafeLocoSet`
 * Improve accuracy of Anim Set struct comments
 
+### 1.1.1
+* Expose some protected properties from SimpleAnimInstance for the sake of layers
+
 ### 1.1.0
 * Fix critical bug regression with anim states not applying fallbacks correctly
 * Add `FSimpleStateToBlendSpaceSet`
