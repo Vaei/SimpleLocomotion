@@ -108,6 +108,8 @@ void USimpleAnimInstance::NativeBeginPlay()
 
 void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(USimpleAnimInstance::NativeUpdateAnimation);
+
 	if (!IsAnimValidToUpdate(DeltaTime))
 	{
 		if (!bOwnerHasInitialized && IsValid(Owner) && OwnerComponent)
@@ -175,6 +177,8 @@ void USimpleAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 void USimpleAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaTime)
 {
+	TRACE_CPUPROFILER_EVENT_SCOPE(USimpleAnimInstance::NativeThreadSafeUpdateAnimation);
+
 	if (!IsAnimValidToUpdate(DeltaTime))
 	{
 		return;
