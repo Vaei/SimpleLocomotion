@@ -113,6 +113,7 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
 		float DeadZoneBwd = DeadZone;
+		float DeadZoneAway = DeadZone;
 
 		if (bWasMovingLastUpdate)
 		{
@@ -127,6 +128,12 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 			else if (CurrentDirection == FSimpleTags::Simple_Cardinal_Backward)
 			{
 				DeadZoneBwd *= 2.f;
+			}
+
+			// Invert when already facing away so the boundary is sticky in both crossing directions
+			if (CurrentDirection == FSimpleTags::Simple_Cardinal_Left_Away || CurrentDirection == FSimpleTags::Simple_Cardinal_Right_Away)
+			{
+				DeadZoneAway *= -1.f;
 			}
 		}
 
@@ -144,7 +151,7 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 
 		// Left and Right
 		const bool bRight = Angle >= 0.f;
-		if (AngleAbs <= 90.f + DeadZoneFwd)
+		if (AngleAbs <= 90.f + DeadZoneAway)
 		{
 			return bRight ? FSimpleTags::Simple_Cardinal_Right : FSimpleTags::Simple_Cardinal_Left;
 		}
@@ -210,7 +217,8 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 		const float AngleAbs = FMath::Abs(Angle);
 		float DeadZoneFwd = DeadZone;
 		float DeadZoneBwd = DeadZone;
-	
+		float DeadZoneAway = DeadZone;
+
 		if (bWasMovingLastUpdate)
 		{
 			// If moving forward or backward, double the dead zone
@@ -224,6 +232,12 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 			else if (CurrentDirection == FSimpleTags::Simple_Cardinal_Backward)
 			{
 				DeadZoneBwd *= 2.f;
+			}
+
+			// Invert when already facing away so the boundary is sticky in both crossing directions
+			if (CurrentDirection == FSimpleTags::Simple_Cardinal_Left_Away || CurrentDirection == FSimpleTags::Simple_Cardinal_Right_Away)
+			{
+				DeadZoneAway *= -1.f;
 			}
 		}
 
@@ -253,7 +267,7 @@ FGameplayTag USimpleStatics::SelectSimpleCardinalFromAngle(const FGameplayTag& C
 
 		// Left and Right
 		const bool bRight = Angle >= 0.f;
-		if (AngleAbs <= 90.f + DeadZoneFwd)
+		if (AngleAbs <= 90.f + DeadZoneAway)
 		{
 			return bRight ? FSimpleTags::Simple_Cardinal_Right : FSimpleTags::Simple_Cardinal_Left;
 		}

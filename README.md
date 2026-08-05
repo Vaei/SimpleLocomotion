@@ -36,6 +36,9 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.2.0
+* Improve deadzone handling to improve results for back-strafing (6-way/10-way)
+
 ### 1.1.2
 * Add `FSimpleStateToStanceToStrafeLocoSet`
 * Improve accuracy of Anim Set struct comments
