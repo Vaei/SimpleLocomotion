@@ -36,6 +36,11 @@ You will likely run into fast path warnings on your animation state transitions.
 
 ## Changelog
 
+### 1.3.0
+* Tags without an entry of their own now fall back to their parent tag, so `Simple.Stance.Crouch.Low` resolves to the `Simple.Stance.Crouch` set, or to whatever it falls back to, without registering fallbacks of its own
+* Add `ESetFallback` to disable parent fallback per lookup
+* `GetAnim`, `GetBlendSpace` and `GetSet` now share a single `FSimpleGetter::FindEntry`
+
 ### 1.2.0
 * Improve deadzone handling to improve results for back-strafing (6-way/10-way)
 

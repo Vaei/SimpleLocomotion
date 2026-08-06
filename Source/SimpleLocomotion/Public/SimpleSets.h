@@ -19,6 +19,16 @@ enum class ESetType : uint8
 	AnimState,
 };
 
+/** How a tag with no entry of its own resolves */
+enum class ESetFallback : uint8
+{
+	/** Only the tag's registered fallbacks are searched */
+	RegisteredOnly,
+
+	/** Registered fallbacks are searched, then the same again for each parent tag */
+	ParentFallback,
+};
+
 /**
  * Custom FGameplayTagContainer that maintains order
  */
@@ -63,119 +73,95 @@ protected:
 /** Getter for Simple Animation Sets */
 struct SIMPLELOCOMOTION_API FSimpleGetter
 {
-	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UAnimSequence>>& Anims,
-		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
-	{
-		// Return this anim if available
-		if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(KeyTag))
-		{
-			return *Anim;
-		}
-
-		// Otherwise fallback to the closest available
-		if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(KeyTag))
-		{
-			for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
-			{
-				if (const TObjectPtr<UAnimSequence>* Anim = Anims.Find(FallbackTag))
-				{
-					return *Anim;
-				}
-			}
-		}
-
-		// If this is an AnimState and no fallbacks are provided, return the default state
-		if (SetType == ESetType::AnimState)
-		{
-			const TObjectPtr<UAnimSequence>* Anim = Anims.Find(FSimpleTags::Simple_State_Default);
-			if (ensure(Anim))  // Did we accidentally mark as AnimState?
-			{
-				return *Anim;
-			}
-		}
-
-		// No available anim
-		return nullptr;
-	}
-	
-	static UBlendSpace* GetBlendSpace(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UBlendSpace>>& BlendSpaces,
-		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
-	{
-		// Return this blend space if available
-		if (const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(KeyTag))
-		{
-			return *BlendSpace;
-		}
-
-		// Otherwise fallback to the closest available
-		if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(KeyTag))
-		{
-			for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
-			{
-				if (const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(FallbackTag))
-				{
-					return *BlendSpace;
-				}
-			}
-		}
-
-		// If this is an AnimState and no fallbacks are provided, return the default state
-		if (SetType == ESetType::AnimState)
-		{
-			const TObjectPtr<UBlendSpace>* BlendSpace = BlendSpaces.Find(FSimpleTags::Simple_State_Default);
-			if (ensure(BlendSpace))  // Did we accidentally mark as AnimState?
-			{
-				return *BlendSpace;
-			}
-		}
-
-		// No available blend space
-		return nullptr;
-	}
-
 	/**
-	 * Get the set of animations for the specified key tag
-	 * 
+	 * Shared lookup behind every getter, tried in order until an entry is found:
+	 *		1. The key tag itself
+	 *		2. The key tag's registered fallbacks, in the order they were registered
+	 *		3. With ParentFallback, the above repeated for each parent tag, walking up one level at a time
+	 *		4. With AnimState, the default state
+	 *
+	 * Parent fallback means a child tag needs no registration of its own, e.g. a child of Simple.Stance.Crouch
+	 * resolves to the Simple.Stance.Crouch entry, or to whatever Simple.Stance.Crouch falls back to.
+	 *
 	 * @param KeyTag The tag to look up
-	 * @param Sets The map of sets to search
+	 * @param Entries The map to search
 	 * @param Fallbacks The map of fallback tags to search if the key tag is not found
-	 * @param SetType For AnimStates use an automatic fallback to default state if no fallbacks are provided
-	 * @return Pointer to the set of animations, or nullptr if not found
+	 * @param SetType For AnimStates use an automatic fallback to default state if nothing else is found
+	 * @param FallbackMode Whether unregistered tags resolve to their parent tag
+	 * @return Pointer to the entry, or nullptr if not found
 	 */
+	template<typename ValueType>
+	static const ValueType* FindEntry(const FGameplayTag& KeyTag, const TMap<FGameplayTag, ValueType>& Entries,
+		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None,
+		ESetFallback FallbackMode = ESetFallback::ParentFallback)
+	{
+		FGameplayTag SearchTag = KeyTag;
+		while (SearchTag.IsValid())
+		{
+			// Return this entry if available
+			if (const ValueType* Entry = Entries.Find(SearchTag))
+			{
+				return Entry;
+			}
+
+			// Otherwise fallback to the closest available
+			if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(SearchTag))
+			{
+				for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
+				{
+					if (const ValueType* Entry = Entries.Find(FallbackTag))
+					{
+						return Entry;
+					}
+				}
+			}
+
+			if (FallbackMode != ESetFallback::ParentFallback)
+			{
+				break;
+			}
+
+			// Retry as the parent tag, e.g. Simple.Gait.Walk.Injured searches Simple.Gait.Walk
+			SearchTag = SearchTag.RequestDirectParent();
+		}
+
+		// If this is an AnimState and no fallbacks are provided, return the default state
+		if (SetType == ESetType::AnimState)
+		{
+			const ValueType* Entry = Entries.Find(FSimpleTags::Simple_State_Default);
+			if (ensure(Entry))  // Did we accidentally mark as AnimState?
+			{
+				return Entry;
+			}
+		}
+
+		// No available entry
+		return nullptr;
+	}
+
+	static UAnimSequence* GetAnim(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UAnimSequence>>& Anims,
+		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None,
+		ESetFallback FallbackMode = ESetFallback::ParentFallback)
+	{
+		const TObjectPtr<UAnimSequence>* Anim = FindEntry(KeyTag, Anims, Fallbacks, SetType, FallbackMode);
+		return Anim ? Anim->Get() : nullptr;
+	}
+
+	static UBlendSpace* GetBlendSpace(const FGameplayTag& KeyTag, const TMap<FGameplayTag, TObjectPtr<UBlendSpace>>& BlendSpaces,
+		const TMap<FGameplayTag, FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None,
+		ESetFallback FallbackMode = ESetFallback::ParentFallback)
+	{
+		const TObjectPtr<UBlendSpace>* BlendSpace = FindEntry(KeyTag, BlendSpaces, Fallbacks, SetType, FallbackMode);
+		return BlendSpace ? BlendSpace->Get() : nullptr;
+	}
+
+	/** Get the set of animations for the specified key tag. See FindEntry() for the search order. */
 	template<typename T>
 	static const T* GetSet(const FGameplayTag& KeyTag, const TMap<FGameplayTag, T>& Sets, const TMap<FGameplayTag,
-		FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None)
+		FSimpleGameplayTagArray>& Fallbacks, ESetType SetType = ESetType::None,
+		ESetFallback FallbackMode = ESetFallback::ParentFallback)
 	{
-		// Return this set if available
-		if (const T* Set = Sets.Find(KeyTag))
-		{
-			return Set;
-		}
-
-		// Otherwise fallback to the closest available
-		if (const FSimpleGameplayTagArray* Fallback = Fallbacks.Find(KeyTag))
-		{
-			for (const FGameplayTag& FallbackTag : Fallback->GetGameplayTagArray())
-			{
-				if (const T* Set = Sets.Find(FallbackTag))
-				{
-					return Set;
-				}
-			}
-		}
-
-		// If this is an AnimState and no fallbacks are provided, return the default state
-		if (SetType == ESetType::AnimState)
-		{
-			const T* DefaultSet = Sets.Find(FSimpleTags::Simple_State_Default);
-			if (ensure(DefaultSet))  // Did we accidentally mark as AnimState?
-			{
-				return DefaultSet;
-			}
-		}
-
-		// No available set
-		return nullptr;
+		return FindEntry(KeyTag, Sets, Fallbacks, SetType, FallbackMode);
 	}
 };
 
